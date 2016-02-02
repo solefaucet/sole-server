@@ -1,0 +1,15 @@
+language: go
+
+sudo: false
+
+go:
+  - 1.5.3
+
+before_script:
+  - make depend
+
+script:
+  - make metalint test
+
+notifications:
+  slack: freeusd:jaRsOvGWpjt9LPpJ0I4PqNwa
