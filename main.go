@@ -7,9 +7,11 @@ import (
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 )
 
-func main() {
-	port := os.Getenv("PORT")
+func init() {
+	initConfig()
+}
 
+func main() {
 	router := gin.New()
 
 	var (
@@ -21,5 +23,5 @@ func main() {
 	router.Use(gin.RecoveryWithWriter(panicWriter))
 	router.Use(gin.ErrorLoggerT(gin.ErrorTypeAny))
 
-	router.Run(port)
+	router.Run(config.HTTP.Port)
 }
