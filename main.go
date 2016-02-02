@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 )
 
 func main() {
