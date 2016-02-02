@@ -11,7 +11,6 @@
 # - "all" is the default target, it runs all the targets in the order above.
 #
 DEPEND=\
-			 github.com/tools/godep \
 			 golang.org/x/tools/cmd/cover \
 			 github.com/smartystreets/goconvey/convey \
 			 github.com/smartystreets/assertions \
@@ -21,7 +20,6 @@ all: depend metalint test
 
 depend:
 	@go get -v $(DEPEND)
-	godep restore
 
 metalint:
 	gometalinter \
@@ -31,4 +29,4 @@ metalint:
 		./...
 
 test:
-	godep go test -cover ./...
+	go test -cover ./...
