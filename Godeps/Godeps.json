@@ -1,6 +1,9 @@
 {
 	"ImportPath": "github.com/freeusd/solebtc",
 	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
