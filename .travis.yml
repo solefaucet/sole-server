@@ -15,12 +15,7 @@ before_script:
 
 script:
   - gometalinter --install --update
-  - >
-    gometalinter \
-    --disable=gotype \
-    --disable=errcheck \
-    --enable=goimports \
-    ./...
+  - gometalinter --disable=gotype --disable=errcheck --enable=goimports ./...
   - go test -cover ./...
 
 notifications:
