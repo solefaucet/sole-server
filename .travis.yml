@@ -14,7 +14,14 @@ before_script:
   - make depend
 
 script:
-  - make metalint test
+  - gometalinter --install --update
+  - >
+    gometalinter \
+    --disable=gotype \
+    --disable=errcheck \
+    --enable=goimports \
+    ./...
+  - go test -cover ./...
 
 notifications:
   slack: freeusd:jaRsOvGWpjt9LPpJ0I4PqNwa

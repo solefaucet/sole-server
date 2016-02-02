@@ -22,7 +22,6 @@ depend:
 	@go get -v $(DEPEND)
 
 metalint:
-	gometalinter --install --update
 	gometalinter \
 		--disable=gotype \
 		--disable=errcheck \
