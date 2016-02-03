@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	"github.com/freeusd/solebtc/controller/v1"
+	"github.com/freeusd/solebtc/controllers/v1"
 )
 
 func init() {
