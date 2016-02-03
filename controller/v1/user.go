@@ -1,10 +1,11 @@
 package v1
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/freeusd/solebtc/utils"
 )
 
 type signupPayload struct {
@@ -13,8 +14,8 @@ type signupPayload struct {
 }
 
 func (p *signupPayload) validate() error {
-	if p.BitcoinAddress != "bitcoin" {
-		return errors.New("invalid bitcoin address")
+	if ok, err := utils.ValidateBitcoinAddress(p.BitcoinAddress); err != nil || !ok {
+		return fmt.Errorf("Invalid bitcoin address: %s", p.BitcoinAddress)
 	}
 
 	return nil

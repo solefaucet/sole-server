@@ -2,84 +2,67 @@ package v1
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 )
 
-func init() {
-	gin.SetMode(gin.ReleaseMode)
-}
+const (
+	validBTCAddr   = "1EFJFaeATfp2442TGcHS5mgadXJjsSSP2T"
+	invalidBTCAddr = "bitcoin"
+	emptyBTCAddr   = ""
 
-func TestSignupPayloadValidate(t *testing.T) {
-	testdata := []struct {
-		p       signupPayload
-		canPass bool
-	}{
-		{
-			signupPayload{BitcoinAddress: "bitcoin"},
-			true,
-		},
-		{
-			signupPayload{BitcoinAddress: "wow"},
-			false,
-		},
-	}
-
-	helper := func(canPass bool) (string, string) {
-		if canPass {
-			return "valid", "invalid"
-		}
-		return "invalid", "valid"
-	}
-
-	for _, v := range testdata {
-		if (v.p.validate() == nil) != v.canPass {
-			expected, but := helper(v.canPass)
-			t.Errorf("%v should be %v but test get %v", v.p, expected, but)
-		}
-	}
-}
+	validEmail   = "valid@email.cc"
+	invalidEmail = "invalid@.ee.cc"
+	emptyEmail   = ""
+)
 
 func TestSignup(t *testing.T) {
+	requestDataJSON := func(email, btcAddr string) []byte {
+		raw, _ := json.Marshal(map[string]interface{}{
+			"email":           email,
+			"bitcoin_address": btcAddr,
+		})
+		return raw
+	}
+
 	testdata := []struct {
-		requestData string
+		requestData []byte
 		code        int
 	}{
 		{
-			"huhu",
+			[]byte("huhu"),
 			400,
 		},
 		{
-			`{"email": "", "bitcoin_address": ""}`,
+			requestDataJSON(emptyEmail, emptyBTCAddr),
 			400,
 		},
 		{
-			`{"email": "valid@email.com", "bitcoin_address": ""}`,
+			requestDataJSON(validEmail, emptyBTCAddr),
 			400,
 		},
 		{
-			`{"email": "valid@email.com", "bitcoin_address": "invalid"}`,
+			requestDataJSON(validEmail, invalidBTCAddr),
 			400,
 		},
 		{
-			`{"email": "", "bitcoin_address": "bitcoin"}`,
+			requestDataJSON(emptyEmail, validBTCAddr),
 			400,
 		},
 		{
-			`{"email": "valid@email.com", "bitcoin_address": "bitcoin"}`,
+			requestDataJSON(validEmail, validBTCAddr),
 			200,
 		},
 	}
 
-	r := gin.New()
-	route := "/users"
-	r.POST(route, Signup())
 	for _, v := range testdata {
-		req, _ := http.NewRequest("POST", route, bytes.NewBufferString(v.requestData))
-		resp := httptest.NewRecorder()
+		route := "/users"
+		_, resp, r := gin.CreateTestContext()
+		r.POST(route, Signup())
+		req, _ := http.NewRequest("POST", route, bytes.NewBuffer(v.requestData))
 		r.ServeHTTP(resp, req)
 
 		if resp.Code != v.code {
