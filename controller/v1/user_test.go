@@ -3,20 +3,20 @@ package v1
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 const (
 	validBTCAddr   = "1EFJFaeATfp2442TGcHS5mgadXJjsSSP2T"
 	invalidBTCAddr = "bitcoin"
-	emptyBTCAddr   = ""
 
 	validEmail   = "valid@email.cc"
 	invalidEmail = "invalid@.ee.cc"
-	emptyEmail   = ""
 )
 
 func TestSignup(t *testing.T) {
@@ -29,44 +29,52 @@ func TestSignup(t *testing.T) {
 	}
 
 	testdata := []struct {
+		when        string
 		requestData []byte
 		code        int
 	}{
 		{
+			"invalid json data",
 			[]byte("huhu"),
 			400,
 		},
 		{
-			requestDataJSON(emptyEmail, emptyBTCAddr),
+			"invalid email, invalid bitcoin address",
+			requestDataJSON(invalidEmail, invalidBTCAddr),
 			400,
 		},
 		{
-			requestDataJSON(validEmail, emptyBTCAddr),
+			"valid email, invalid bitcoin address",
+			requestDataJSON(validEmail, invalidEmail),
 			400,
 		},
 		{
-			requestDataJSON(validEmail, invalidBTCAddr),
+			"invalid email, valid bitcoin address",
+			requestDataJSON(invalidEmail, validBTCAddr),
 			400,
 		},
 		{
-			requestDataJSON(emptyEmail, validBTCAddr),
-			400,
-		},
-		{
+			"valid email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			200,
 		},
 	}
 
-	for _, v := range testdata {
+	Convey("Given Signup controller", t, func() {
+		s := Signup()
 		route := "/users"
-		_, resp, r := gin.CreateTestContext()
-		r.POST(route, Signup())
-		req, _ := http.NewRequest("POST", route, bytes.NewBuffer(v.requestData))
-		r.ServeHTTP(resp, req)
 
-		if resp.Code != v.code {
-			t.Errorf("request with %s should get status code %v but get %v", v.requestData, v.code, resp.Code)
+		for _, v := range testdata {
+			Convey(fmt.Sprintf("When request with %s", v.when), func() {
+				_, resp, r := gin.CreateTestContext()
+				r.POST(route, s)
+				req, _ := http.NewRequest("POST", route, bytes.NewBuffer(v.requestData))
+				r.ServeHTTP(resp, req)
+
+				Convey("Response code should equal", func() {
+					So(resp.Code, ShouldEqual, v.code)
+				})
+			})
 		}
-	}
+	})
 }
