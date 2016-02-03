@@ -16,7 +16,10 @@ before_script:
 script:
   - gometalinter --install --update
   - gometalinter --disable=gotype --disable=errcheck --enable=goimports --deadline=60s ./...
-  - go test -cover ./...
+  - bash test.sh
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   slack: freeusd:jaRsOvGWpjt9LPpJ0I4PqNwa
