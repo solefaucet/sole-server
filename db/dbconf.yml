@@ -1,0 +1,13 @@
+# dbconf in format of https://bitbucket.org/liamstask/goose
+#
+test:
+  driver: mysql
+  open: root:@/solebtc_test
+
+development:
+  driver: mysql
+  open: /solebtc_dev
+
+production:
+  driver: mysql
+  open: /solebtc_prod

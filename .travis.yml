@@ -1,6 +1,6 @@
 language: go
 
-sudo: false
+sudo: true
 
 go:
   - 1.5.3
@@ -10,13 +10,26 @@ install:
   - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
   - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
 
+services:
+  - mysql
+
 before_script:
+  # dependency
   - make depend
+  # upgrade mysql to 5.7
+  - bash travis.upgrade.mysql.sh
+  # prepare test database
+  - mysql -uroot -e 'drop database if exists solebtc_test;'
+  - mysql -uroot -e 'create database solebtc_test character set utf8;'
+  - goose -env test up
 
 script:
   - gometalinter --install --update
   - gometalinter --disable=gotype --disable=errcheck --disable=deadcode --enable=goimports --deadline=60s ./...
   - bash test.sh
+
+after_script:
+  - mysql -uroot -e 'drop database if exists solebtc_test;'
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

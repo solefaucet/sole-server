@@ -12,8 +12,7 @@
 #
 DEPEND=\
 			 golang.org/x/tools/cmd/cover \
-			 github.com/smartystreets/goconvey/convey \
-			 github.com/smartystreets/assertions \
+			 bitbucket.org/liamstask/goose/cmd/goose \
 			 github.com/alecthomas/gometalinter
 
 all: depend metalint test
@@ -31,4 +30,11 @@ metalint:
 		./...
 
 test:
+	# prepare test database
+	mysql -uroot -e 'drop database if exists solebtc_test;'
+	mysql -uroot -e 'create database solebtc_test character set utf8;'
+	goose -env test up
+	# run test
 	go test -cover ./...
+	# cleanup
+	mysql -uroot -e 'drop database if exists solebtc_test;'
