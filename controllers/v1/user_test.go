@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	. "github.com/smartystreets/goconvey/convey"
+	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
 )
 
 const (
