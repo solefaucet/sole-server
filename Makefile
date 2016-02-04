@@ -25,7 +25,9 @@ metalint:
 	gometalinter \
 		--disable=gotype \
 		--disable=errcheck \
+		--disable=deadcode \
 		--enable=goimports \
+		--deadline=60s \
 		./...
 
 test:

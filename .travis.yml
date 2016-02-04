@@ -15,7 +15,7 @@ before_script:
 
 script:
   - gometalinter --install --update
-  - gometalinter --disable=gotype --disable=errcheck --enable=goimports --deadline=60s ./...
+  - gometalinter --disable=gotype --disable=errcheck --disable=deadcode --enable=goimports --deadline=60s ./...
   - bash test.sh
 
 after_success:
