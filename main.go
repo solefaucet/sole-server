@@ -7,6 +7,7 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/controllers/v1"
+	"github.com/freeusd/solebtc/middlewares"
 )
 
 func init() {
@@ -21,9 +22,9 @@ func main() {
 		panicWriter io.Writer = os.Stderr
 	)
 
-	router.Use(gin.LoggerWithWriter(logWriter))
 	router.Use(gin.RecoveryWithWriter(panicWriter))
-	router.Use(gin.ErrorLoggerT(gin.ErrorTypeAny))
+	router.Use(gin.LoggerWithWriter(logWriter))
+	router.Use(middlewares.ErrorWriter())
 
 	g1 := router.Group("/v1")
 	g1.POST("/users", v1.Signup())
