@@ -30,10 +30,6 @@ metalint:
 		./...
 
 test:
-	# prepare test database
-	mysql -uroot -e 'drop database if exists solebtc_test;'
-	mysql -uroot -e 'create database solebtc_test character set utf8;'
-	goose -env test up
 	# run test
 	go test -cover ./...
 	# cleanup

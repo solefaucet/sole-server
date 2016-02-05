@@ -18,10 +18,6 @@ before_script:
   - make depend
   # upgrade mysql to 5.7
   - bash travis.upgrade.mysql.sh
-  # prepare test database
-  - mysql -uroot -e 'drop database if exists solebtc_test;'
-  - mysql -uroot -e 'create database solebtc_test character set utf8;'
-  - goose -env test up
 
 script:
   - gometalinter --install --update
@@ -29,6 +25,7 @@ script:
   - bash test.sh
 
 after_script:
+  # cleanup
   - mysql -uroot -e 'drop database if exists solebtc_test;'
 
 after_success:

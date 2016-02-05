@@ -6,6 +6,7 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/errors"
+	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/utils"
 )
 
@@ -29,8 +30,19 @@ func (p *signupPayload) validate() error {
 	return nil
 }
 
+type createUserService interface {
+	CreateUser(models.User) errors.Error
+}
+
+func userWithSignupPayload(p signupPayload) models.User {
+	return models.User{
+		Email:          p.Email,
+		BitcoinAddress: p.BitcoinAddress,
+	}
+}
+
 // Signup creates a new user with unique email, bitcoin address
-func Signup(dependencies ...interface{}) gin.HandlerFunc {
+func Signup(cus createUserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
@@ -41,6 +53,22 @@ func Signup(dependencies ...interface{}) gin.HandlerFunc {
 			return
 		}
 
-		c.Status(200)
+		user := userWithSignupPayload(payload)
+		if err := cus.CreateUser(user); err.NotNil() {
+			switch err.ErrCode {
+			case errors.ErrCodeDuplicateEmail:
+				err.ErrString = fmt.Sprintf("Email %s is duplicated", payload.Email)
+				c.AbortWithError(http.StatusConflict, err)
+			case errors.ErrCodeDuplicateBitcoinAddress:
+				err.ErrString = fmt.Sprintf("Bitcoin address %s is duplicated", payload.BitcoinAddress)
+				c.AbortWithError(http.StatusConflict, err)
+			default:
+				err.ErrString = "Internal server error"
+				c.AbortWithError(http.StatusInternalServerError, err)
+			}
+			return
+		}
+
+		c.JSON(http.StatusOK, user)
 	}
 }
