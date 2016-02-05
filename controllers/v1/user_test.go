@@ -23,14 +23,14 @@ const (
 
 type mockCreateUserService struct {
 	createUserService
-	err errors.Error
+	err *errors.Error
 }
 
-func (m mockCreateUserService) CreateUser(models.User) errors.Error {
+func (m mockCreateUserService) CreateUser(models.User) *errors.Error {
 	return m.err
 }
 
-func newMockCreateUserService(err errors.Error) mockCreateUserService {
+func newMockCreateUserService(err *errors.Error) mockCreateUserService {
 	return mockCreateUserService{err: err}
 }
 
@@ -77,31 +77,25 @@ func TestSignup(t *testing.T) {
 			"duplicate email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
-			newMockCreateUserService(errors.Error{
-				ErrCode: errors.ErrCodeDuplicateEmail,
-			}),
+			newMockCreateUserService(errors.New(errors.ErrCodeDuplicateEmail)),
 		},
 		{
 			"valid email, duplicate bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
-			newMockCreateUserService(errors.Error{
-				ErrCode: errors.ErrCodeDuplicateBitcoinAddress,
-			}),
+			newMockCreateUserService(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
 		},
 		{
 			"valid email, valid bitcoin address, but unknow error",
 			requestDataJSON(validEmail, validBTCAddr),
 			500,
-			newMockCreateUserService(errors.Error{
-				ErrCode: errors.ErrCodeUnknown,
-			}),
+			newMockCreateUserService(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
 			"valid email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			200,
-			newMockCreateUserService(errors.Nil),
+			newMockCreateUserService(nil),
 		},
 	}
 

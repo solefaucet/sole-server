@@ -2,15 +2,19 @@ package errors
 
 // error codes
 const (
-	ErrCodeNil     Code = -1
-	ErrCodeUnknown Code = 99999
+	_ Code = iota
+	ErrCodeUnknown
+)
 
-	// validation error
-	_ Code = iota + 4000
-	ErrCodeInvalidBitcoinAddress
-
-	// duplicate error
+// duplicate error
+const (
 	_ Code = iota + 5000
 	ErrCodeDuplicateEmail
 	ErrCodeDuplicateBitcoinAddress
+)
+
+// validate error
+const (
+	_ Code = iota + 4000
+	ErrCodeInvalidBitcoinAddress
 )

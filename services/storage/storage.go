@@ -7,5 +7,5 @@ import (
 
 // Storage defines interface that one should implement
 type Storage interface {
-	CreateUser(models.User) errors.Error
+	CreateUser(models.User) *errors.Error
 }

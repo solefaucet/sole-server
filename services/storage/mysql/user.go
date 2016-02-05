@@ -10,34 +10,32 @@ import (
 )
 
 // CreateUser create a new user
-func (s Storage) CreateUser(u models.User) errors.Error {
+func (s Storage) CreateUser(u models.User) *errors.Error {
 	_, err := s.db.NamedExec("INSERT INTO users (`email`, `bitcoin_address`) VALUES (:email, :bitcoin_address)", u)
 
 	if err != nil {
 		switch e := err.(type) {
 		case *mysql.MySQLError:
 			if e.Number == errcodeDuplicate {
+				syserr := errors.New(errors.ErrCodeUnknown)
 				errcodeMapping := map[string]errors.Code{
 					"key 'email'":           errors.ErrCodeDuplicateEmail,
 					"key 'bitcoin_address'": errors.ErrCodeDuplicateBitcoinAddress,
 				}
-				code := errors.ErrCodeUnknown
 				for k, v := range errcodeMapping {
 					if strings.Contains(e.Message, k) {
-						code = v
+						syserr.ErrCode = v
 					}
 				}
-				return errors.Error{
-					ErrCode: code,
-				}
+				return syserr
 			}
 		}
 
-		return errors.Error{
+		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
 			ErrStringForLogging: fmt.Sprintf("Create user unknown error: %v", err),
 		}
 	}
 
-	return errors.Nil
+	return nil
 }

@@ -16,7 +16,7 @@ func TestCreateUser(t *testing.T) {
 			err := s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
 
 			Convey("Error should be nil", func() {
-				So(err.NotNil(), ShouldBeFalse)
+				So(err, ShouldBeNil)
 			})
 		})
 	})

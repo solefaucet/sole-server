@@ -17,10 +17,8 @@ type signupPayload struct {
 
 func (p *signupPayload) validate() error {
 	if ok, err := utils.ValidateBitcoinAddress(p.BitcoinAddress); err != nil || !ok {
-		e := errors.Error{
-			ErrCode:   errors.ErrCodeInvalidBitcoinAddress,
-			ErrString: fmt.Sprintf("%s is invalid bitcoin address", p.BitcoinAddress),
-		}
+		e := errors.New(errors.ErrCodeInvalidBitcoinAddress)
+		e.ErrString = fmt.Sprintf("%s is invalid bitcoin address", p.BitcoinAddress)
 		if err != nil {
 			e.ErrStringForLogging = fmt.Sprintf("validate bitcoin address error: %v", err)
 		}
@@ -31,7 +29,7 @@ func (p *signupPayload) validate() error {
 }
 
 type createUserService interface {
-	CreateUser(models.User) errors.Error
+	CreateUser(models.User) *errors.Error
 }
 
 func userWithSignupPayload(p signupPayload) models.User {
@@ -54,7 +52,7 @@ func Signup(cus createUserService) gin.HandlerFunc {
 		}
 
 		user := userWithSignupPayload(payload)
-		if err := cus.CreateUser(user); err.NotNil() {
+		if err := cus.CreateUser(user); err != nil {
 			switch err.ErrCode {
 			case errors.ErrCodeDuplicateEmail:
 				err.ErrString = fmt.Sprintf("Email %s is duplicated", payload.Email)

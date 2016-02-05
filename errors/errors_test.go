@@ -8,17 +8,15 @@ import (
 func ExampleErrors() {
 	errorString := "error"
 
-	e := Error{
-		ErrCode:             ErrCodeInvalidBitcoinAddress,
-		ErrString:           errorString,
-		ErrStringForLogging: "for logging purpose",
-	}
-	fmt.Println(e, e.ErrCode, e.NotNil())
+	e := New(ErrCodeInvalidBitcoinAddress)
+	e.ErrString = errorString
+	e.ErrStringForLogging = "for logging purpose"
+	fmt.Println(e, e.ErrCode)
 
 	raw, _ := json.Marshal(e)
 	fmt.Println(string(raw))
 
 	// Output:
-	// error 4003 true
+	// error 4001
 	// {"error":"error"}
 }
