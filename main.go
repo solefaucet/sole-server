@@ -6,8 +6,10 @@ import (
 	"os"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	mysqldriver "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
 	"github.com/freeusd/solebtc/controllers/v1"
 	"github.com/freeusd/solebtc/middlewares"
+	"github.com/freeusd/solebtc/services/storage/mysql"
 )
 
 func init() {
@@ -15,12 +17,26 @@ func init() {
 }
 
 func main() {
-	router := gin.New()
-
 	var (
 		logWriter   io.Writer = os.Stdout
 		panicWriter io.Writer = os.Stderr
 	)
+
+	// storage service
+	mysqlCfg, err := mysqldriver.ParseDSN(config.DB.DataSourceName)
+	if err != nil {
+		fmt.Fprintf(panicWriter, "Cannot parse mysql data source name: %v", err)
+		return
+	}
+	mysqlCfg.ParseTime = true
+	storage, err := mysql.New(mysqlCfg)
+	if err != nil {
+		fmt.Fprintf(panicWriter, "Cannot create mysql storage: %v", err)
+		return
+	}
+
+	gin.SetMode(ginEnvMode())
+	router := gin.New()
 
 	router.Use(gin.RecoveryWithWriter(panicWriter))
 	router.Use(gin.LoggerWithWriter(logWriter))
