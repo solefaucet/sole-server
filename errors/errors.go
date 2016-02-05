@@ -2,17 +2,27 @@ package errors
 
 import "encoding/json"
 
-var _ error = Error{}
-var _ json.Marshaler = Error{}
+var (
+	_ error          = Error{}
+	_ json.Marshaler = Error{}
+	// Nil error
+	Nil = Error{ErrCode: ErrCodeNil}
+)
 
 // Error is custom error
 type Error struct {
-	ErrCode             code
+	ErrCode             Code
 	ErrString           string
 	ErrStringForLogging string
 }
 
-type code int
+// Code is custom error code
+type Code int
+
+// NotNil checks if error is not nil
+func (e Error) NotNil() bool {
+	return e.ErrCode != ErrCodeNil
+}
 
 // err implements error interface
 func (e Error) Error() string {
