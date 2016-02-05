@@ -39,7 +39,7 @@ func main() {
 	router := gin.New()
 
 	router.Use(gin.RecoveryWithWriter(panicWriter))
-	router.Use(gin.LoggerWithWriter(logWriter))
+	router.Use(middlewares.LoggerWithWriter(logWriter))
 	router.Use(middlewares.ErrorWriter())
 
 	g1 := router.Group("/v1")
