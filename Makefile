@@ -27,6 +27,7 @@ metalint:
 		--disable=deadcode \
 		--enable=goimports \
 		--deadline=60s \
+		--dupl-threshold=100 \
 		./...
 
 test:
