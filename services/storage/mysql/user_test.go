@@ -8,6 +8,41 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
+func TestGetUserByEmail(t *testing.T) {
+	Convey("Given empty mysql storage", t, func() {
+		s := prepareDatabaseForTesting()
+
+		Convey("When get user by email", func() {
+			_, err := s.GetUserByEmail("e")
+
+			Convey("Error should be ErrCodeNotFound", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+			})
+		})
+	})
+
+	Convey("Given mysql storage with user data", t, func() {
+		s := prepareDatabaseForTesting()
+		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+
+		Convey("When get user by email", func() {
+			user, _ := s.GetUserByEmail("e")
+
+			Convey("Email should be e", func() {
+				So(user.Email, ShouldEqual, "e")
+			})
+
+			Convey("BitcoinAddress should be b", func() {
+				So(user.BitcoinAddress, ShouldEqual, "b")
+			})
+		})
+	})
+
+	withClosedConn(t, "When get user by email", func(s Storage) *errors.Error {
+		_, err := s.GetUserByEmail("e")
+		return err
+	})
+}
 func TestCreateUser(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
