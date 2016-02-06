@@ -6,8 +6,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"testing"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
+	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
+	"github.com/freeusd/solebtc/errors"
 )
 
 func execCommand(cmd string) {
@@ -17,6 +20,7 @@ func execCommand(cmd string) {
 	}
 }
 
+// test helpers
 func prepareDatabaseForTesting() Storage {
 	execCommand(`mysql -uroot -e 'drop database if exists solebtc_test;'`)
 	execCommand(`mysql -uroot -e 'create database solebtc_test character set utf8;'`)
@@ -36,4 +40,19 @@ func prepareDatabaseForTesting() Storage {
 
 func resetDatabase() {
 	execCommand(`mysql -uroot -e 'drop database if exists solebtc_test;'`)
+}
+
+func withClosedConn(t *testing.T, description string, f func(Storage) *errors.Error) {
+	Convey("Given mysql storage with closed connection", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.Close()
+
+		Convey(description, func() {
+			err := f(s)
+
+			Convey("Error should be unknown", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			})
+		})
+	})
 }

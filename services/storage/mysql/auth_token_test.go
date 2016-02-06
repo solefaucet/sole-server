@@ -34,17 +34,9 @@ func TestGetAuthToken(t *testing.T) {
 		})
 	})
 
-	Convey("Given mysql storage with closed connection", t, func() {
-		s := prepareDatabaseForTesting()
-		s.db.Close()
-
-		Convey("When get auth token", func() {
-			_, err := s.GetAuthToken("token")
-
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
-			})
-		})
+	withClosedConn(t, "When get auth token", func(s Storage) *errors.Error {
+		_, err := s.GetAuthToken("token")
+		return err
 	})
 }
 
@@ -74,17 +66,8 @@ func TestCreateAuthToken(t *testing.T) {
 		})
 	})
 
-	Convey("Given mysql storage with closed connection", t, func() {
-		s := prepareDatabaseForTesting()
-		s.db.Close()
-
-		Convey("When create auth token", func() {
-			err := s.CreateAuthToken(models.AuthToken{AuthToken: "token"})
-
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
-			})
-		})
+	withClosedConn(t, "When create auth token", func(s Storage) *errors.Error {
+		return s.CreateAuthToken(models.AuthToken{AuthToken: "token"})
 	})
 }
 
@@ -102,16 +85,7 @@ func TestDeleteAuthToken(t *testing.T) {
 		})
 	})
 
-	Convey("Given mysql storage with closed connection", t, func() {
-		s := prepareDatabaseForTesting()
-		s.db.Close()
-
-		Convey("When delete auth token", func() {
-			err := s.DeleteAuthToken("token")
-
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
-			})
-		})
+	withClosedConn(t, "When delete auth token", func(s Storage) *errors.Error {
+		return s.DeleteAuthToken("token")
 	})
 }

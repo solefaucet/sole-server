@@ -42,16 +42,7 @@ func TestCreateUser(t *testing.T) {
 		})
 	})
 
-	Convey("Given mysql storage with closed connection", t, func() {
-		s := prepareDatabaseForTesting()
-		s.db.Close()
-
-		Convey("When create user", func() {
-			err := s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
-
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
-			})
-		})
+	withClosedConn(t, "When create user", func(s Storage) *errors.Error {
+		return s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
 	})
 }
