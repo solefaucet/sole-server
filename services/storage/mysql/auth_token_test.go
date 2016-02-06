@@ -8,6 +8,46 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
+func TestGetAuthToken(t *testing.T) {
+	Convey("Given empty mysql storage", t, func() {
+		s := prepareDatabaseForTesting()
+
+		Convey("When get auth token", func() {
+			_, err := s.GetAuthToken("token")
+
+			Convey("Error should be not found", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+			})
+		})
+	})
+
+	Convey("Given mysql storage with auth token data", t, func() {
+		s := prepareDatabaseForTesting()
+		s.CreateAuthToken(models.AuthToken{AuthToken: "token"})
+
+		Convey("When get auth token", func() {
+			authToken, _ := s.GetAuthToken("token")
+
+			Convey("Auth token should be token", func() {
+				So(authToken.AuthToken, ShouldEqual, "token")
+			})
+		})
+	})
+
+	Convey("Given mysql storage with closed connection", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.Close()
+
+		Convey("When get auth token", func() {
+			_, err := s.GetAuthToken("token")
+
+			Convey("Error should be unknown", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			})
+		})
+	})
+}
+
 func TestCreateAuthToken(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()

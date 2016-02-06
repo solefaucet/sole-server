@@ -4,6 +4,7 @@ package errors
 const (
 	_ Code = iota
 	ErrCodeUnknown
+	ErrCodeNotFound
 )
 
 // duplicate error

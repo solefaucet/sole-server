@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
@@ -9,9 +10,22 @@ import (
 )
 
 // GetAuthToken gets models.AuthToken with auth_token given
-func (s Storage) GetAuthToken(authToken string) (models.AuthToken, *errors.Error) {
-	// TODO:
-	return models.AuthToken{}, nil
+func (s Storage) GetAuthToken(authTokenString string) (models.AuthToken, *errors.Error) {
+	authToken := models.AuthToken{}
+	err := s.db.Get(&authToken, "SELECT * FROM auth_tokens WHERE auth_token = ?", authTokenString)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return authToken, errors.New(errors.ErrCodeNotFound)
+		}
+
+		return authToken, &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Get auth token unknown error: %v", err),
+		}
+	}
+
+	return authToken, nil
 }
 
 // CreateAuthToken creates a new auth token

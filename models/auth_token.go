@@ -7,6 +7,7 @@ import (
 
 // AuthToken model
 type AuthToken struct {
+	ID        int       `db:"id"`
 	UserID    int       `db:"user_id"`
 	AuthToken string    `db:"auth_token"`
 	CreatedAt time.Time `db:"created_at"`
