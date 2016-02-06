@@ -13,4 +13,5 @@ type Storage interface {
 	// AuthToken
 	GetAuthToken(authToken string) (models.AuthToken, *errors.Error)
 	CreateAuthToken(models.AuthToken) *errors.Error
+	DeleteAuthToken(authToken string) *errors.Error
 }

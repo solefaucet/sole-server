@@ -87,3 +87,31 @@ func TestCreateAuthToken(t *testing.T) {
 		})
 	})
 }
+
+func TestDeleteAuthToken(t *testing.T) {
+	Convey("Given mysql storage with auth token data", t, func() {
+		s := prepareDatabaseForTesting()
+		s.CreateAuthToken(models.AuthToken{AuthToken: "token"})
+
+		Convey("When delete auth token", func() {
+			err := s.DeleteAuthToken("token")
+
+			Convey("Error should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given mysql storage with closed connection", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.Close()
+
+		Convey("When delete auth token", func() {
+			err := s.DeleteAuthToken("token")
+
+			Convey("Error should be unknown", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			})
+		})
+	})
+}

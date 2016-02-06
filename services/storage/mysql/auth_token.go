@@ -51,6 +51,14 @@ func (s Storage) CreateAuthToken(authToken models.AuthToken) *errors.Error {
 
 // DeleteAuthToken deletes auth_token from storage
 func (s Storage) DeleteAuthToken(authToken string) *errors.Error {
-	// TODO:
+	_, err := s.db.Exec("DELETE FROM auth_tokens WHERE auth_token = ?", authToken)
+
+	if err != nil {
+		return &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Delete auth token unknown error: %v", err),
+		}
+	}
+
 	return nil
 }
