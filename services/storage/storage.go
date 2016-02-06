@@ -7,5 +7,9 @@ import (
 
 // Storage defines interface that one should implement
 type Storage interface {
+	// User
 	CreateUser(models.User) *errors.Error
+
+	// AuthToken
+	CreateAuthToken(models.AuthToken) *errors.Error
 }

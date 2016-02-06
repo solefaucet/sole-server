@@ -11,6 +11,7 @@ const (
 	_ Code = iota + 5000
 	ErrCodeDuplicateEmail
 	ErrCodeDuplicateBitcoinAddress
+	ErrCodeDuplicateAuthToken
 )
 
 // validate error
