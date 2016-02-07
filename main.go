@@ -44,6 +44,9 @@ func main() {
 	// auth token endpoints
 	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")
 	v1AuthTokenEndpoints.POST("", v1.Login(storage.GetUserByEmail, storage.CreateAuthToken))
+	v1AuthTokenEndpoints.
+		Use(middlewares.AuthRequired(storage.GetAuthToken, config.AuthToken.Lifetime)).
+		DELETE("", v1.Logout(storage.DeleteAuthToken))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s", config.HTTP.Port)
 	router.Run(config.HTTP.Port)

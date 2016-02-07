@@ -16,8 +16,9 @@ type loginPayload struct {
 
 // dependencies
 type (
-	loginDependencyGetUserByEmail  func(string) (models.User, *errors.Error)
-	loginDependencyCreateAuthToken func(models.AuthToken) *errors.Error
+	loginDependencyGetUserByEmail   func(string) (models.User, *errors.Error)
+	loginDependencyCreateAuthToken  func(models.AuthToken) *errors.Error
+	logoutDependencyDeleteAuthToken func(string) *errors.Error
 )
 
 // Login logs a existing user in, response with auth token
@@ -54,5 +55,18 @@ func Login(
 		}
 
 		c.JSON(http.StatusCreated, authToken)
+	}
+}
+
+// Logout deletes corresponding auth token
+func Logout(deleteAuthToken logoutDependencyDeleteAuthToken) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authToken := c.MustGet("auth_token").(models.AuthToken)
+		if err := deleteAuthToken(authToken.AuthToken); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.Status(http.StatusOK)
 	}
 }

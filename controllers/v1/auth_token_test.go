@@ -102,3 +102,49 @@ func TestLogin(t *testing.T) {
 		})
 	}
 }
+
+func mockLogoutDependencyDeleteAuthToken(err *errors.Error) logoutDependencyDeleteAuthToken {
+	return func(string) *errors.Error {
+		return err
+	}
+}
+
+func TestLogout(t *testing.T) {
+	Convey("Given Logout controller with errored logout dependency", t, func() {
+		s := Logout(mockLogoutDependencyDeleteAuthToken(errors.New(errors.ErrCodeUnknown)))
+
+		Convey("When logout", func() {
+			route := "/auth_tokens"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.DELETE(route, s)
+			req, _ := http.NewRequest("DELETE", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given Logout controller", t, func() {
+		s := Logout(mockLogoutDependencyDeleteAuthToken(nil))
+
+		Convey("When logout", func() {
+			route := "/auth_tokens"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.DELETE(route, s)
+			req, _ := http.NewRequest("DELETE", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 200", func() {
+				So(resp.Code, ShouldEqual, 200)
+			})
+		})
+	})
+}
