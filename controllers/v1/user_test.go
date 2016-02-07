@@ -94,12 +94,12 @@ func TestSignup(t *testing.T) {
 
 	for _, v := range testdata {
 		Convey("Given Signup controller", t, func() {
-			s := Signup(v.createUser)
+			handler := Signup(v.createUser)
 
 			Convey(fmt.Sprintf("When request with %s", v.when), func() {
 				route := "/users"
 				_, resp, r := gin.CreateTestContext()
-				r.POST(route, s)
+				r.POST(route, handler)
 				req, _ := http.NewRequest("POST", route, bytes.NewBuffer(v.requestData))
 				r.ServeHTTP(resp, req)
 

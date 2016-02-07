@@ -86,12 +86,12 @@ func TestLogin(t *testing.T) {
 
 	for _, v := range testdata {
 		Convey("Given Login controller", t, func() {
-			s := Login(v.getUserByEmail, v.createAuthToken)
+			handler := Login(v.getUserByEmail, v.createAuthToken)
 
 			Convey(fmt.Sprintf("When request with %s", v.when), func() {
 				route := "/auth_tokens"
 				_, resp, r := gin.CreateTestContext()
-				r.POST(route, s)
+				r.POST(route, handler)
 				req, _ := http.NewRequest("POST", route, bytes.NewBuffer(v.requestData))
 				r.ServeHTTP(resp, req)
 
@@ -111,7 +111,7 @@ func mockLogoutDependencyDeleteAuthToken(err *errors.Error) logoutDependencyDele
 
 func TestLogout(t *testing.T) {
 	Convey("Given Logout controller with errored logout dependency", t, func() {
-		s := Logout(mockLogoutDependencyDeleteAuthToken(errors.New(errors.ErrCodeUnknown)))
+		handler := Logout(mockLogoutDependencyDeleteAuthToken(errors.New(errors.ErrCodeUnknown)))
 
 		Convey("When logout", func() {
 			route := "/auth_tokens"
@@ -119,7 +119,7 @@ func TestLogout(t *testing.T) {
 			r.Use(func(c *gin.Context) {
 				c.Set("auth_token", models.AuthToken{})
 			})
-			r.DELETE(route, s)
+			r.DELETE(route, handler)
 			req, _ := http.NewRequest("DELETE", route, nil)
 			r.ServeHTTP(resp, req)
 
@@ -130,7 +130,7 @@ func TestLogout(t *testing.T) {
 	})
 
 	Convey("Given Logout controller", t, func() {
-		s := Logout(mockLogoutDependencyDeleteAuthToken(nil))
+		handler := Logout(mockLogoutDependencyDeleteAuthToken(nil))
 
 		Convey("When logout", func() {
 			route := "/auth_tokens"
@@ -138,7 +138,7 @@ func TestLogout(t *testing.T) {
 			r.Use(func(c *gin.Context) {
 				c.Set("auth_token", models.AuthToken{})
 			})
-			r.DELETE(route, s)
+			r.DELETE(route, handler)
 			req, _ := http.NewRequest("DELETE", route, nil)
 			r.ServeHTTP(resp, req)
 
