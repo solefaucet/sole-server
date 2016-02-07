@@ -18,6 +18,11 @@ type configuration struct {
 	AuthToken struct {
 		Lifetime time.Duration
 	}
+	Mandrill struct {
+		Key       string
+		FromEmail string
+		FromName  string
+	}
 }
 
 var config configuration
@@ -32,6 +37,9 @@ func initConfig() {
 	viper.SetDefault("port", "3000")
 	viper.SetDefault("dsn", "/solebtc_dev")
 	viper.SetDefault("auth_token_lifetime", "720h")
+	viper.SetDefault("mandrill_key", "SANDBOX_SUCCESS")
+	viper.SetDefault("mandrill_from_email", "no_reply@solebtc.com")
+	viper.SetDefault("mandrill_from_name", "SoleBTC")
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
@@ -45,6 +53,9 @@ func initConfig() {
 		log.Fatalf("parse auth_token_lifetime error: %v", err)
 	}
 	config.AuthToken.Lifetime = authTokenLifetime
+	config.Mandrill.Key = viper.GetString("mandrill_key")
+	config.Mandrill.FromEmail = viper.GetString("mandrill_from_email")
+	config.Mandrill.FromName = viper.GetString("mandrill_from_name")
 }
 
 func ginEnvMode() string {
