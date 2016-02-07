@@ -35,8 +35,15 @@ func main() {
 	router.Use(middlewares.LoggerWithWriter(logWriter))
 	router.Use(middlewares.ErrorWriter())
 
-	g1 := router.Group("/v1")
-	g1.POST("/users", v1.Signup(storage.CreateUser))
+	v1Endpoints := router.Group("/v1")
+
+	// user endpoints
+	v1UserEndpoints := v1Endpoints.Group("/users")
+	v1UserEndpoints.POST("", v1.Signup(storage.CreateUser))
+
+	// auth token endpoints
+	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")
+	v1AuthTokenEndpoints.POST("", v1.Login(storage.GetUserByEmail, storage.CreateAuthToken))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s", config.HTTP.Port)
 	router.Run(config.HTTP.Port)
