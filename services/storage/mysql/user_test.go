@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
@@ -28,8 +29,14 @@ func TestGetUserByEmail(t *testing.T) {
 		Convey("When get user by email", func() {
 			user, _ := s.GetUserByEmail("e")
 
-			Convey("Email should be e", func() {
-				So(user.Email, ShouldEqual, "e")
+			Convey("Email should be e, BitcoinAddress should be b", func() {
+				So(user, func(actual interface{}, expected ...interface{}) string {
+					u := actual.(models.User)
+					if u.Email == "e" && u.BitcoinAddress == "b" {
+						return ""
+					}
+					return fmt.Sprintf("User %v is not expected", u)
+				})
 			})
 
 			Convey("BitcoinAddress should be b", func() {

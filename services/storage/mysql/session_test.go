@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
@@ -40,8 +41,7 @@ func TestGetSessionByToken(t *testing.T) {
 						s.Type == "verify-email" {
 						return ""
 					}
-
-					return "Sessions does not equal to each other"
+					return fmt.Sprintf("Session %v is not expected", s)
 				})
 			})
 		})

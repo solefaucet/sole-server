@@ -49,9 +49,9 @@ func main() {
 		Use(middlewares.AuthRequired(storage.GetAuthToken, config.AuthToken.Lifetime)).
 		DELETE("", v1.Logout(storage.DeleteAuthToken))
 
-	fmt.Fprintf(logWriter, "SoleBTC is running on %s", config.HTTP.Port)
+	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
 	if err := router.Run(config.HTTP.Port); err != nil {
-		fmt.Fprintf(panicWriter, "HTTP listen and serve error: %v", err)
+		fmt.Fprintf(panicWriter, "HTTP listen and serve error: %v\n", err)
 		os.Exit(1)
 	}
 }

@@ -12,9 +12,9 @@ type Storage interface {
 	CreateUser(models.User) *errors.Error
 
 	// AuthToken
-	GetAuthToken(authToken string) (models.AuthToken, *errors.Error)
+	GetAuthToken(string) (models.AuthToken, *errors.Error)
 	CreateAuthToken(models.AuthToken) *errors.Error
-	DeleteAuthToken(authToken string) *errors.Error
+	DeleteAuthToken(string) *errors.Error
 
 	// Session
 	GetSessionByToken(string) (models.Session, *errors.Error)
