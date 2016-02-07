@@ -21,17 +21,10 @@ const (
 	invalidEmail = "invalid@.ee.cc"
 )
 
-type mockCreateUserService struct {
-	createUserService
-	err *errors.Error
-}
-
-func (m mockCreateUserService) CreateUser(models.User) *errors.Error {
-	return m.err
-}
-
-func newMockCreateUserService(err *errors.Error) mockCreateUserService {
-	return mockCreateUserService{err: err}
+func mockSignupDependencyCreateUser(err *errors.Error) signupDependencyCreateUser {
+	return func(models.User) *errors.Error {
+		return err
+	}
 }
 
 func TestSignup(t *testing.T) {
@@ -47,7 +40,7 @@ func TestSignup(t *testing.T) {
 		when        string
 		requestData []byte
 		code        int
-		mcus        createUserService
+		createUser  signupDependencyCreateUser
 	}{
 		{
 			"invalid json data",
@@ -77,40 +70,40 @@ func TestSignup(t *testing.T) {
 			"duplicate email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
-			newMockCreateUserService(errors.New(errors.ErrCodeDuplicateEmail)),
+			mockSignupDependencyCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
 		},
 		{
 			"valid email, duplicate bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
-			newMockCreateUserService(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
+			mockSignupDependencyCreateUser(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
 		},
 		{
 			"valid email, valid bitcoin address, but unknow error",
 			requestDataJSON(validEmail, validBTCAddr),
 			500,
-			newMockCreateUserService(errors.New(errors.ErrCodeUnknown)),
+			mockSignupDependencyCreateUser(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
 			"valid email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			200,
-			newMockCreateUserService(nil),
+			mockSignupDependencyCreateUser(nil),
 		},
 	}
 
 	for _, v := range testdata {
 		Convey("Given Signup controller", t, func() {
-			s := Signup(v.mcus)
-			route := "/users"
+			s := Signup(v.createUser)
 
 			Convey(fmt.Sprintf("When request with %s", v.when), func() {
+				route := "/users"
 				_, resp, r := gin.CreateTestContext()
 				r.POST(route, s)
 				req, _ := http.NewRequest("POST", route, bytes.NewBuffer(v.requestData))
 				r.ServeHTTP(resp, req)
 
-				Convey("Response code should equal", func() {
+				Convey(fmt.Sprintf("Response code should be equal to %d", v.code), func() {
 					So(resp.Code, ShouldEqual, v.code)
 				})
 			})

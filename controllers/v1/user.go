@@ -28,9 +28,7 @@ func (p *signupPayload) validate() error {
 	return nil
 }
 
-type createUserService interface {
-	CreateUser(models.User) *errors.Error
-}
+type signupDependencyCreateUser func(models.User) *errors.Error
 
 func userWithSignupPayload(p signupPayload) models.User {
 	return models.User{
@@ -40,7 +38,7 @@ func userWithSignupPayload(p signupPayload) models.User {
 }
 
 // Signup creates a new user with unique email, bitcoin address
-func Signup(cus createUserService) gin.HandlerFunc {
+func Signup(createUser signupDependencyCreateUser) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
@@ -52,7 +50,7 @@ func Signup(cus createUserService) gin.HandlerFunc {
 		}
 
 		user := userWithSignupPayload(payload)
-		if err := cus.CreateUser(user); err != nil {
+		if err := createUser(user); err != nil {
 			switch err.ErrCode {
 			case errors.ErrCodeDuplicateEmail:
 				err.ErrString = fmt.Sprintf("Email %s is duplicated", payload.Email)

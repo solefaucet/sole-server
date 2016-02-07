@@ -43,7 +43,7 @@ func main() {
 	router.Use(middlewares.ErrorWriter())
 
 	g1 := router.Group("/v1")
-	g1.POST("/users", v1.Signup(storage))
+	g1.POST("/users", v1.Signup(storage.CreateUser))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s", config.HTTP.Port)
 	router.Run(config.HTTP.Port)
