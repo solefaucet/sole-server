@@ -33,6 +33,7 @@ func main() {
 
 	router.Use(gin.RecoveryWithWriter(panicWriter))
 	router.Use(middlewares.LoggerWithWriter(logWriter))
+	router.Use(middlewares.CORS())
 	router.Use(middlewares.ErrorWriter())
 
 	v1Endpoints := router.Group("/v1")
