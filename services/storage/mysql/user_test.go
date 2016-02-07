@@ -9,6 +9,46 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
+func TestGetUserByID(t *testing.T) {
+	Convey("Given empty mysql storage", t, func() {
+		s := prepareDatabaseForTesting()
+
+		Convey("When get user by id", func() {
+			_, err := s.GetUserByID(1)
+
+			Convey("Error should be ErrCodeNotFound", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+			})
+		})
+	})
+
+	Convey("Given mysql storage with user data", t, func() {
+		s := prepareDatabaseForTesting()
+		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+
+		Convey("When get user by id", func() {
+			user, _ := s.GetUserByID(1)
+
+			Convey("ID should be 1, Email should be e, BitcoinAddress should be b", func() {
+				So(user, func(actual interface{}, expected ...interface{}) string {
+					u := actual.(models.User)
+					if u.ID == 1 &&
+						u.Email == "e" &&
+						u.BitcoinAddress == "b" {
+						return ""
+					}
+					return fmt.Sprintf("User %v is not expected", u)
+				})
+			})
+		})
+	})
+
+	withClosedConn(t, "When get user by id", func(s Storage) *errors.Error {
+		_, err := s.GetUserByID(1)
+		return err
+	})
+}
+
 func TestGetUserByEmail(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
@@ -38,10 +78,6 @@ func TestGetUserByEmail(t *testing.T) {
 					return fmt.Sprintf("User %v is not expected", u)
 				})
 			})
-
-			Convey("BitcoinAddress should be b", func() {
-				So(user.BitcoinAddress, ShouldEqual, "b")
-			})
 		})
 	})
 
@@ -50,6 +86,7 @@ func TestGetUserByEmail(t *testing.T) {
 		return err
 	})
 }
+
 func TestCreateUser(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()

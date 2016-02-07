@@ -10,6 +10,25 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
+// GetUserByID gets a user with id given
+func (s Storage) GetUserByID(id int) (models.User, *errors.Error) {
+	user := models.User{}
+	err := s.db.Get(&user, "SELECT * FROM users WHERE `id` = ?", id)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, errors.New(errors.ErrCodeNotFound)
+		}
+
+		return user, &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Get user unknown error: %v", err),
+		}
+	}
+
+	return user, nil
+}
+
 // GetUserByEmail gets a user with email given
 func (s Storage) GetUserByEmail(email string) (models.User, *errors.Error) {
 	user := models.User{}
