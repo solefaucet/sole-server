@@ -14,7 +14,13 @@ type Storage struct {
 var _ storage.Storage = Storage{}
 
 // New returns a Storage with data source name
-func New(config *mysql.Config) (s Storage, err error) {
+func New(dsn string) (s Storage, err error) {
+	config, err := mysql.ParseDSN(dsn)
+	if err != nil {
+		return
+	}
+	config.ParseTime = true
+
 	s.db, err = sqlx.Connect("mysql", config.FormatDSN())
 	return
 }

@@ -8,11 +8,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
 	"github.com/freeusd/solebtc/errors"
 )
 
+func TestMysql(t *testing.T) {
+	incorrectDSN := "invalid"
+	_, err := New(incorrectDSN)
+	if err == nil {
+		t.Error("Create mysql storage with incorrect data source name should return err but get nil")
+	}
+}
+
+// test helpers
 func execCommand(cmd string) {
 	c := exec.Command("sh", "-c", "-i", cmd)
 	if err := c.Run(); err != nil {
@@ -20,7 +28,6 @@ func execCommand(cmd string) {
 	}
 }
 
-// test helpers
 func prepareDatabaseForTesting() Storage {
 	execCommand(`mysql -uroot -e 'drop database if exists solebtc_test;'`)
 	execCommand(`mysql -uroot -e 'create database solebtc_test character set utf8;'`)
@@ -29,12 +36,8 @@ func prepareDatabaseForTesting() Storage {
 	projBasePath := strings.Join(paths[:len(paths)-3], string(os.PathSeparator)) // cannot come up with any better way
 	execCommand(fmt.Sprintf(`cd %s && goose -env test up`, projBasePath))
 
-	config := &mysql.Config{}
-	config.User = "root"
-	config.DBName = "solebtc_test"
-	config.ParseTime = true
-
-	s, _ := New(config)
+	dsn := "root:@/solebtc_test"
+	s, _ := New(dsn)
 	return s
 }
 

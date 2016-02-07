@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	mysqldriver "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
 	"github.com/freeusd/solebtc/controllers/v1"
 	"github.com/freeusd/solebtc/middlewares"
 	"github.com/freeusd/solebtc/services/storage/mysql"
@@ -23,13 +22,7 @@ func main() {
 	)
 
 	// storage service
-	mysqlCfg, err := mysqldriver.ParseDSN(config.DB.DataSourceName)
-	if err != nil {
-		fmt.Fprintf(panicWriter, "Cannot parse mysql data source name: %v", err)
-		return
-	}
-	mysqlCfg.ParseTime = true
-	storage, err := mysql.New(mysqlCfg)
+	storage, err := mysql.New(config.DB.DataSourceName)
 	if err != nil {
 		fmt.Fprintf(panicWriter, "Cannot create mysql storage: %v", err)
 		return
