@@ -15,4 +15,8 @@ type Storage interface {
 	GetAuthToken(authToken string) (models.AuthToken, *errors.Error)
 	CreateAuthToken(models.AuthToken) *errors.Error
 	DeleteAuthToken(authToken string) *errors.Error
+
+	// Session
+	GetSessionByToken(string) (models.Session, *errors.Error)
+	UpsertSession(models.Session) *errors.Error
 }
