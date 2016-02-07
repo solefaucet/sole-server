@@ -11,6 +11,7 @@ type Storage interface {
 	GetUserByID(int) (models.User, *errors.Error)
 	GetUserByEmail(string) (models.User, *errors.Error)
 	CreateUser(models.User) *errors.Error
+	UpdateUser(models.User) *errors.Error
 
 	// AuthToken
 	GetAuthToken(string) (models.AuthToken, *errors.Error)

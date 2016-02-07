@@ -78,3 +78,17 @@ func (s Storage) CreateUser(u models.User) *errors.Error {
 
 	return nil
 }
+
+// UpdateUser updates a user's info
+func (s Storage) UpdateUser(user models.User) *errors.Error {
+	_, err := s.db.NamedExec("UPDATE users SET `status` = :status WHERE `id` = :id", user)
+
+	if err != nil {
+		return &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Update user unknown error: %v", err),
+		}
+	}
+
+	return nil
+}

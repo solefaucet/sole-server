@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
+	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -123,5 +124,29 @@ func TestCreateUser(t *testing.T) {
 
 	withClosedConn(t, "When create user", func(s Storage) *errors.Error {
 		return s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+	})
+}
+
+func TestUpdateUser(t *testing.T) {
+	Convey("Given mysql storage with user data", t, func() {
+		s := prepareDatabaseForTesting()
+		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+
+		Convey("When update user", func() {
+			err := s.UpdateUser(models.User{ID: 1, Status: constant.UserStatusVerified})
+			user, _ := s.GetUserByID(1)
+
+			Convey("Error should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("New user status should be verified", func() {
+				So(user.Status, ShouldEqual, constant.UserStatusVerified)
+			})
+		})
+	})
+
+	withClosedConn(t, "When update user", func(s Storage) *errors.Error {
+		return s.UpdateUser(models.User{})
 	})
 }
