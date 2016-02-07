@@ -11,6 +11,10 @@
 			"Rev": "5c4df71dfe9ac89ef6287afc05e4c1b16ae65a1e"
 		},
 		{
+			"ImportPath": "github.com/gin-gonic/contrib/cors",
+			"Rev": "14f66d54cdb96059bafca98665bcc6d9df4951f2"
+		},
+		{
 			"ImportPath": "github.com/gin-gonic/gin",
 			"Comment": "v1.0rc1-219-g3d002e3",
 			"Rev": "3d002e382355cafc15d706b92899b1961d5b79e9"
