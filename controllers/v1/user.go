@@ -12,6 +12,15 @@ import (
 	"github.com/freeusd/solebtc/utils"
 )
 
+// dependencies
+type (
+	signupDependencyCreateUser func(models.User) *errors.Error
+
+	verifyEmailDependencyGetSessionByToken func(string) (models.Session, *errors.Error)
+	verifyEmailDependencyGetUserByID       func(int) (models.User, *errors.Error)
+	verifyEmailDependencyUpdateUser        func(models.User) *errors.Error
+)
+
 type signupPayload struct {
 	Email          string `json:"email" binding:"required,email"`
 	BitcoinAddress string `json:"bitcoin_address" binding:"required"`
@@ -29,8 +38,6 @@ func (p *signupPayload) validate() error {
 
 	return nil
 }
-
-type signupDependencyCreateUser func(models.User) *errors.Error
 
 func userWithSignupPayload(p signupPayload) models.User {
 	return models.User{
@@ -69,12 +76,6 @@ func Signup(createUser signupDependencyCreateUser) gin.HandlerFunc {
 		c.JSON(http.StatusOK, user)
 	}
 }
-
-type (
-	verifyEmailDependencyGetSessionByToken func(string) (models.Session, *errors.Error)
-	verifyEmailDependencyGetUserByID       func(int) (models.User, *errors.Error)
-	verifyEmailDependencyUpdateUser        func(models.User) *errors.Error
-)
 
 // VerifyEmail updates user's status to verified if current status is unverified
 func VerifyEmail(

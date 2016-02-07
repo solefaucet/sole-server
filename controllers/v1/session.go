@@ -10,6 +10,7 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
+// dependencies
 type (
 	requestVerifyEmailDependencyGetUserByID   func(int) (models.User, *errors.Error)
 	requestVerifyEmailDependencyUpsertSession func(models.Session) *errors.Error

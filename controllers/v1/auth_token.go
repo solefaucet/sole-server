@@ -16,8 +16,9 @@ type loginPayload struct {
 
 // dependencies
 type (
-	loginDependencyGetUserByEmail   func(string) (models.User, *errors.Error)
-	loginDependencyCreateAuthToken  func(models.AuthToken) *errors.Error
+	loginDependencyGetUserByEmail  func(string) (models.User, *errors.Error)
+	loginDependencyCreateAuthToken func(models.AuthToken) *errors.Error
+
 	logoutDependencyDeleteAuthToken func(string) *errors.Error
 )
 
