@@ -13,7 +13,6 @@ ALTER TABLE `auth_tokens`
 ADD UNIQUE INDEX (`auth_token`),
 ADD INDEX (`created_at`);
 
-
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back
 DROP TABLE `auth_tokens`;
