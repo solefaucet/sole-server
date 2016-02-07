@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
+	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -109,4 +111,132 @@ func TestSignup(t *testing.T) {
 			})
 		})
 	}
+}
+
+func mockVerifyEmailDependencyGetSessionByToken(sess models.Session, err *errors.Error) verifyEmailDependencyGetSessionByToken {
+	return func(string) (models.Session, *errors.Error) {
+		return sess, err
+	}
+}
+
+func mockVerifyDependencyGetUserByID(user models.User, err *errors.Error) verifyEmailDependencyGetUserByID {
+	return func(int) (models.User, *errors.Error) {
+		return user, err
+	}
+}
+
+func mockVerifyEmailDependencyUpdateUser(err *errors.Error) verifyEmailDependencyUpdateUser {
+	return func(models.User) *errors.Error {
+		return err
+	}
+}
+
+func TestVerifyEmail(t *testing.T) {
+	Convey("Given verify email controller with expired session and errored getSessionByToken dependency", t, func() {
+		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{}, errors.New(errors.ErrCodeUnknown))
+		handler := VerifyEmail(getSessionByToken, nil, nil)
+
+		Convey("When verify email", func() {
+			route := "/users/1/status"
+			_, resp, r := gin.CreateTestContext()
+			r.PUT(route, handler)
+			req, _ := http.NewRequest("PUT", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 401", func() {
+				So(resp.Code, ShouldEqual, 401)
+			})
+		})
+	})
+
+	Convey("Given verify email controller with expired session and getSessionByToken dependency", t, func() {
+		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{}, nil)
+		handler := VerifyEmail(getSessionByToken, nil, nil)
+
+		Convey("When verify email", func() {
+			route := "/users/1/status"
+			_, resp, r := gin.CreateTestContext()
+			r.PUT(route, handler)
+			req, _ := http.NewRequest("PUT", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 401", func() {
+				So(resp.Code, ShouldEqual, 401)
+			})
+		})
+	})
+
+	Convey("Given verify email controller with errored getUserByID dependency", t, func() {
+		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockVerifyDependencyGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
+		handler := VerifyEmail(getSessionByToken, getUserByID, nil)
+
+		Convey("When verify email", func() {
+			route := "/users/1/status"
+			_, resp, r := gin.CreateTestContext()
+			r.PUT(route, handler)
+			req, _ := http.NewRequest("PUT", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given verify email controller with banned user status", t, func() {
+		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockVerifyDependencyGetUserByID(models.User{Status: constant.UserStatusBanned}, nil)
+		handler := VerifyEmail(getSessionByToken, getUserByID, nil)
+
+		Convey("When verify email", func() {
+			route := "/users/1/status"
+			_, resp, r := gin.CreateTestContext()
+			r.PUT(route, handler)
+			req, _ := http.NewRequest("PUT", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 403", func() {
+				So(resp.Code, ShouldEqual, 403)
+			})
+		})
+	})
+
+	Convey("Given verify email controller with errored updateUser dependency", t, func() {
+		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockVerifyDependencyGetUserByID(models.User{}, nil)
+		updateUser := mockVerifyEmailDependencyUpdateUser(errors.New(errors.ErrCodeUnknown))
+		handler := VerifyEmail(getSessionByToken, getUserByID, updateUser)
+
+		Convey("When verify email", func() {
+			route := "/users/1/status"
+			_, resp, r := gin.CreateTestContext()
+			r.PUT(route, handler)
+			req, _ := http.NewRequest("PUT", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given verify email controller with correct dependencies injected", t, func() {
+		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockVerifyDependencyGetUserByID(models.User{}, nil)
+		updateUser := mockVerifyEmailDependencyUpdateUser(nil)
+		handler := VerifyEmail(getSessionByToken, getUserByID, updateUser)
+
+		Convey("When verify email", func() {
+			route := "/users/1/status"
+			_, resp, r := gin.CreateTestContext()
+			r.PUT(route, handler)
+			req, _ := http.NewRequest("PUT", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 200", func() {
+				So(resp.Code, ShouldEqual, 200)
+			})
+		})
+	})
 }

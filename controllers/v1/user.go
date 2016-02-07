@@ -3,8 +3,10 @@ package v1
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/utils"
@@ -59,12 +61,61 @@ func Signup(createUser signupDependencyCreateUser) gin.HandlerFunc {
 				err.ErrString = fmt.Sprintf("Bitcoin address %s is duplicated", payload.BitcoinAddress)
 				c.AbortWithError(http.StatusConflict, err)
 			default:
-				err.ErrString = "Internal server error"
 				c.AbortWithError(http.StatusInternalServerError, err)
 			}
 			return
 		}
 
 		c.JSON(http.StatusOK, user)
+	}
+}
+
+type (
+	verifyEmailDependencyGetSessionByToken func(string) (models.Session, *errors.Error)
+	verifyEmailDependencyGetUserByID       func(int) (models.User, *errors.Error)
+	verifyEmailDependencyUpdateUser        func(models.User) *errors.Error
+)
+
+// VerifyEmail updates user's status to verified if current status is unverified
+func VerifyEmail(
+	getSessionByToken verifyEmailDependencyGetSessionByToken,
+	getUserByID verifyEmailDependencyGetUserByID,
+	updateUser verifyEmailDependencyUpdateUser,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.Query("token")
+
+		// check session lifetime
+		session, err := getSessionByToken(token)
+		if session.UpdatedAt.Add(3 * time.Hour).Before(time.Now()) {
+			if err != nil {
+				c.AbortWithError(http.StatusUnauthorized, err)
+			} else {
+				c.AbortWithStatus(http.StatusUnauthorized)
+			}
+			return
+		}
+
+		// get user
+		user, err := getUserByID(session.UserID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		// check user status
+		if user.Status == constant.UserStatusBanned {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		// update user
+		user.Status = constant.UserStatusVerified
+		if err := updateUser(user); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.Status(http.StatusOK)
 	}
 }

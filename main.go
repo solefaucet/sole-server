@@ -51,6 +51,7 @@ func main() {
 	// user endpoints
 	v1UserEndpoints := v1Endpoints.Group("/users")
 	v1UserEndpoints.POST("", v1.Signup(storage.CreateUser))
+	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(storage.GetSessionByToken, storage.GetUserByID, storage.UpdateUser))
 
 	// auth token endpoints
 	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")
