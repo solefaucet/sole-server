@@ -9,13 +9,14 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
+	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
 
-func mockLoginDependencyGetUserByEmail(err *errors.Error) loginDependencyGetUserByEmail {
+func mockLoginDependencyGetUserByEmail(user models.User, err *errors.Error) loginDependencyGetUserByEmail {
 	return func(string) (models.User, *errors.Error) {
-		return models.User{}, err
+		return user, err
 	}
 }
 
@@ -55,31 +56,38 @@ func TestLogin(t *testing.T) {
 			nil,
 		},
 		{
+			"banned user",
+			requestDataJSON(validEmail),
+			403,
+			mockLoginDependencyGetUserByEmail(models.User{Status: constant.UserStatusBanned}, nil),
+			nil,
+		},
+		{
 			"non existing email",
 			requestDataJSON(validEmail),
 			404,
-			mockLoginDependencyGetUserByEmail(errors.New(errors.ErrCodeNotFound)),
+			mockLoginDependencyGetUserByEmail(models.User{}, errors.New(errors.ErrCodeNotFound)),
 			nil,
 		},
 		{
 			"valid email, unknown error",
 			requestDataJSON(validEmail),
 			500,
-			mockLoginDependencyGetUserByEmail(errors.New(errors.ErrCodeUnknown)),
+			mockLoginDependencyGetUserByEmail(models.User{}, errors.New(errors.ErrCodeUnknown)),
 			nil,
 		},
 		{
 			"valid existing email, but unknown error",
 			requestDataJSON(validEmail),
 			500,
-			mockLoginDependencyGetUserByEmail(nil),
+			mockLoginDependencyGetUserByEmail(models.User{}, nil),
 			mockLoginDependencyCreateAuthToken(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
 			"valid existing email",
 			requestDataJSON(validEmail),
 			201,
-			mockLoginDependencyGetUserByEmail(nil),
+			mockLoginDependencyGetUserByEmail(models.User{}, nil),
 			mockLoginDependencyCreateAuthToken(nil),
 		},
 	}

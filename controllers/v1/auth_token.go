@@ -6,6 +6,7 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/satori/go.uuid"
+	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -42,6 +43,11 @@ func Login(
 			default:
 				c.AbortWithError(http.StatusInternalServerError, err)
 			}
+			return
+		}
+
+		if user.Status == constant.UserStatusBanned {
+			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
