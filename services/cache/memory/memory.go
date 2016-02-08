@@ -3,7 +3,7 @@ package memory
 import (
 	"fmt"
 	"io"
-	"sync/atomic"
+	"sync"
 	"time"
 
 	"github.com/freeusd/solebtc/services/cache"
@@ -11,8 +11,9 @@ import (
 
 // Cache implements cache.Cache interface with memory
 type Cache struct {
-	getBTCPrice    getBitcoinPriceFunc
-	cachedBTCPrice *int64
+	getBTCPrice         getBitcoinPriceFunc
+	cachedBTCPrice      int64
+	cachedBTCPriceMutex sync.RWMutex
 
 	logWriter io.Writer
 }
@@ -22,11 +23,10 @@ var _ cache.Cache = &Cache{}
 type getBitcoinPriceFunc func() (int64, error)
 
 // New creates a new in-memory cache
-func New(getBTCPrice getBitcoinPriceFunc, logWriter io.Writer, interval time.Duration) Cache {
-	c := Cache{
-		getBTCPrice:    getBTCPrice,
-		cachedBTCPrice: new(int64),
-		logWriter:      logWriter,
+func New(getBTCPrice getBitcoinPriceFunc, logWriter io.Writer, interval time.Duration) *Cache {
+	c := &Cache{
+		getBTCPrice: getBTCPrice,
+		logWriter:   logWriter,
 	}
 
 	// get init value, on error it should panic
@@ -39,8 +39,11 @@ func New(getBTCPrice getBitcoinPriceFunc, logWriter io.Writer, interval time.Dur
 }
 
 // GetBitcoinPrice returns the cached bitcoin price
-func (c Cache) GetBitcoinPrice() int64 {
-	return atomic.LoadInt64(c.cachedBTCPrice)
+func (c *Cache) GetBitcoinPrice() int64 {
+	c.cachedBTCPriceMutex.RLock()
+	defer c.cachedBTCPriceMutex.RUnlock()
+	return c.cachedBTCPrice
+}
 }
 
 
@@ -60,6 +63,9 @@ func (c *Cache) backgroundJob(panicOnError bool, interval time.Duration) {
 }
 
 func (c *Cache) setBitcoinPrice(panicOnError bool) {
+	c.cachedBTCPriceMutex.Lock()
+	defer c.cachedBTCPriceMutex.Unlock()
+
 	p, err := c.getBTCPrice()
 	if err != nil {
 		if panicOnError {
@@ -78,5 +84,5 @@ func (c *Cache) setBitcoinPrice(panicOnError bool) {
 		return
 	}
 
-	atomic.StoreInt64(c.cachedBTCPrice, p)
+	c.cachedBTCPrice = p
 }
