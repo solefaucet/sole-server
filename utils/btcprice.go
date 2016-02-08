@@ -8,13 +8,13 @@ import (
 
 const blockchainTickerURL = "https://blockchain.info/ticker"
 
-// BitcoinPrice returns the lastest bitcoin price in USD
-func BitcoinPrice() (_ float64, err error) {
+// BitcoinPrice returns the lastest bitcoin price in Penny (1USD = 100Penny)
+func BitcoinPrice() (_ int, err error) {
 	_, body, _ := gorequest.New().Get(blockchainTickerURL).EndBytes()
 	return bitcoinPriceWithByteFromBlockchain(body)
 }
 
-func bitcoinPriceWithByteFromBlockchain(data []byte) (float64, error) {
+func bitcoinPriceWithByteFromBlockchain(data []byte) (int, error) {
 	m := map[string]struct { // use pointer so it fails fast
 		Last float64 `json:"last"`
 	}{}
@@ -24,5 +24,5 @@ func bitcoinPriceWithByteFromBlockchain(data []byte) (float64, error) {
 		return 0, err
 	}
 
-	return m["USD"].Last, nil
+	return int(100 * m["USD"].Last), nil
 }
