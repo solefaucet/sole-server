@@ -15,6 +15,10 @@ type Cache struct {
 	cachedBTCPrice      int64
 	cachedBTCPriceMutex sync.RWMutex
 
+	lastDay          int
+	totalReward      int64
+	totalRewardMutex sync.RWMutex
+
 	logWriter io.Writer
 }
 
@@ -44,8 +48,26 @@ func (c *Cache) GetBitcoinPrice() int64 {
 	defer c.cachedBTCPriceMutex.RUnlock()
 	return c.cachedBTCPrice
 }
+
+// GetTotalRewardToday returns total reward of today
+func (c *Cache) GetTotalRewardToday() int64 {
+	c.totalRewardMutex.RLock()
+	defer c.totalRewardMutex.RUnlock()
+	return c.totalReward
 }
 
+// IncrementTotalReward increment total reward today by delta if day matches
+func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
+	c.totalRewardMutex.Lock()
+	defer c.totalRewardMutex.Unlock()
+
+	if c.lastDay == t.YearDay() {
+		c.totalReward += delta
+	} else {
+		c.totalReward = delta
+		c.lastDay = t.YearDay()
+	}
+}
 
 func (c *Cache) backgroundJob(panicOnError bool, interval time.Duration) {
 	defer func() {

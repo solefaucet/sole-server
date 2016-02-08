@@ -41,6 +41,18 @@ func TestMemory(t *testing.T) {
 		c.getBTCPrice = mockGetBitcoinPriceFunc(0, errors.New("error"))
 		c.backgroundJob(true, time.Second)
 	})
+
+	now := time.Now()
+
+	c.IncrementTotalReward(now, 1)
+	if v := c.GetTotalRewardToday(); v != 1 {
+		t.Errorf("total reward should be 1 but get %v", v)
+	}
+
+	c.IncrementTotalReward(now, 1)
+	if v := c.GetTotalRewardToday(); v != 2 {
+		t.Errorf("total reward should be 2 but get %v", v)
+	}
 }
 
 func funcWithRecover(f func()) {
