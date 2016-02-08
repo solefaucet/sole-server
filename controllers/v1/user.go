@@ -17,7 +17,7 @@ type (
 	signupDependencyCreateUser func(models.User) *errors.Error
 
 	verifyEmailDependencyGetSessionByToken func(string) (models.Session, *errors.Error)
-	verifyEmailDependencyGetUserByID       func(int) (models.User, *errors.Error)
+	verifyEmailDependencyGetUserByID       func(int64) (models.User, *errors.Error)
 	verifyEmailDependencyUpdateUser        func(models.User) *errors.Error
 )
 

@@ -3,7 +3,7 @@ package memory
 import (
 	"fmt"
 	"io"
-	"math"
+	"sync/atomic"
 	"time"
 
 	"github.com/freeusd/solebtc/services/cache"
@@ -12,20 +12,21 @@ import (
 // Cache implements cache.Cache interface with memory
 type Cache struct {
 	getBTCPrice    getBitcoinPriceFunc
-	cachedBTCPrice float64
+	cachedBTCPrice *int64
 
 	logWriter io.Writer
 }
 
-var _ cache.Cache = Cache{}
+var _ cache.Cache = &Cache{}
 
-type getBitcoinPriceFunc func() (float64, error)
+type getBitcoinPriceFunc func() (int64, error)
 
 // New creates a new in-memory cache
 func New(getBTCPrice getBitcoinPriceFunc, logWriter io.Writer, interval time.Duration) Cache {
 	c := Cache{
-		getBTCPrice: getBTCPrice,
-		logWriter:   logWriter,
+		getBTCPrice:    getBTCPrice,
+		cachedBTCPrice: new(int64),
+		logWriter:      logWriter,
 	}
 
 	// get init value, on error it should panic
@@ -38,11 +39,10 @@ func New(getBTCPrice getBitcoinPriceFunc, logWriter io.Writer, interval time.Dur
 }
 
 // GetBitcoinPrice returns the cached bitcoin price
-func (c Cache) GetBitcoinPrice() float64 {
-	return c.cachedBTCPrice
+func (c Cache) GetBitcoinPrice() int64 {
+	return atomic.LoadInt64(c.cachedBTCPrice)
 }
 
-var epsilon = math.Nextafter(1, 2) - 1
 
 func (c *Cache) backgroundJob(panicOnError bool, interval time.Duration) {
 	defer func() {
@@ -69,7 +69,7 @@ func (c *Cache) setBitcoinPrice(panicOnError bool) {
 		return
 	}
 
-	if -epsilon < p && p < epsilon {
+	if p == 0 {
 		errorString := fmt.Sprintf("bitcoin price %v should not be 0", p)
 		if panicOnError {
 			panic(errorString)
@@ -78,5 +78,5 @@ func (c *Cache) setBitcoinPrice(panicOnError bool) {
 		return
 	}
 
-	c.cachedBTCPrice = p
+	atomic.StoreInt64(c.cachedBTCPrice, p)
 }

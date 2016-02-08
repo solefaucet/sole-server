@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-func mockGetBitcoinPriceFunc(p float64, err error) getBitcoinPriceFunc {
-	return func() (float64, error) {
+func mockGetBitcoinPriceFunc(p int64, err error) getBitcoinPriceFunc {
+	return func() (int64, error) {
 		return p, err
 	}
 }
 
 func TestMemory(t *testing.T) {
-	c := New(mockGetBitcoinPriceFunc(8.8, nil), &bytes.Buffer{}, time.Second)
+	c := New(mockGetBitcoinPriceFunc(8, nil), &bytes.Buffer{}, time.Second)
 
 	p := c.GetBitcoinPrice()
-	if p-8.8 > epsilon || p-8.8 < -epsilon {
+	if p != 8 {
 		t.Errorf("price should be 8.8 but get %v", p)
 	}
 

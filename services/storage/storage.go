@@ -8,7 +8,7 @@ import (
 // Storage defines interface that one should implement
 type Storage interface {
 	// User
-	GetUserByID(int) (models.User, *errors.Error)
+	GetUserByID(int64) (models.User, *errors.Error)
 	GetUserByEmail(string) (models.User, *errors.Error)
 	CreateUser(models.User) *errors.Error
 	UpdateUser(models.User) *errors.Error

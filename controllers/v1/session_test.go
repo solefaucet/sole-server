@@ -11,7 +11,7 @@ import (
 )
 
 func mockRequestVerifyEmailDependencyGetUserByID(err *errors.Error) requestVerifyEmailDependencyGetUserByID {
-	return func(int) (models.User, *errors.Error) {
+	return func(int64) (models.User, *errors.Error) {
 		return models.User{}, err
 	}
 }

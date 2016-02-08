@@ -11,7 +11,7 @@ import (
 )
 
 // GetUserByID gets a user with id given
-func (s Storage) GetUserByID(id int) (models.User, *errors.Error) {
+func (s Storage) GetUserByID(id int64) (models.User, *errors.Error) {
 	user := models.User{}
 	err := s.db.Get(&user, "SELECT * FROM users WHERE `id` = ?", id)
 

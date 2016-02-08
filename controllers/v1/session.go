@@ -12,7 +12,7 @@ import (
 
 // dependencies
 type (
-	requestVerifyEmailDependencyGetUserByID   func(int) (models.User, *errors.Error)
+	requestVerifyEmailDependencyGetUserByID   func(int64) (models.User, *errors.Error)
 	requestVerifyEmailDependencyUpsertSession func(models.Session) *errors.Error
 	requestVerifyEmailDependencySendEmail     func(recipients []string, subject string, html string) *errors.Error
 )

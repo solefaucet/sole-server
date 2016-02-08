@@ -120,7 +120,7 @@ func mockVerifyEmailDependencyGetSessionByToken(sess models.Session, err *errors
 }
 
 func mockVerifyDependencyGetUserByID(user models.User, err *errors.Error) verifyEmailDependencyGetUserByID {
-	return func(int) (models.User, *errors.Error) {
+	return func(int64) (models.User, *errors.Error) {
 		return user, err
 	}
 }
