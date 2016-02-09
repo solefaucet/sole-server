@@ -5,7 +5,6 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/satori/go.uuid"
-	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -37,7 +36,7 @@ func RequestVerifyEmail(
 		if err := upsertSession(models.Session{
 			UserID: authToken.UserID,
 			Token:  uuid.NewV4().String(),
-			Type:   constant.SessionTypeVerifyEmail,
+			Type:   models.SessionTypeVerifyEmail,
 		}); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/utils"
@@ -105,13 +104,13 @@ func VerifyEmail(
 		}
 
 		// check user status
-		if user.Status == constant.UserStatusBanned {
+		if user.Status == models.UserStatusBanned {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
 		// update user
-		user.Status = constant.UserStatusVerified
+		user.Status = models.UserStatusVerified
 		if err := updateUser(user); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

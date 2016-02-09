@@ -5,6 +5,13 @@ import (
 	"time"
 )
 
+// User status
+const (
+	UserStatusBanned     = "banned"
+	UserStatusUnverified = "unverified"
+	UserStatusVerified   = "verified"
+)
+
 // User model
 type User struct {
 	ID             int64     `db:"id"`

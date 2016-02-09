@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
-	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -133,7 +132,7 @@ func TestUpdateUser(t *testing.T) {
 		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
 
 		Convey("When update user", func() {
-			err := s.UpdateUser(models.User{ID: 1, Status: constant.UserStatusVerified})
+			err := s.UpdateUser(models.User{ID: 1, Status: models.UserStatusVerified})
 			user, _ := s.GetUserByID(1)
 
 			Convey("Error should be nil", func() {
@@ -141,7 +140,7 @@ func TestUpdateUser(t *testing.T) {
 			})
 
 			Convey("New user status should be verified", func() {
-				So(user.Status, ShouldEqual, constant.UserStatusVerified)
+				So(user.Status, ShouldEqual, models.UserStatusVerified)
 			})
 		})
 	})

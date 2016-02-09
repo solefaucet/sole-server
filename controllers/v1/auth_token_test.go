@@ -9,7 +9,6 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
-	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -59,7 +58,7 @@ func TestLogin(t *testing.T) {
 			"banned user",
 			requestDataJSON(validEmail),
 			403,
-			mockLoginDependencyGetUserByEmail(models.User{Status: constant.UserStatusBanned}, nil),
+			mockLoginDependencyGetUserByEmail(models.User{Status: models.UserStatusBanned}, nil),
 			nil,
 		},
 		{

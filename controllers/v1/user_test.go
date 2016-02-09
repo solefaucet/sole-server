@@ -10,7 +10,6 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
-	"github.com/freeusd/solebtc/constant"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -186,7 +185,7 @@ func TestVerifyEmail(t *testing.T) {
 
 	Convey("Given verify email controller with banned user status", t, func() {
 		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
-		getUserByID := mockVerifyDependencyGetUserByID(models.User{Status: constant.UserStatusBanned}, nil)
+		getUserByID := mockVerifyDependencyGetUserByID(models.User{Status: models.UserStatusBanned}, nil)
 		handler := VerifyEmail(getSessionByToken, getUserByID, nil)
 
 		Convey("When verify email", func() {

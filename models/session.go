@@ -2,6 +2,12 @@ package models
 
 import "time"
 
+// Session type
+const (
+	SessionTypeVerifyEmail   = "verify-email"
+	SessionTypeResetPassword = "reset-password"
+)
+
 // Session model
 type Session struct {
 	ID        int64     `db:"id"`
