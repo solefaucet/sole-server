@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"time"
+
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -21,4 +23,8 @@ type Storage interface {
 	// Session
 	GetSessionByToken(string) (models.Session, *errors.Error)
 	UpsertSession(models.Session) *errors.Error
+
+	// TotalReward
+	IncrementTotalReward(time.Time, int64) *errors.Error
+	GetSortedTotalRewards() ([]models.TotalReward, *errors.Error)
 }
