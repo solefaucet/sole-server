@@ -26,7 +26,7 @@ type Storage interface {
 
 	// TotalReward
 	IncrementTotalReward(time.Time, int64) *errors.Error
-	GetSortedTotalRewards() ([]models.TotalReward, *errors.Error)
+	GetLatestTotalReward() (models.TotalReward, *errors.Error)
 
 	// RewardRate
 	GetRewardRatesByType(string) ([]models.RewardRate, *errors.Error)

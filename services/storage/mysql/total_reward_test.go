@@ -14,15 +14,15 @@ func TestGetSortedTotalRewards(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 
-		Convey("When get total rewards", func() {
-			trs, err := s.GetSortedTotalRewards()
+		Convey("When get latest total reward", func() {
+			result, err := s.GetLatestTotalReward()
 
 			Convey("Error should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Result set should be empty", func() {
-				So(trs, ShouldBeEmpty)
+			Convey("Result should be zero value", func() {
+				So(result, ShouldResemble, models.TotalReward{})
 			})
 		})
 	})
@@ -33,18 +33,17 @@ func TestGetSortedTotalRewards(t *testing.T) {
 		s.IncrementTotalReward(now, 1)
 		s.IncrementTotalReward(now, 1)
 
-		Convey("When get total rewards", func() {
-			trs, _ := s.GetSortedTotalRewards()
+		Convey("When get latest total reward", func() {
+			r, _ := s.GetLatestTotalReward()
 
-			Convey("Result set should be equal", func() {
-				So(trs, func(actual interface{}, expected ...interface{}) string {
-					result := actual.([]models.TotalReward)
-					if len(result) == 1 &&
-						result[0].CreatedAt.YearDay() == now.YearDay() &&
-						result[0].Total == 2 {
+			Convey("Result should be equal", func() {
+				So(r, func(actual interface{}, expected ...interface{}) string {
+					result := actual.(models.TotalReward)
+					if result.CreatedAt.YearDay() == now.YearDay() &&
+						result.Total == 2 {
 						return ""
 					}
-					return fmt.Sprintf("Result set %v is not expected", result)
+					return fmt.Sprintf("Result %v is not expected", result)
 				})
 			})
 		})
@@ -57,27 +56,24 @@ func TestGetSortedTotalRewards(t *testing.T) {
 		s.IncrementTotalReward(now, 10)
 		s.IncrementTotalReward(tmr, 1)
 
-		Convey("When get total rewards", func() {
-			trs, _ := s.GetSortedTotalRewards()
+		Convey("When get latest total reward", func() {
+			r, _ := s.GetLatestTotalReward()
 
-			Convey("Result set should be equal", func() {
-				So(trs, func(actual interface{}, expected ...interface{}) string {
-					result := actual.([]models.TotalReward)
-					if len(result) == 2 &&
-						result[0].Total == 1 &&
-						result[0].CreatedAt.YearDay() == tmr.YearDay() &&
-						result[1].Total == 10 &&
-						result[1].CreatedAt.YearDay() == now.YearDay() {
+			Convey("Result should be equal", func() {
+				So(r, func(actual interface{}, expected ...interface{}) string {
+					result := actual.(models.TotalReward)
+					if result.Total == 1 &&
+						result.CreatedAt.YearDay() == tmr.YearDay() {
 						return ""
 					}
-					return fmt.Sprintf("Result set %v is not expected", result)
+					return fmt.Sprintf("Result %v is not expected", result)
 				})
 			})
 		})
 	})
 
-	withClosedConn(t, "When total rewards", func(s Storage) *errors.Error {
-		_, err := s.GetSortedTotalRewards()
+	withClosedConn(t, "When get latest total rewards", func(s Storage) *errors.Error {
+		_, err := s.GetLatestTotalReward()
 		return err
 	})
 }

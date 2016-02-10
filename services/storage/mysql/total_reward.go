@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -8,19 +9,19 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
-// GetSortedTotalRewards get all total rewards order by time desc
-func (s Storage) GetSortedTotalRewards() ([]models.TotalReward, *errors.Error) {
-	trs := []models.TotalReward{}
-	err := s.db.Select(&trs, "SELECT * FROM total_rewards ORDER BY created_at DESC")
+// GetLatestTotalReward get all total rewards order by time desc
+func (s Storage) GetLatestTotalReward() (models.TotalReward, *errors.Error) {
+	result := models.TotalReward{}
+	err := s.db.Get(&result, "SELECT * FROM total_rewards FORCE INDEX (`created_at`) ORDER BY `created_at` DESC LIMIT 1")
 
-	if err != nil {
-		return trs, &errors.Error{
+	if err != nil && err != sql.ErrNoRows {
+		return result, &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
 			ErrStringForLogging: fmt.Sprintf("Get sorted total rewards unknown error: %v", err),
 		}
 	}
 
-	return trs, nil
+	return result, nil
 }
 
 // IncrementTotalReward increments total reward by delta for now
