@@ -13,18 +13,6 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
-func mockLoginDependencyGetUserByEmail(user models.User, err *errors.Error) loginDependencyGetUserByEmail {
-	return func(string) (models.User, *errors.Error) {
-		return user, err
-	}
-}
-
-func mockLoginDependencyCreateAuthToken(err *errors.Error) loginDependencyCreateAuthToken {
-	return func(models.AuthToken) *errors.Error {
-		return err
-	}
-}
-
 func TestLogin(t *testing.T) {
 	requestDataJSON := func(email string) []byte {
 		raw, _ := json.Marshal(map[string]interface{}{
@@ -37,8 +25,8 @@ func TestLogin(t *testing.T) {
 		when            string
 		requestData     []byte
 		code            int
-		getUserByEmail  loginDependencyGetUserByEmail
-		createAuthToken loginDependencyCreateAuthToken
+		getUserByEmail  dependencyGetUserByEmail
+		createAuthToken dependencyCreateAuthToken
 	}{
 		{
 			"invalid json data",
@@ -58,36 +46,36 @@ func TestLogin(t *testing.T) {
 			"banned user",
 			requestDataJSON(validEmail),
 			403,
-			mockLoginDependencyGetUserByEmail(models.User{Status: models.UserStatusBanned}, nil),
+			mockGetUserByEmail(models.User{Status: models.UserStatusBanned}, nil),
 			nil,
 		},
 		{
 			"non existing email",
 			requestDataJSON(validEmail),
 			404,
-			mockLoginDependencyGetUserByEmail(models.User{}, errors.New(errors.ErrCodeNotFound)),
+			mockGetUserByEmail(models.User{}, errors.New(errors.ErrCodeNotFound)),
 			nil,
 		},
 		{
 			"valid email, unknown error",
 			requestDataJSON(validEmail),
 			500,
-			mockLoginDependencyGetUserByEmail(models.User{}, errors.New(errors.ErrCodeUnknown)),
+			mockGetUserByEmail(models.User{}, errors.New(errors.ErrCodeUnknown)),
 			nil,
 		},
 		{
 			"valid existing email, but unknown error",
 			requestDataJSON(validEmail),
 			500,
-			mockLoginDependencyGetUserByEmail(models.User{}, nil),
-			mockLoginDependencyCreateAuthToken(errors.New(errors.ErrCodeUnknown)),
+			mockGetUserByEmail(models.User{}, nil),
+			mockCreateAuthToken(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
 			"valid existing email",
 			requestDataJSON(validEmail),
 			201,
-			mockLoginDependencyGetUserByEmail(models.User{}, nil),
-			mockLoginDependencyCreateAuthToken(nil),
+			mockGetUserByEmail(models.User{}, nil),
+			mockCreateAuthToken(nil),
 		},
 	}
 
@@ -110,15 +98,9 @@ func TestLogin(t *testing.T) {
 	}
 }
 
-func mockLogoutDependencyDeleteAuthToken(err *errors.Error) logoutDependencyDeleteAuthToken {
-	return func(string) *errors.Error {
-		return err
-	}
-}
-
 func TestLogout(t *testing.T) {
 	Convey("Given Logout controller with errored logout dependency", t, func() {
-		handler := Logout(mockLogoutDependencyDeleteAuthToken(errors.New(errors.ErrCodeUnknown)))
+		handler := Logout(mockDeleteAuthToken(errors.New(errors.ErrCodeUnknown)))
 
 		Convey("When logout", func() {
 			route := "/auth_tokens"
@@ -137,7 +119,7 @@ func TestLogout(t *testing.T) {
 	})
 
 	Convey("Given Logout controller", t, func() {
-		handler := Logout(mockLogoutDependencyDeleteAuthToken(nil))
+		handler := Logout(mockDeleteAuthToken(nil))
 
 		Convey("When logout", func() {
 			route := "/auth_tokens"

@@ -5,22 +5,14 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/satori/go.uuid"
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
-)
-
-// dependencies
-type (
-	requestVerifyEmailDependencyGetUserByID   func(int64) (models.User, *errors.Error)
-	requestVerifyEmailDependencyUpsertSession func(models.Session) *errors.Error
-	requestVerifyEmailDependencySendEmail     func(recipients []string, subject string, html string) *errors.Error
 )
 
 // RequestVerifyEmail send verification url to user via email
 func RequestVerifyEmail(
-	getUserByID requestVerifyEmailDependencyGetUserByID,
-	upsertSession requestVerifyEmailDependencyUpsertSession,
-	sendEmail requestVerifyEmailDependencySendEmail,
+	getUserByID dependencyGetUserByID,
+	upsertSession dependencyUpsertSession,
+	sendEmail dependencySendEmail,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)

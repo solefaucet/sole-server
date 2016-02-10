@@ -11,15 +11,6 @@ import (
 	"github.com/freeusd/solebtc/utils"
 )
 
-// dependencies
-type (
-	signupDependencyCreateUser func(models.User) *errors.Error
-
-	verifyEmailDependencyGetSessionByToken func(string) (models.Session, *errors.Error)
-	verifyEmailDependencyGetUserByID       func(int64) (models.User, *errors.Error)
-	verifyEmailDependencyUpdateUser        func(models.User) *errors.Error
-)
-
 type signupPayload struct {
 	Email          string `json:"email" binding:"required,email"`
 	BitcoinAddress string `json:"bitcoin_address" binding:"required"`
@@ -46,7 +37,7 @@ func userWithSignupPayload(p signupPayload) models.User {
 }
 
 // Signup creates a new user with unique email, bitcoin address
-func Signup(createUser signupDependencyCreateUser) gin.HandlerFunc {
+func Signup(createUser dependencyCreateUser) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
@@ -78,9 +69,9 @@ func Signup(createUser signupDependencyCreateUser) gin.HandlerFunc {
 
 // VerifyEmail updates user's status to verified if current status is unverified
 func VerifyEmail(
-	getSessionByToken verifyEmailDependencyGetSessionByToken,
-	getUserByID verifyEmailDependencyGetUserByID,
-	updateUser verifyEmailDependencyUpdateUser,
+	getSessionByToken dependencyGetSessionByToken,
+	getUserByID dependencyGetUserByID,
+	updateUser dependencyUpdateUser,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Query("token")

@@ -22,12 +22,6 @@ const (
 	invalidEmail = "invalid@.ee.cc"
 )
 
-func mockSignupDependencyCreateUser(err *errors.Error) signupDependencyCreateUser {
-	return func(models.User) *errors.Error {
-		return err
-	}
-}
-
 func TestSignup(t *testing.T) {
 	requestDataJSON := func(email, btcAddr string) []byte {
 		raw, _ := json.Marshal(map[string]interface{}{
@@ -41,7 +35,7 @@ func TestSignup(t *testing.T) {
 		when        string
 		requestData []byte
 		code        int
-		createUser  signupDependencyCreateUser
+		createUser  dependencyCreateUser
 	}{
 		{
 			"invalid json data",
@@ -71,25 +65,25 @@ func TestSignup(t *testing.T) {
 			"duplicate email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
-			mockSignupDependencyCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
+			mockCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
 		},
 		{
 			"valid email, duplicate bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
-			mockSignupDependencyCreateUser(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
+			mockCreateUser(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
 		},
 		{
 			"valid email, valid bitcoin address, but unknow error",
 			requestDataJSON(validEmail, validBTCAddr),
 			500,
-			mockSignupDependencyCreateUser(errors.New(errors.ErrCodeUnknown)),
+			mockCreateUser(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
 			"valid email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			200,
-			mockSignupDependencyCreateUser(nil),
+			mockCreateUser(nil),
 		},
 	}
 
@@ -112,27 +106,9 @@ func TestSignup(t *testing.T) {
 	}
 }
 
-func mockVerifyEmailDependencyGetSessionByToken(sess models.Session, err *errors.Error) verifyEmailDependencyGetSessionByToken {
-	return func(string) (models.Session, *errors.Error) {
-		return sess, err
-	}
-}
-
-func mockVerifyDependencyGetUserByID(user models.User, err *errors.Error) verifyEmailDependencyGetUserByID {
-	return func(int64) (models.User, *errors.Error) {
-		return user, err
-	}
-}
-
-func mockVerifyEmailDependencyUpdateUser(err *errors.Error) verifyEmailDependencyUpdateUser {
-	return func(models.User) *errors.Error {
-		return err
-	}
-}
-
 func TestVerifyEmail(t *testing.T) {
 	Convey("Given verify email controller with expired session and errored getSessionByToken dependency", t, func() {
-		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{}, errors.New(errors.ErrCodeUnknown))
+		getSessionByToken := mockGetSessionByToken(models.Session{}, errors.New(errors.ErrCodeUnknown))
 		handler := VerifyEmail(getSessionByToken, nil, nil)
 
 		Convey("When verify email", func() {
@@ -149,7 +125,7 @@ func TestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given verify email controller with expired session and getSessionByToken dependency", t, func() {
-		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{}, nil)
+		getSessionByToken := mockGetSessionByToken(models.Session{}, nil)
 		handler := VerifyEmail(getSessionByToken, nil, nil)
 
 		Convey("When verify email", func() {
@@ -166,8 +142,8 @@ func TestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given verify email controller with errored getUserByID dependency", t, func() {
-		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
-		getUserByID := mockVerifyDependencyGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
+		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
 		handler := VerifyEmail(getSessionByToken, getUserByID, nil)
 
 		Convey("When verify email", func() {
@@ -184,8 +160,8 @@ func TestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given verify email controller with banned user status", t, func() {
-		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
-		getUserByID := mockVerifyDependencyGetUserByID(models.User{Status: models.UserStatusBanned}, nil)
+		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockGetUserByID(models.User{Status: models.UserStatusBanned}, nil)
 		handler := VerifyEmail(getSessionByToken, getUserByID, nil)
 
 		Convey("When verify email", func() {
@@ -202,9 +178,9 @@ func TestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given verify email controller with errored updateUser dependency", t, func() {
-		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
-		getUserByID := mockVerifyDependencyGetUserByID(models.User{}, nil)
-		updateUser := mockVerifyEmailDependencyUpdateUser(errors.New(errors.ErrCodeUnknown))
+		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockGetUserByID(models.User{}, nil)
+		updateUser := mockUpdateUser(errors.New(errors.ErrCodeUnknown))
 		handler := VerifyEmail(getSessionByToken, getUserByID, updateUser)
 
 		Convey("When verify email", func() {
@@ -221,9 +197,9 @@ func TestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given verify email controller with correct dependencies injected", t, func() {
-		getSessionByToken := mockVerifyEmailDependencyGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
-		getUserByID := mockVerifyDependencyGetUserByID(models.User{}, nil)
-		updateUser := mockVerifyEmailDependencyUpdateUser(nil)
+		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
+		getUserByID := mockGetUserByID(models.User{}, nil)
+		updateUser := mockUpdateUser(nil)
 		handler := VerifyEmail(getSessionByToken, getUserByID, updateUser)
 
 		Convey("When verify email", func() {

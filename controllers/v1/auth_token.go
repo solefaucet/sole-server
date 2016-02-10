@@ -14,18 +14,10 @@ type loginPayload struct {
 	Email string `json:"email" binding:"required,email"`
 }
 
-// dependencies
-type (
-	loginDependencyGetUserByEmail  func(string) (models.User, *errors.Error)
-	loginDependencyCreateAuthToken func(models.AuthToken) *errors.Error
-
-	logoutDependencyDeleteAuthToken func(string) *errors.Error
-)
-
 // Login logs a existing user in, response with auth token
 func Login(
-	getUserByEmail loginDependencyGetUserByEmail,
-	createAuthToken loginDependencyCreateAuthToken,
+	getUserByEmail dependencyGetUserByEmail,
+	createAuthToken dependencyCreateAuthToken,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := loginPayload{}
@@ -65,7 +57,7 @@ func Login(
 }
 
 // Logout deletes corresponding auth token
-func Logout(deleteAuthToken logoutDependencyDeleteAuthToken) gin.HandlerFunc {
+func Logout(deleteAuthToken dependencyDeleteAuthToken) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 		if err := deleteAuthToken(authToken.AuthToken); err != nil {

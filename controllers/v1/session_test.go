@@ -10,27 +10,9 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
-func mockRequestVerifyEmailDependencyGetUserByID(err *errors.Error) requestVerifyEmailDependencyGetUserByID {
-	return func(int64) (models.User, *errors.Error) {
-		return models.User{}, err
-	}
-}
-
-func mockRequestVerifyEmailDependencyUpsertSession(err *errors.Error) requestVerifyEmailDependencyUpsertSession {
-	return func(models.Session) *errors.Error {
-		return err
-	}
-}
-
-func mockRequestVerifyEmailDependencySendEmail(err *errors.Error) requestVerifyEmailDependencySendEmail {
-	return func([]string, string, string) *errors.Error {
-		return err
-	}
-}
-
 func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored getUserByID dependency", t, func() {
-		getUserByID := mockRequestVerifyEmailDependencyGetUserByID(errors.New(errors.ErrCodeUnknown))
+		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
 		handler := RequestVerifyEmail(getUserByID, nil, nil)
 
 		Convey("When request verify email", func() {
@@ -50,8 +32,8 @@ func TestRequestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given request verify email controller with errored upsertSession dependency", t, func() {
-		getUserByID := mockRequestVerifyEmailDependencyGetUserByID(nil)
-		upsertSession := mockRequestVerifyEmailDependencyUpsertSession(errors.New(errors.ErrCodeUnknown))
+		getUserByID := mockGetUserByID(models.User{}, nil)
+		upsertSession := mockUpsertSession(errors.New(errors.ErrCodeUnknown))
 		handler := RequestVerifyEmail(getUserByID, upsertSession, nil)
 
 		Convey("When request verify email", func() {
@@ -71,9 +53,9 @@ func TestRequestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given request verify email controller with errored sendEmail dependency", t, func() {
-		getUserByID := mockRequestVerifyEmailDependencyGetUserByID(nil)
-		upsertSession := mockRequestVerifyEmailDependencyUpsertSession(nil)
-		sendEmail := mockRequestVerifyEmailDependencySendEmail(errors.New(errors.ErrCodeUnknown))
+		getUserByID := mockGetUserByID(models.User{}, nil)
+		upsertSession := mockUpsertSession(nil)
+		sendEmail := mockSendEmail(errors.New(errors.ErrCodeUnknown))
 		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail)
 
 		Convey("When request verify email", func() {
@@ -93,9 +75,9 @@ func TestRequestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given request verify email controller with correct dependencies injected", t, func() {
-		getUserByID := mockRequestVerifyEmailDependencyGetUserByID(nil)
-		upsertSession := mockRequestVerifyEmailDependencyUpsertSession(nil)
-		sendEmail := mockRequestVerifyEmailDependencySendEmail(nil)
+		getUserByID := mockGetUserByID(models.User{}, nil)
+		upsertSession := mockUpsertSession(nil)
+		sendEmail := mockSendEmail(nil)
 		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail)
 
 		Convey("When request verify email", func() {
