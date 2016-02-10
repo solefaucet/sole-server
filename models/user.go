@@ -1,9 +1,6 @@
 package models
 
-import (
-	"encoding/json"
-	"time"
-)
+import "time"
 
 // User status
 const (
@@ -14,21 +11,13 @@ const (
 
 // User model
 type User struct {
-	ID             int64     `db:"id"`
-	Email          string    `db:"email"`
-	BitcoinAddress string    `db:"bitcoin_address"`
-	Status         string    `db:"status"`
-	UpdatedAt      time.Time `db:"updated_at"`
-	CreatedAt      time.Time `db:"created_at"`
-}
-
-var _ json.Marshaler = User{}
-
-// MarshalJSON implements json.Marshaler
-func (u User) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"email":           u.Email,
-		"bitcoin_address": u.BitcoinAddress,
-		"status":          u.Status,
-	})
+	ID             int64     `db:"id" json:"id,omitempty"`
+	Email          string    `db:"email" json:"email,omitempty"`
+	BitcoinAddress string    `db:"bitcoin_address" json:"bitcoin_address,omitempty"`
+	Status         string    `db:"status" json:"status,omitempty"`
+	Balance        int64     `db:"balance" json:"balance"`
+	RewardInterval int64     `db:"reward_interval" json:"reward_interval"`
+	RewardedAt     time.Time `db:"rewarded_at" json:"rewarded_at"`
+	UpdatedAt      time.Time `db:"updated_at" json:"-"`
+	CreatedAt      time.Time `db:"created_at" json:"-"`
 }
