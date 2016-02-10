@@ -14,5 +14,5 @@ func ExampleBitcoinPrice() {
 
 	// Output:
 	// true
-	// 550
+	// 55000
 }

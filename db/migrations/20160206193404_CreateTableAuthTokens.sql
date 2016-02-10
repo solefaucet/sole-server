@@ -11,6 +11,7 @@ CREATE TABLE `auth_tokens` (
 
 ALTER TABLE `auth_tokens`
 ADD UNIQUE INDEX (`auth_token`),
+ADD INDEX (`user_id`),
 ADD INDEX (`created_at`);
 
 -- +goose Down
