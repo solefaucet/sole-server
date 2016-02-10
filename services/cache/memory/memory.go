@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/services/cache"
 )
 
@@ -19,6 +20,9 @@ type Cache struct {
 	totalReward      int64
 	totalRewardMutex sync.RWMutex
 
+	rewardRatesMapping map[string][]models.RewardRate
+	rewardRatesMutex   sync.RWMutex
+
 	logWriter io.Writer
 }
 
@@ -29,8 +33,9 @@ type getBitcoinPriceFunc func() (int64, error)
 // New creates a new in-memory cache
 func New(getBTCPrice getBitcoinPriceFunc, logWriter io.Writer, interval time.Duration) *Cache {
 	c := &Cache{
-		getBTCPrice: getBTCPrice,
-		logWriter:   logWriter,
+		getBTCPrice:        getBTCPrice,
+		rewardRatesMapping: make(map[string][]models.RewardRate),
+		logWriter:          logWriter,
 	}
 
 	// get init value, on error it should panic
@@ -67,6 +72,20 @@ func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
 		c.totalReward = delta
 		c.lastDay = t.YearDay()
 	}
+}
+
+// GetRewardRatesByType returns reward rates by type
+func (c *Cache) GetRewardRatesByType(t string) []models.RewardRate {
+	c.rewardRatesMutex.RLock()
+	defer c.rewardRatesMutex.RUnlock()
+	return c.rewardRatesMapping[t]
+}
+
+// SetRewardRates sets reward rates with type
+func (c *Cache) SetRewardRates(t string, rates []models.RewardRate) {
+	c.rewardRatesMutex.Lock()
+	defer c.rewardRatesMutex.Unlock()
+	c.rewardRatesMapping[t] = rates
 }
 
 func (c *Cache) backgroundJob(panicOnError bool, interval time.Duration) {

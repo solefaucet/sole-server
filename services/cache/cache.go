@@ -1,6 +1,10 @@
 package cache
 
-import "time"
+import (
+	"time"
+
+	"github.com/freeusd/solebtc/models"
+)
 
 // Cache defines interface that one should implement
 type Cache interface {
@@ -8,4 +12,7 @@ type Cache interface {
 
 	GetTotalRewardToday() int64
 	IncrementTotalReward(time.Time, int64)
+
+	GetRewardRatesByType(string) []models.RewardRate
+	SetRewardRates(string, []models.RewardRate)
 }

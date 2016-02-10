@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 	"time"
+
+	"github.com/freeusd/solebtc/models"
 )
 
 func mockGetBitcoinPriceFunc(p int64, err error) getBitcoinPriceFunc {
@@ -52,6 +54,12 @@ func TestMemory(t *testing.T) {
 	c.IncrementTotalReward(now, 1)
 	if v := c.GetTotalRewardToday(); v != 2 {
 		t.Errorf("total reward should be 2 but get %v", v)
+	}
+
+	c.SetRewardRates(models.RewardRateTypeLess, []models.RewardRate{models.RewardRate{}})
+	rates := c.GetRewardRatesByType(models.RewardRateTypeLess)
+	if len(rates) != 1 {
+		t.Errorf("expected length of rates should be 1 but get %v", len(rates))
 	}
 }
 
