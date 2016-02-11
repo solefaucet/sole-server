@@ -9,7 +9,7 @@ import (
 const blockchainTickerURL = "https://blockchain.info/ticker"
 
 // BitcoinPrice returns the lastest bitcoin price in 1 / 10,000 USD
-func BitcoinPrice() (_ int64, err error) {
+func BitcoinPrice() (int64, error) {
 	_, body, _ := gorequest.New().Get(blockchainTickerURL).EndBytes()
 	return bitcoinPriceWithByteFromBlockchain(body)
 }
@@ -24,5 +24,5 @@ func bitcoinPriceWithByteFromBlockchain(data []byte) (int64, error) {
 		return 0, err
 	}
 
-	return int64(10000 * m["USD"].Last), nil
+	return MachineReadableUSD(m["USD"].Last), nil
 }
