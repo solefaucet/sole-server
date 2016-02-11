@@ -9,7 +9,10 @@ import (
 
 // RandomReward generates a random reward with rates given
 func RandomReward(rates []models.RewardRate) int64 {
-	sum := sumOfWeights(rates)
+	var sum int64
+	for i := range rates {
+		sum += rates[i].Weight
+	}
 	if sum < 1 {
 		panic("sum of reward rates weight should be greater than 0")
 	}
@@ -24,13 +27,6 @@ func RandomReward(rates []models.RewardRate) int64 {
 
 	rate := rates[i]
 	return randInt64(rate.Min, rate.Max)
-}
-
-func sumOfWeights(rates []models.RewardRate) (sum int64) {
-	for i := range rates {
-		sum += rates[i].Weight
-	}
-	return
 }
 
 func randInt64(min, max int64) int64 {
