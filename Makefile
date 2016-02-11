@@ -27,7 +27,7 @@ metalint:
 		--disable=deadcode \
 		--enable=goimports \
 		--deadline=60s \
-		--dupl-threshold=100 \
+		--linter='dupl:dupl -plumbing -threshold {duplthreshold} ./*.go | grep -v "_test.go"::(?P<path>[^\s][^:]+?\.go):(?P<line>\d+)-\d+:\s*(?P<message>.*)' \
 		./...
 
 test:
