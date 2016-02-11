@@ -14,6 +14,7 @@ import (
 type signupPayload struct {
 	Email          string `json:"email" binding:"required,email"`
 	BitcoinAddress string `json:"bitcoin_address" binding:"required"`
+	RefererID      int64  `json:"referer_id,omitempty" binding:"-"`
 }
 
 func (p *signupPayload) validate() error {
@@ -37,7 +38,7 @@ func userWithSignupPayload(p signupPayload) models.User {
 }
 
 // Signup creates a new user with unique email, bitcoin address
-func Signup(createUser dependencyCreateUser) gin.HandlerFunc {
+func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
@@ -49,6 +50,10 @@ func Signup(createUser dependencyCreateUser) gin.HandlerFunc {
 		}
 
 		user := userWithSignupPayload(payload)
+		// assign referer_id to user
+		referer, _ := getUserByID(payload.RefererID)
+		user.RefererID = referer.ID
+
 		if err := createUser(user); err != nil {
 			switch err.ErrCode {
 			case errors.ErrCodeDuplicateEmail:

@@ -27,6 +27,7 @@ func TestSignup(t *testing.T) {
 		raw, _ := json.Marshal(map[string]interface{}{
 			"email":           email,
 			"bitcoin_address": btcAddr,
+			"referer_id":      2,
 		})
 		return raw
 	}
@@ -35,6 +36,7 @@ func TestSignup(t *testing.T) {
 		when        string
 		requestData []byte
 		code        int
+		getUserByID dependencyGetUserByID
 		createUser  dependencyCreateUser
 	}{
 		{
@@ -42,11 +44,13 @@ func TestSignup(t *testing.T) {
 			[]byte("huhu"),
 			400,
 			nil,
+			nil,
 		},
 		{
 			"invalid email, invalid bitcoin address",
 			requestDataJSON(invalidEmail, invalidBTCAddr),
 			400,
+			nil,
 			nil,
 		},
 		{
@@ -54,42 +58,48 @@ func TestSignup(t *testing.T) {
 			requestDataJSON(validEmail, invalidEmail),
 			400,
 			nil,
+			nil,
 		},
 		{
 			"invalid email, valid bitcoin address",
 			requestDataJSON(invalidEmail, validBTCAddr),
 			400,
 			nil,
+			nil,
 		},
 		{
 			"duplicate email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
+			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
 		},
 		{
 			"valid email, duplicate bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			409,
+			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
 		},
 		{
-			"valid email, valid bitcoin address, but unknow error",
+			"valid email, valid bitcoin address, but create user unknown error",
 			requestDataJSON(validEmail, validBTCAddr),
 			500,
+			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
 			"valid email, valid bitcoin address",
 			requestDataJSON(validEmail, validBTCAddr),
 			200,
+			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(nil),
 		},
 	}
 
 	for _, v := range testdata {
 		Convey("Given Signup controller", t, func() {
-			handler := Signup(v.createUser)
+			handler := Signup(v.createUser, v.getUserByID)
 
 			Convey(fmt.Sprintf("When request with %s", v.when), func() {
 				route := "/users"

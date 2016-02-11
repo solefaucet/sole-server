@@ -50,7 +50,7 @@ func (s Storage) GetUserByEmail(email string) (models.User, *errors.Error) {
 
 // CreateUser creates a new user
 func (s Storage) CreateUser(u models.User) *errors.Error {
-	_, err := s.db.NamedExec("INSERT INTO users (`email`, `bitcoin_address`) VALUES (:email, :bitcoin_address)", u)
+	_, err := s.db.NamedExec("INSERT INTO users (`email`, `bitcoin_address`, `referer_id`) VALUES (:email, :bitcoin_address, :referer_id)", u)
 
 	if err != nil {
 		switch e := err.(type) {
