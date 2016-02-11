@@ -54,8 +54,8 @@ func (c *Cache) GetBitcoinPrice() int64 {
 	return c.cachedBTCPrice
 }
 
-// GetTotalRewardToday returns total reward of today
-func (c *Cache) GetTotalRewardToday() int64 {
+// GetLatestTotalReward returns total reward of today
+func (c *Cache) GetLatestTotalReward() int64 {
 	c.totalRewardMutex.RLock()
 	defer c.totalRewardMutex.RUnlock()
 	return c.totalReward
