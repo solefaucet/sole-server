@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
 	"github.com/freeusd/solebtc/errors"
@@ -87,6 +88,25 @@ func (s Storage) UpdateUser(user models.User) *errors.Error {
 		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
 			ErrStringForLogging: fmt.Sprintf("Update user unknown error: %v", err),
+		}
+	}
+
+	return nil
+}
+
+// IncrementUserBalance increments user's balance by delta and update rewarded_at if needed
+func (s Storage) IncrementUserBalance(userID int64, delta int64, t *time.Time) *errors.Error {
+	var err error
+	if t != nil {
+		_, err = s.db.Exec("UPDATE users SET `balance` = `balance` + ?, `rewarded_at` = ? WHERE id = ?", delta, *t, userID)
+	} else {
+		_, err = s.db.Exec("UPDATE users SET `balance` = `balance` + ? WHERE id = ?", delta, userID)
+	}
+
+	if err != nil {
+		return &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Increment user balance unknown error: %v", err),
 		}
 	}
 

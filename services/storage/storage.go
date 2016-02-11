@@ -14,6 +14,7 @@ type Storage interface {
 	GetUserByEmail(string) (models.User, *errors.Error)
 	CreateUser(models.User) *errors.Error
 	UpdateUser(models.User) *errors.Error
+	IncrementUserBalance(int64, int64, *time.Time) *errors.Error
 
 	// AuthToken
 	GetAuthToken(string) (models.AuthToken, *errors.Error)
