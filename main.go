@@ -5,34 +5,39 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/controllers/v1"
+	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/middlewares"
+	"github.com/freeusd/solebtc/models"
+	"github.com/freeusd/solebtc/services/cache"
+	"github.com/freeusd/solebtc/services/cache/memory"
 	"github.com/freeusd/solebtc/services/mail"
 	"github.com/freeusd/solebtc/services/mail/mandrill"
 	"github.com/freeusd/solebtc/services/storage"
 	"github.com/freeusd/solebtc/services/storage/mysql"
+	"github.com/freeusd/solebtc/utils"
 )
 
 var (
-	mailer mail.Mailer
-	store  storage.Storage
-	err    error
+	logWriter   io.Writer = os.Stdout
+	panicWriter io.Writer = os.Stderr
+	mailer      mail.Mailer
+	store       storage.Storage
+	memoryCache cache.Cache
+	err         error
 )
 
 func init() {
 	initConfig()
 	initMailer()
 	initStorage()
+	initCache()
 }
 
 func main() {
-	var (
-		logWriter   io.Writer = os.Stdout
-		panicWriter io.Writer = os.Stderr
-	)
-
 	gin.SetMode(ginEnvMode())
 	router := gin.New()
 
@@ -63,10 +68,30 @@ func main() {
 	v1SessionEndpoints := v1Endpoints.Group("/sessions")
 	v1SessionEndpoints.Use(authRequired).POST("", v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail))
 
+	// income endpoints
+	v1IncomeEndpoints := v1Endpoints.Group("/incomes")
+	v1IncomeEndpoints.Use(authRequired).POST("/rewards", v1.GetReward(store.GetUserByID, memoryCache.GetLatestTotalReward, memoryCache.GetLatestConfig, memoryCache.GetRewardRatesByType, memoryCache.GetBitcoinPrice, createRewardIncome()))
+
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
 	if err := router.Run(config.HTTP.Port); err != nil {
 		fmt.Fprintf(panicWriter, "HTTP listen and serve error: %v\n", err)
 		os.Exit(1)
+	}
+}
+
+func createRewardIncome() func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
+	return func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
+		if err := store.CreateRewardIncome(userID, refererID, reward, rewardReferer, now); err != nil {
+			return err
+		}
+
+		totalReward := reward
+		if refererID > 0 {
+			totalReward += rewardReferer
+		}
+		memoryCache.IncrementTotalReward(now, totalReward)
+
+		return nil
 	}
 }
 
@@ -81,4 +106,27 @@ func initStorage() {
 	if err != nil {
 		log.Fatalf("Cannot create mysql storage: %v", err)
 	}
+}
+
+func initCache() {
+	memoryCache = memory.New(utils.BitcoinPrice, logWriter, time.Minute*5)
+
+	// init config in cache
+	config, err := store.GetLatestConfig()
+	if err != nil {
+		log.Fatalf("Cannot get latest config: %v", err)
+	}
+	memoryCache.SetLatestConfig(config)
+
+	// init rates in cache
+	lessRates, err := store.GetRewardRatesByType(models.RewardRateTypeLess)
+	if err != nil {
+		log.Fatalf("Cannot get reward rates with type less: %v", err)
+	}
+	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
+	if err != nil {
+		log.Fatalf("Cannot get reward rates with type more: %v", err)
+	}
+	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
+	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 }

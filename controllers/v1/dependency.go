@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"time"
+
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -23,4 +25,20 @@ type (
 
 	// email
 	dependencySendEmail func(recipients []string, subject string, html string) *errors.Error
+
+	// bitcoin price
+	dependencyGetBitcoinPrice func() int64
+
+	// total reward
+	dependencyGetLatestTotalReward func() models.TotalReward
+	dependencyIncrementTotalReward func(time.Time, int64) *errors.Error
+
+	// reward rate
+	dependencyGetRewardRatesByType func(string) []models.RewardRate
+
+	// system config
+	dependencyGetSystemConfig func() models.Config
+
+	// income
+	dependencyCreateRewardIncome func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error
 )
