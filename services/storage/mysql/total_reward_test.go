@@ -39,7 +39,7 @@ func TestGetLatestTotalReward(t *testing.T) {
 			Convey("Result should be equal", func() {
 				So(r, func(actual interface{}, expected ...interface{}) string {
 					result := actual.(models.TotalReward)
-					if result.CreatedAt.YearDay() == now.YearDay() &&
+					if result.CreatedAt.YearDay() == now.UTC().YearDay() &&
 						result.Total == 2 {
 						return ""
 					}
@@ -63,7 +63,7 @@ func TestGetLatestTotalReward(t *testing.T) {
 				So(r, func(actual interface{}, expected ...interface{}) string {
 					result := actual.(models.TotalReward)
 					if result.Total == 1 &&
-						result.CreatedAt.YearDay() == tmr.YearDay() {
+						result.CreatedAt.YearDay() == tmr.UTC().YearDay() {
 						return ""
 					}
 					return fmt.Sprintf("Result %v is not expected", result)

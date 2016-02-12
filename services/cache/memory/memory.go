@@ -69,11 +69,11 @@ func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
 	c.totalRewardMutex.Lock()
 	defer c.totalRewardMutex.Unlock()
 
-	if c.lastDay == t.YearDay() {
+	if c.lastDay == t.UTC().YearDay() {
 		c.totalReward.Total += delta
 	} else {
 		c.totalReward.Total = delta
-		c.lastDay = t.YearDay()
+		c.lastDay = t.UTC().YearDay()
 	}
 }
 
