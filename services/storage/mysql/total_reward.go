@@ -26,12 +26,7 @@ func (s Storage) GetLatestTotalReward() (models.TotalReward, *errors.Error) {
 
 // IncrementTotalReward increments total reward by delta for now
 func (s Storage) IncrementTotalReward(now time.Time, delta int64) *errors.Error {
-	sql := "INSERT INTO total_rewards (`total`, `created_at`) VALUES (:delta, :created_at) ON DUPLICATE KEY UPDATE `total` = `total` + :delta"
-	args := map[string]interface{}{
-		"delta":      delta,
-		"created_at": now,
-	}
-	_, err := s.db.NamedExec(sql, args)
+	_, err := s.db.NamedExec(incrementTotalRewardSQL(now, delta))
 
 	if err != nil {
 		return &errors.Error{
@@ -41,4 +36,13 @@ func (s Storage) IncrementTotalReward(now time.Time, delta int64) *errors.Error 
 	}
 
 	return nil
+}
+
+func incrementTotalRewardSQL(now time.Time, delta int64) (string, map[string]interface{}) {
+	sql := "INSERT INTO total_rewards (`total`, `created_at`) VALUES (:delta, :created_at) ON DUPLICATE KEY UPDATE `total` = `total` + :delta"
+	args := map[string]interface{}{
+		"delta":      delta,
+		"created_at": now,
+	}
+	return sql, args
 }

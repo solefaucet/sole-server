@@ -34,4 +34,7 @@ type Storage interface {
 
 	// Config
 	GetLatestConfig() (models.Config, *errors.Error)
+
+	// Income
+	CreateRewardIncome(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error
 }
