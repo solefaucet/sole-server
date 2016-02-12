@@ -61,6 +61,12 @@ func TestMemory(t *testing.T) {
 	if len(rates) != 1 {
 		t.Errorf("expected length of rates should be 1 but get %v", len(rates))
 	}
+
+	c.SetLatestConfig(models.Config{TotalRewardThreshold: 1000})
+	config := c.GetLatestConfig()
+	if config.TotalRewardThreshold != 1000 {
+		t.Errorf("expected total reward threshold should be 1000 but get %v", config.TotalRewardThreshold)
+	}
 }
 
 func funcWithRecover(f func()) {

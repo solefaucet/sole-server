@@ -23,6 +23,9 @@ type Cache struct {
 	rewardRatesMapping map[string][]models.RewardRate
 	rewardRatesMutex   sync.RWMutex
 
+	config      models.Config
+	configMutex sync.RWMutex
+
 	logWriter io.Writer
 }
 
@@ -86,6 +89,20 @@ func (c *Cache) SetRewardRates(t string, rates []models.RewardRate) {
 	c.rewardRatesMutex.Lock()
 	defer c.rewardRatesMutex.Unlock()
 	c.rewardRatesMapping[t] = rates
+}
+
+// GetLatestConfig returns latest system config
+func (c *Cache) GetLatestConfig() models.Config {
+	c.configMutex.RLock()
+	defer c.configMutex.RUnlock()
+	return c.config
+}
+
+// SetLatestConfig sets latest system config in cache
+func (c *Cache) SetLatestConfig(config models.Config) {
+	c.configMutex.Lock()
+	defer c.configMutex.Unlock()
+	c.config = config
 }
 
 func (c *Cache) backgroundJob(panicOnError bool, interval time.Duration) {

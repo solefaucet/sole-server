@@ -15,4 +15,7 @@ type Cache interface {
 
 	GetRewardRatesByType(string) []models.RewardRate
 	SetRewardRates(string, []models.RewardRate)
+
+	GetLatestConfig() models.Config
+	SetLatestConfig(models.Config)
 }
