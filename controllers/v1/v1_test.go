@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"time"
+
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -55,6 +57,36 @@ func mockUpsertSession(err *errors.Error) dependencyUpsertSession {
 
 func mockSendEmail(err *errors.Error) dependencySendEmail {
 	return func([]string, string, string) *errors.Error {
+		return err
+	}
+}
+
+func mockGetLatestTotalReward(r models.TotalReward) dependencyGetLatestTotalReward {
+	return func() models.TotalReward {
+		return r
+	}
+}
+
+func mockGetSystemConfig(c models.Config) dependencyGetSystemConfig {
+	return func() models.Config {
+		return c
+	}
+}
+
+func mockGetRewardRatesByType(rates []models.RewardRate) dependencyGetRewardRatesByType {
+	return func(string) []models.RewardRate {
+		return rates
+	}
+}
+
+func mockGetBitcoinPrice(price int64) dependencyGetBitcoinPrice {
+	return func() int64 {
+		return price
+	}
+}
+
+func mockCreateRewardIncome(err *errors.Error) dependencyCreateRewardIncome {
+	return func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
 		return err
 	}
 }

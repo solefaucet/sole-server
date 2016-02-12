@@ -38,7 +38,8 @@ func GetReward(
 		// get random bitcoin reward in Satonish
 		latestTotalReward := getLatestTotalReward()
 		rewardRateType := models.RewardRateTypeLess
-		if latestTotalReward.Total > getSystemConfig().TotalRewardThreshold {
+		if latestTotalReward.CreatedAt.YearDay() == now.UTC().YearDay() &&
+			latestTotalReward.Total > getSystemConfig().TotalRewardThreshold {
 			rewardRateType = models.RewardRateTypeMore
 		}
 		rewardRates := getRewardRatesByType(rewardRateType)
