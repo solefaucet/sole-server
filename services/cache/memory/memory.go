@@ -17,7 +17,7 @@ type Cache struct {
 	cachedBTCPriceMutex sync.RWMutex
 
 	lastDay          int
-	totalReward      int64
+	totalReward      models.TotalReward
 	totalRewardMutex sync.RWMutex
 
 	rewardRatesMapping map[string][]models.RewardRate
@@ -58,7 +58,7 @@ func (c *Cache) GetBitcoinPrice() int64 {
 }
 
 // GetLatestTotalReward returns total reward of today
-func (c *Cache) GetLatestTotalReward() int64 {
+func (c *Cache) GetLatestTotalReward() models.TotalReward {
 	c.totalRewardMutex.RLock()
 	defer c.totalRewardMutex.RUnlock()
 	return c.totalReward
@@ -70,9 +70,9 @@ func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
 	defer c.totalRewardMutex.Unlock()
 
 	if c.lastDay == t.YearDay() {
-		c.totalReward += delta
+		c.totalReward.Total += delta
 	} else {
-		c.totalReward = delta
+		c.totalReward.Total = delta
 		c.lastDay = t.YearDay()
 	}
 }

@@ -10,7 +10,7 @@ import (
 type Cache interface {
 	GetBitcoinPrice() int64
 
-	GetLatestTotalReward() int64
+	GetLatestTotalReward() models.TotalReward
 	IncrementTotalReward(time.Time, int64)
 
 	GetRewardRatesByType(string) []models.RewardRate

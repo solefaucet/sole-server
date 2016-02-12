@@ -47,12 +47,12 @@ func TestMemory(t *testing.T) {
 	now := time.Now()
 
 	c.IncrementTotalReward(now, 1)
-	if v := c.GetLatestTotalReward(); v != 1 {
+	if v := c.GetLatestTotalReward(); v.Total != 1 {
 		t.Errorf("total reward should be 1 but get %v", v)
 	}
 
 	c.IncrementTotalReward(now, 1)
-	if v := c.GetLatestTotalReward(); v != 2 {
+	if v := c.GetLatestTotalReward(); v.Total != 2 {
 		t.Errorf("total reward should be 2 but get %v", v)
 	}
 
