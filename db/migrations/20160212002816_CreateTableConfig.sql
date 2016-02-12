@@ -10,6 +10,8 @@ CREATE TABLE `configs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `configs` (total_reward_threshold, referer_reward_rate) VALUES (10000000, 0.1);
+
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back
 DROP TABLE `configs`;

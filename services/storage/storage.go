@@ -31,4 +31,7 @@ type Storage interface {
 
 	// RewardRate
 	GetRewardRatesByType(string) ([]models.RewardRate, *errors.Error)
+
+	// Config
+	GetLatestConfig() (models.Config, *errors.Error)
 }

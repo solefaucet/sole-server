@@ -10,7 +10,7 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
-func TestGetSortedTotalRewards(t *testing.T) {
+func TestGetLatestTotalReward(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 
