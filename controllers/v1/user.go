@@ -115,3 +115,23 @@ func VerifyEmail(
 		c.Status(http.StatusOK)
 	}
 }
+
+// UserInfo returns user's info as response
+func UserInfo(getUserByID dependencyGetUserByID) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authToken := c.MustGet("auth_token").(models.AuthToken)
+
+		user, err := getUserByID(authToken.UserID)
+		if err != nil {
+			// user is already authorized
+			// if get user error
+			// it must be internal server error
+			// do not need to check existence of user
+			// although error code can be ErrCodeNotFound
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, user)
+	}
+}

@@ -225,3 +225,45 @@ func TestVerifyEmail(t *testing.T) {
 		})
 	})
 }
+
+func TestGetUserInfo(t *testing.T) {
+	Convey("Given get user info controller with errored getUserByID dependency", t, func() {
+		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeNotFound))
+		handler := UserInfo(getUserByID)
+
+		Convey("When get user info", func() {
+			route := "/users"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given get user info controller with correctly dependencies injected", t, func() {
+		getUserByID := mockGetUserByID(models.User{}, nil)
+		handler := UserInfo(getUserByID)
+
+		Convey("When get user info", func() {
+			route := "/users"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 200", func() {
+				So(resp.Code, ShouldEqual, 200)
+			})
+		})
+	})
+}
