@@ -70,7 +70,7 @@ func main() {
 
 	// income endpoints
 	v1IncomeEndpoints := v1Endpoints.Group("/incomes")
-	v1IncomeEndpoints.Use(authRequired).POST("/rewards", v1.GetReward(store.GetUserByID, memoryCache.GetLatestTotalReward, memoryCache.GetLatestConfig, memoryCache.GetRewardRatesByType, memoryCache.GetBitcoinPrice, createRewardIncome()))
+	v1IncomeEndpoints.Use(authRequired).POST("/rewards", v1.GetReward(store.GetUserByID, memoryCache.GetLatestTotalReward, memoryCache.GetLatestConfig, memoryCache.GetRewardRatesByType, memoryCache.GetBitcoinPrice, createRewardIncome))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
 	if err := router.Run(config.HTTP.Port); err != nil {
@@ -79,20 +79,18 @@ func main() {
 	}
 }
 
-func createRewardIncome() func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
-	return func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
-		if err := store.CreateRewardIncome(userID, refererID, reward, rewardReferer, now); err != nil {
-			return err
-		}
-
-		totalReward := reward
-		if refererID > 0 {
-			totalReward += rewardReferer
-		}
-		memoryCache.IncrementTotalReward(now, totalReward)
-
-		return nil
+func createRewardIncome(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
+	if err := store.CreateRewardIncome(userID, refererID, reward, rewardReferer, now); err != nil {
+		return err
 	}
+
+	totalReward := reward
+	if refererID > 0 {
+		totalReward += rewardReferer
+	}
+	memoryCache.IncrementTotalReward(now, totalReward)
+
+	return nil
 }
 
 func initMailer() {
