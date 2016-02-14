@@ -49,29 +49,28 @@ func main() {
 	authRequired := middlewares.AuthRequired(store.GetAuthToken, config.AuthToken.Lifetime)
 
 	// globally use middlewares
-	router.Use(recovery).Use(logger).Use(cors).Use(errorWriter)
+	router.Use(recovery, logger, cors, errorWriter)
 
 	// version 1 api endpoints
 	v1Endpoints := router.Group("/v1")
 
 	// user endpoints
 	v1UserEndpoints := v1Endpoints.Group("/users")
-	v1UserEndpoints.Use(authRequired).GET("", v1.UserInfo(store.GetUserByID))
+	v1UserEndpoints.GET("", authRequired, v1.UserInfo(store.GetUserByID))
 	v1UserEndpoints.POST("", v1.Signup(store.CreateUser, store.GetUserByID))
 	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(store.GetSessionByToken, store.GetUserByID, store.UpdateUser))
 
 	// auth token endpoints
 	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")
 	v1AuthTokenEndpoints.POST("", v1.Login(store.GetUserByEmail, store.CreateAuthToken))
-	v1AuthTokenEndpoints.Use(authRequired).DELETE("", v1.Logout(store.DeleteAuthToken))
+	v1AuthTokenEndpoints.DELETE("", authRequired, v1.Logout(store.DeleteAuthToken))
 
 	// session endpoints
 	v1SessionEndpoints := v1Endpoints.Group("/sessions")
-	v1SessionEndpoints.Use(authRequired).POST("", v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail))
+	v1SessionEndpoints.POST("", authRequired, v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail))
 
 	// income endpoints
-	v1IncomeEndpoints := v1Endpoints.Group("/incomes")
-	v1IncomeEndpoints.Use(authRequired)
+	v1IncomeEndpoints := v1Endpoints.Group("/incomes", authRequired)
 	v1IncomeEndpoints.POST("/rewards",
 		v1.GetReward(store.GetUserByID,
 			memoryCache.GetLatestTotalReward,
