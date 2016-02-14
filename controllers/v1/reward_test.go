@@ -82,7 +82,7 @@ func TestGetReward(t *testing.T) {
 
 	Convey("Given get reward controller with everything correctly configured", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		getLatestTotalReward := mockGetLatestTotalReward(models.TotalReward{CreatedAt: time.Now(), Total: 11})
+		getLatestTotalReward := mockGetLatestTotalReward(models.TotalReward{CreatedAt: time.Now().UTC(), Total: 11})
 		getSystemConfig := mockGetSystemConfig(models.Config{TotalRewardThreshold: 10, RefererRewardRate: 0.1})
 		getRewardRatesByType := mockGetRewardRatesByType([]models.RewardRate{
 			{Weight: 1, Min: 1, Max: 10},
@@ -136,6 +136,21 @@ func TestRewardList(t *testing.T) {
 			})
 			r.GET(route, handler)
 			req, _ := http.NewRequest("GET", route+"?since=3i", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 400", func() {
+				So(resp.Code, ShouldEqual, 400)
+			})
+		})
+
+		Convey("When get reward list without since or until", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route, nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 400", func() {
