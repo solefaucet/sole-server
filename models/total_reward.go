@@ -8,3 +8,8 @@ type TotalReward struct {
 	Total     int64     `db:"total"`
 	CreatedAt time.Time `db:"created_at"`
 }
+
+// IsSameDay checks if created_at and now are in the same day
+func (t *TotalReward) IsSameDay(now time.Time) bool {
+	return t.CreatedAt.YearDay() == now.UTC().YearDay()
+}

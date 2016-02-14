@@ -16,7 +16,6 @@ type Cache struct {
 	cachedBTCPrice      int64
 	cachedBTCPriceMutex sync.RWMutex
 
-	lastDay          int
 	totalReward      models.TotalReward
 	totalRewardMutex sync.RWMutex
 
@@ -69,11 +68,10 @@ func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
 	c.totalRewardMutex.Lock()
 	defer c.totalRewardMutex.Unlock()
 
-	if c.lastDay == t.UTC().YearDay() {
+	if c.totalReward.IsSameDay(t) {
 		c.totalReward.Total += delta
 	} else {
-		c.totalReward.Total = delta
-		c.lastDay = t.UTC().YearDay()
+		c.totalReward = models.TotalReward{CreatedAt: t, Total: delta}
 	}
 }
 
