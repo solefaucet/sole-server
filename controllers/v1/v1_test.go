@@ -90,3 +90,15 @@ func mockCreateRewardIncome(err *errors.Error) dependencyCreateRewardIncome {
 		return err
 	}
 }
+
+func mockGetRewardIncomesSince(incomes []models.Income, err *errors.Error) dependencyGetRewardIncomesSince {
+	return func(int64, time.Time, int64) ([]models.Income, *errors.Error) {
+		return incomes, err
+	}
+}
+
+func mockGetRewardIncomesUntil(incomes []models.Income, err *errors.Error) dependencyGetRewardIncomesUntil {
+	return func(int64, time.Time, int64) ([]models.Income, *errors.Error) {
+		return incomes, err
+	}
+}

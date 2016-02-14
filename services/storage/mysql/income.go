@@ -9,6 +9,35 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
+// GetRewardIncomesSince get user's reward income records since, created_at >= since
+// pagination design, previous
+// https://developers.facebook.com/blog/post/478/
+func (s Storage) GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error) {
+	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `created_at` >= ? AND `type` = ? ORDER BY `id` ASC LIMIT ?"
+	args := []interface{}{userID, since, models.IncomeTypeReward, limit}
+	return s.getIncomes(rawSQL, args...)
+}
+
+// GetRewardIncomesUntil get user's reward income records until, created_at < until
+// pagination design, next
+func (s Storage) GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error) {
+	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `created_at` < ? AND `type` = ? ORDER BY `id` DESC LIMIT ?"
+	args := []interface{}{userID, until, models.IncomeTypeReward, limit}
+	return s.getIncomes(rawSQL, args...)
+}
+
+func (s Storage) getIncomes(rawSQL string, args ...interface{}) ([]models.Income, *errors.Error) {
+	incomes := []models.Income{}
+	if err := s.db.Select(&incomes, rawSQL, args...); err != nil {
+		return nil, &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Get reward incomes unknown error: %v", err),
+		}
+	}
+
+	return incomes, nil
+}
+
 // CreateRewardIncome creates a new reward type income
 func (s Storage) CreateRewardIncome(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
 	income := models.Income{

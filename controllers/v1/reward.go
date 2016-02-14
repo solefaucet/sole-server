@@ -1,10 +1,13 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/utils"
 )
@@ -55,5 +58,54 @@ func GetReward(
 		}
 
 		c.Status(http.StatusOK)
+	}
+}
+
+// RewardList returns user's reward list as response
+func RewardList(
+	getRewardIncomesSince dependencyGetRewardIncomesSince,
+	getRewardIncomesUntil dependencyGetRewardIncomesUntil,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authToken := c.MustGet("auth_token").(models.AuthToken)
+
+		// parse limit
+		queryLimit := c.DefaultQuery("limit", "10")
+		limit, err := strconv.ParseInt(queryLimit, 10, 64)
+		if err != nil {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		limit = max(limit, 100)
+
+		// parse timestamp
+		queryTimestamp := c.Query("timestamp")
+		timestamp, err := strconv.ParseInt(queryTimestamp, 10, 64)
+		if err != nil {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		t := time.Unix(timestamp, 0)
+
+		// parse since or until
+		incomes := []models.Income{}
+		var syserr *errors.Error
+		switch c.Query("type") {
+		case "since":
+			incomes, syserr = getRewardIncomesSince(authToken.UserID, t, limit)
+		case "until":
+			incomes, syserr = getRewardIncomesUntil(authToken.UserID, t, limit)
+		default:
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		if syserr != nil {
+			fmt.Printf("got error: %v\n", syserr)
+			c.AbortWithError(http.StatusInternalServerError, syserr)
+			return
+		}
+
+		c.JSON(http.StatusOK, incomes)
 	}
 }

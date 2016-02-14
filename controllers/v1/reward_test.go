@@ -110,3 +110,94 @@ func TestGetReward(t *testing.T) {
 		})
 	})
 }
+
+func TestRewardList(t *testing.T) {
+	Convey("Given reward list controller", t, func() {
+		handler := RewardList(nil, nil)
+
+		Convey("When get reward list with invalid limit", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?limit=3i", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 400", func() {
+				So(resp.Code, ShouldEqual, 400)
+			})
+		})
+
+		Convey("When get reward list with invalid timestamp", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?timestamp=3i", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 400", func() {
+				So(resp.Code, ShouldEqual, 400)
+			})
+		})
+
+		Convey("When get reward list with invalid type", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?timestamp=3&type=wow", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 400", func() {
+				So(resp.Code, ShouldEqual, 400)
+			})
+		})
+	})
+
+	Convey("Given reward list controller with errored getRewardIncomesSince dependency", t, func() {
+		getRewardIncomesSince := mockGetRewardIncomesSince(nil, errors.New(errors.ErrCodeUnknown))
+		handler := RewardList(getRewardIncomesSince, nil)
+
+		Convey("When get reward list", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?timestamp=3&type=since", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given reward list controller with correct dependencies injected", t, func() {
+		getRewardIncomesUntil := mockGetRewardIncomesUntil(nil, nil)
+		handler := RewardList(nil, getRewardIncomesUntil)
+
+		Convey("When get reward list", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?timestamp=3&type=until", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 200", func() {
+				So(resp.Code, ShouldEqual, 200)
+			})
+		})
+	})
+}

@@ -71,7 +71,15 @@ func main() {
 
 	// income endpoints
 	v1IncomeEndpoints := v1Endpoints.Group("/incomes")
-	v1IncomeEndpoints.Use(authRequired).POST("/rewards", v1.GetReward(store.GetUserByID, memoryCache.GetLatestTotalReward, memoryCache.GetLatestConfig, memoryCache.GetRewardRatesByType, memoryCache.GetBitcoinPrice, createRewardIncome))
+	v1IncomeEndpoints.Use(authRequired)
+	v1IncomeEndpoints.POST("/rewards",
+		v1.GetReward(store.GetUserByID,
+			memoryCache.GetLatestTotalReward,
+			memoryCache.GetLatestConfig,
+			memoryCache.GetRewardRatesByType,
+			memoryCache.GetBitcoinPrice,
+			createRewardIncome))
+	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
 	if err := router.Run(config.HTTP.Port); err != nil {
