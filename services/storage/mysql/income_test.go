@@ -105,13 +105,6 @@ func TestCreateRewardIncome(t *testing.T) {
 	})
 }
 
-func TestGetIncomes(t *testing.T) {
-	withClosedConn(t, "When get incomes", func(s Storage) *errors.Error {
-		_, err := s.getIncomes("SELECT * FROM incomes")
-		return err
-	})
-}
-
 func TestGetRewardIncomesSince(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()

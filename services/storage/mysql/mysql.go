@@ -1,8 +1,11 @@
 package mysql
 
 import (
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql" // is needed for mysql driver registeration
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/jmoiron/sqlx"
+	"fmt"
+
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/jmoiron/sqlx" // is needed for mysql driver registeration
+	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/services/storage"
 )
 
@@ -29,3 +32,14 @@ func New(dsn string) (s Storage, err error) {
 const (
 	errcodeDuplicate = 1062
 )
+
+func (s Storage) selects(dest interface{}, rawSQL string, args ...interface{}) *errors.Error {
+	if err := s.db.Select(dest, rawSQL, args...); err != nil {
+		return &errors.Error{
+			ErrCode:             errors.ErrCodeUnknown,
+			ErrStringForLogging: fmt.Sprintf("Query %v error: %v", rawSQL, err),
+		}
+	}
+
+	return nil
+}

@@ -10,6 +10,7 @@ import (
 
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
 	"github.com/freeusd/solebtc/errors"
+	"github.com/freeusd/solebtc/models"
 )
 
 func TestMysql(t *testing.T) {
@@ -57,5 +58,11 @@ func withClosedConn(t *testing.T, description string, f func(Storage) *errors.Er
 				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
 			})
 		})
+	})
+}
+
+func TestSelects(t *testing.T) {
+	withClosedConn(t, "When selects", func(s Storage) *errors.Error {
+		return s.selects(&[]models.User{}, "SELECT * FROM users")
 	})
 }

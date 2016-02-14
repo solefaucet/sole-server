@@ -15,7 +15,9 @@ import (
 func (s Storage) GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error) {
 	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `created_at` >= ? AND `type` = ? ORDER BY `id` ASC LIMIT ?"
 	args := []interface{}{userID, since, models.IncomeTypeReward, limit}
-	return s.getIncomes(rawSQL, args...)
+	incomes := []models.Income{}
+	err := s.selects(&incomes, rawSQL, args...)
+	return incomes, err
 }
 
 // GetRewardIncomesUntil get user's reward income records until, created_at < until
@@ -23,19 +25,9 @@ func (s Storage) GetRewardIncomesSince(userID int64, since time.Time, limit int6
 func (s Storage) GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error) {
 	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `created_at` < ? AND `type` = ? ORDER BY `id` DESC LIMIT ?"
 	args := []interface{}{userID, until, models.IncomeTypeReward, limit}
-	return s.getIncomes(rawSQL, args...)
-}
-
-func (s Storage) getIncomes(rawSQL string, args ...interface{}) ([]models.Income, *errors.Error) {
 	incomes := []models.Income{}
-	if err := s.db.Select(&incomes, rawSQL, args...); err != nil {
-		return nil, &errors.Error{
-			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Get reward incomes unknown error: %v", err),
-		}
-	}
-
-	return incomes, nil
+	err := s.selects(&incomes, rawSQL, args...)
+	return incomes, err
 }
 
 // CreateRewardIncome creates a new reward type income
