@@ -26,9 +26,6 @@ type (
 	// email
 	dependencySendEmail func(recipients []string, subject string, html string) *errors.Error
 
-	// bitcoin price
-	dependencyGetBitcoinPrice func() int64
-
 	// total reward
 	dependencyGetLatestTotalReward func() models.TotalReward
 	dependencyIncrementTotalReward func(time.Time, int64) *errors.Error

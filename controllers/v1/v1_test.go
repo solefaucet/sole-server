@@ -79,12 +79,6 @@ func mockGetRewardRatesByType(rates []models.RewardRate) dependencyGetRewardRate
 	}
 }
 
-func mockGetBitcoinPrice(price int64) dependencyGetBitcoinPrice {
-	return func() int64 {
-		return price
-	}
-}
-
 func mockCreateRewardIncome(err *errors.Error) dependencyCreateRewardIncome {
 	return func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
 		return err

@@ -18,7 +18,6 @@ func GetReward(
 	getLatestTotalReward dependencyGetLatestTotalReward,
 	getSystemConfig dependencyGetSystemConfig,
 	getRewardRatesByType dependencyGetRewardRatesByType,
-	getBitcoinPrice dependencyGetBitcoinPrice,
 	createRewardIncome dependencyCreateRewardIncome,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -46,7 +45,7 @@ func GetReward(
 		}
 		rewardRates := getRewardRatesByType(rewardRateType)
 		rewardUSD := utils.RandomReward(rewardRates)
-		btcPrice := getBitcoinPrice()
+		btcPrice := getSystemConfig().BitcoinPrice
 		reward := utils.MachineReadableBTC(float64(rewardUSD) / float64(btcPrice))
 		rewardReferer := int64(float64(reward) * getSystemConfig().RefererRewardRate)
 
