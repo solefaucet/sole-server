@@ -44,7 +44,7 @@ func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
 	if c.totalReward.IsSameDay(t) {
 		c.totalReward.Total += delta
 	} else {
-		c.totalReward = models.TotalReward{CreatedAt: t, Total: delta}
+		c.totalReward = models.TotalReward{CreatedAt: t.UTC(), Total: delta}
 	}
 }
 
