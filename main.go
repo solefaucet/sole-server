@@ -77,7 +77,6 @@ func main() {
 			memoryCache.GetLatestTotalReward,
 			memoryCache.GetLatestConfig,
 			memoryCache.GetRewardRatesByType,
-			memoryCache.GetBitcoinPrice,
 			createRewardIncome))
 	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
@@ -116,7 +115,7 @@ func initStorage() {
 }
 
 func initCache() {
-	memoryCache = memory.New(utils.BitcoinPrice, logWriter, time.Minute*5)
+	memoryCache = memory.New()
 
 	// init config in cache
 	config, err := store.GetLatestConfig()
@@ -136,4 +135,46 @@ func initCache() {
 	}
 	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
+
+	// update bitcoin price in background
+	updateBitcoinPrice()
+	go every(time.Minute, updateBitcoinPrice)
+}
+
+func updateBitcoinPrice() {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Fprintf(logWriter, "Update bitcoin price panic: %v\n", err)
+		}
+	}()
+
+	// get bitcoin price from blockchain.info
+	p, err := utils.BitcoinPrice()
+	if err != nil {
+		fmt.Fprintf(logWriter, "Fetch bitcoin price error: %v\n", err)
+		return
+	}
+
+	// update bitcoin price in database
+	if err := store.UpdateLatestBitcoinPrice(p); err != nil {
+		fmt.Fprintf(logWriter, "Update bitcoin price in database error: %v\n", err)
+		return
+	}
+
+	// update bitcoin price in cache
+	c := memoryCache.GetLatestConfig()
+	c.BitcoinPrice = p
+	memoryCache.SetLatestConfig(c)
+
+	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
+}
+
+func every(duration time.Duration, f func()) {
+	ticker := time.NewTicker(duration)
+	for {
+		select {
+		case <-ticker.C:
+			f()
+		}
+	}
 }
