@@ -86,14 +86,14 @@ func main() {
 	}
 }
 
-func createRewardIncome(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
-	if err := store.CreateRewardIncome(userID, refererID, reward, rewardReferer, now); err != nil {
+func createRewardIncome(income models.Income, now time.Time) *errors.Error {
+	if err := store.CreateRewardIncome(income, now); err != nil {
 		return err
 	}
 
-	totalReward := reward
-	if refererID > 0 {
-		totalReward += rewardReferer
+	totalReward := income.Income
+	if income.RefererID > 0 {
+		totalReward += income.RefererIncome
 	}
 	memoryCache.IncrementTotalReward(now, totalReward)
 

@@ -50,7 +50,14 @@ func GetReward(
 		rewardReferer := int64(float64(reward) * getSystemConfig().RefererRewardRate)
 
 		// create income reward
-		if err := createRewardIncome(user.ID, user.RefererID, reward, rewardReferer, now); err != nil {
+		income := models.Income{
+			UserID:        user.ID,
+			RefererID:     user.RefererID,
+			Type:          models.IncomeTypeReward,
+			Income:        reward,
+			RefererIncome: rewardReferer,
+		}
+		if err := createRewardIncome(income, now); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

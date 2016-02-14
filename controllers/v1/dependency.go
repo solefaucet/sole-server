@@ -37,7 +37,7 @@ type (
 	dependencyGetSystemConfig func() models.Config
 
 	// income
-	dependencyCreateRewardIncome    func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error
+	dependencyCreateRewardIncome    func(models.Income, time.Time) *errors.Error
 	dependencyGetRewardIncomesSince func(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
 	dependencyGetRewardIncomesUntil func(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
 )

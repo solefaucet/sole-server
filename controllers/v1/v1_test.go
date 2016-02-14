@@ -80,7 +80,7 @@ func mockGetRewardRatesByType(rates []models.RewardRate) dependencyGetRewardRate
 }
 
 func mockCreateRewardIncome(err *errors.Error) dependencyCreateRewardIncome {
-	return func(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
+	return func(models.Income, time.Time) *errors.Error {
 		return err
 	}
 }

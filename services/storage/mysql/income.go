@@ -39,14 +39,7 @@ func (s Storage) getIncomes(rawSQL string, args ...interface{}) ([]models.Income
 }
 
 // CreateRewardIncome creates a new reward type income
-func (s Storage) CreateRewardIncome(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error {
-	income := models.Income{
-		UserID:        userID,
-		RefererID:     refererID,
-		Type:          models.IncomeTypeReward,
-		Income:        reward,
-		RefererIncome: rewardReferer,
-	}
+func (s Storage) CreateRewardIncome(income models.Income, now time.Time) *errors.Error {
 	tx := s.db.MustBegin()
 
 	if err := createRewardIncomeWithTx(tx, income, now); err != nil {

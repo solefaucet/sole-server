@@ -96,7 +96,7 @@ func TestCreateRewardIncome(t *testing.T) {
 		s.CreateUser(models.User{Email: "e2", BitcoinAddress: "b2", RefererID: 1})
 
 		Convey("When create reward income", func() {
-			err := s.CreateRewardIncome(1, 2, 10, 1, time.Now())
+			err := s.CreateRewardIncome(income(1, 2, 100, 4), time.Now())
 
 			Convey("Error should be nil", func() {
 				So(err, ShouldBeNil)
@@ -117,9 +117,9 @@ func TestGetRewardIncomesSince(t *testing.T) {
 		s := prepareDatabaseForTesting()
 		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
 		rewardedAt := time.Now()
-		s.CreateRewardIncome(1, 2, 91, 1, rewardedAt)
-		s.CreateRewardIncome(1, 2, 92, 1, rewardedAt)
-		s.CreateRewardIncome(1, 2, 93, 1, rewardedAt)
+		s.CreateRewardIncome(income(1, 2, 91, 1), rewardedAt)
+		s.CreateRewardIncome(income(1, 2, 92, 1), rewardedAt)
+		s.CreateRewardIncome(income(1, 2, 93, 1), rewardedAt)
 
 		Convey("When get reward incomes since now", func() {
 			result, _ := s.GetRewardIncomesSince(1, time.Now().AddDate(0, 0, -1), 2)
@@ -144,9 +144,9 @@ func TestGetRewardIncomesUntil(t *testing.T) {
 		s := prepareDatabaseForTesting()
 		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
 		rewardedAt := time.Now()
-		s.CreateRewardIncome(1, 2, 91, 1, rewardedAt)
-		s.CreateRewardIncome(1, 2, 92, 1, rewardedAt)
-		s.CreateRewardIncome(1, 2, 93, 1, rewardedAt)
+		s.CreateRewardIncome(income(1, 2, 91, 1), rewardedAt)
+		s.CreateRewardIncome(income(1, 2, 92, 1), rewardedAt)
+		s.CreateRewardIncome(income(1, 2, 93, 1), rewardedAt)
 
 		Convey("When get reward incomes until now", func() {
 			result, _ := s.GetRewardIncomesUntil(1, time.Now().AddDate(0, 0, 1), 2)
@@ -164,4 +164,14 @@ func TestGetRewardIncomesUntil(t *testing.T) {
 			})
 		})
 	})
+}
+
+func income(userID, refererID, income, refererIncome int64) models.Income {
+	return models.Income{
+		UserID:        userID,
+		RefererID:     refererID,
+		Type:          models.IncomeTypeReward,
+		Income:        income,
+		RefererIncome: refererIncome,
+	}
 }

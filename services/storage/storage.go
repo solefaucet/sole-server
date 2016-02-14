@@ -36,7 +36,7 @@ type Storage interface {
 	UpdateLatestBitcoinPrice(int64) *errors.Error
 
 	// Income
-	CreateRewardIncome(userID, refererID, reward, rewardReferer int64, now time.Time) *errors.Error
+	CreateRewardIncome(models.Income, time.Time) *errors.Error
 	GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
 	GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
 }

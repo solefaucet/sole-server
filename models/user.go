@@ -23,7 +23,7 @@ type User struct {
 	CreatedAt      time.Time `db:"created_at" json:"-"`
 }
 
-// HasReferer indicates if the user is refered by another user
+// HasReferer indicates if the user is referred by another user
 func (u User) HasReferer() bool {
 	return u.RefererID > 0
 }
