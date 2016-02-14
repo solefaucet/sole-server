@@ -26,7 +26,7 @@
 		},
 		{
 			"ImportPath": "github.com/golang/protobuf/proto",
-			"Rev": "45bba206dd5270d96bac4942dcfe515726613249"
+			"Rev": "0dfe8f37844c14cb32c7247925270e0f7ba90973"
 		},
 		{
 			"ImportPath": "github.com/gopherjs/gopherjs/js",
@@ -34,12 +34,12 @@
 		},
 		{
 			"ImportPath": "github.com/hashicorp/hcl",
-			"Rev": "e96d23138c76470c808bf6586bdaf981bbd25cae"
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
 		},
 		{
 			"ImportPath": "github.com/jmoiron/sqlx",
-			"Comment": "sqlx-v1.1-60-gddb3dc8",
-			"Rev": "ddb3dc8bd6515cf1af155d322e01bd26a03bff18"
+			"Comment": "sqlx-v1.1-61-g398dd58",
+			"Rev": "398dd5876282499cdfd4cb8ea0f31a672abe9495"
 		},
 		{
 			"ImportPath": "github.com/jtolds/gls",
@@ -70,7 +70,7 @@
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
-			"Rev": "281073eb9eb092240d33ef253c404f1cca550309"
+			"Rev": "d2dd0262208475919e1a362f675cfc0e7c10e905"
 		},
 		{
 			"ImportPath": "github.com/moul/http2curl",
@@ -87,13 +87,13 @@
 		},
 		{
 			"ImportPath": "github.com/smartystreets/assertions",
-			"Comment": "1.5.0-412-g443d812",
-			"Rev": "443d812296a84445c202c085f19e18fc238f8250"
+			"Comment": "1.5.0-414-g287b434",
+			"Rev": "287b4346dc4e71a038c346375a9d572453bc469b"
 		},
 		{
 			"ImportPath": "github.com/smartystreets/goconvey/convey",
-			"Comment": "1.6.0-10-g995f5b2",
-			"Rev": "995f5b2e021c69b8b028ba6d0b05c1dd500783db"
+			"Comment": "1.6.0-13-gbf58a9a",
+			"Rev": "bf58a9a1291224109919756b4dcc469c670cc7e4"
 		},
 		{
 			"ImportPath": "github.com/spf13/cast",
@@ -109,15 +109,15 @@
 		},
 		{
 			"ImportPath": "github.com/spf13/viper",
-			"Rev": "a212099cbe6fbe8d07476bfda8d2d39b6ff8f325"
+			"Rev": "c975dc1b4eacf4ec7fdbf0873638de5d090ba323"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "7f88271ea9913b72aca44fa7fc8af919eacc17ce"
+			"Rev": "cbbbe2bc0f2efdd2afb318d93f1eadb19350e4a3"
 		},
 		{
 			"ImportPath": "golang.org/x/net/publicsuffix",
-			"Rev": "7f88271ea9913b72aca44fa7fc8af919eacc17ce"
+			"Rev": "cbbbe2bc0f2efdd2afb318d93f1eadb19350e4a3"
 		},
 		{
 			"ImportPath": "gopkg.in/fsnotify.v1",
@@ -126,8 +126,8 @@
 		},
 		{
 			"ImportPath": "gopkg.in/go-playground/validator.v8",
-			"Comment": "v8.15.1",
-			"Rev": "c193cecd124b5cc722d7ee5538e945bdb3348435"
+			"Comment": "v8.16",
+			"Rev": "4c79e698231042063ef780f52bd0295392de42d7"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
