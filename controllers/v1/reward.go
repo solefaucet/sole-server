@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -83,30 +82,31 @@ func RewardList(
 		}
 		limit = max(limit, 100)
 
-		// parse timestamp
-		queryTimestamp := c.Query("timestamp")
-		timestamp, err := strconv.ParseInt(queryTimestamp, 10, 64)
-		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		t := time.Unix(timestamp, 0)
-
-		// parse since or until
-		incomes := []models.Income{}
-		var syserr *errors.Error
-		switch c.Query("type") {
-		case "since":
-			incomes, syserr = getRewardIncomesSince(authToken.UserID, t, limit)
-		case "until":
-			incomes, syserr = getRewardIncomesUntil(authToken.UserID, t, limit)
+		// parse time
+		querySince := c.Query("since")
+		queryUntil := c.Query("until")
+		var f func(int64, time.Time, int64) ([]models.Income, *errors.Error)
+		var t time.Time
+		switch {
+		case querySince != "":
+			f = getRewardIncomesSince
+			t, err = time.Parse(time.RFC3339, querySince)
+		case queryUntil != "":
+			f = getRewardIncomesUntil
+			t, err = time.Parse(time.RFC3339, queryUntil)
 		default:
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
+		if err != nil {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		// response with incomes
+		incomes, syserr := f(authToken.UserID, t, limit)
 		if syserr != nil {
-			fmt.Printf("got error: %v\n", syserr)
 			c.AbortWithError(http.StatusInternalServerError, syserr)
 			return
 		}
