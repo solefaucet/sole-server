@@ -8,8 +8,6 @@ import (
 
 // Cache defines interface that one should implement
 type Cache interface {
-	GetBitcoinPrice() int64
-
 	GetLatestTotalReward() models.TotalReward
 	IncrementTotalReward(time.Time, int64)
 
