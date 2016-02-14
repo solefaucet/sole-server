@@ -61,7 +61,7 @@ func GetReward(
 			return
 		}
 
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, income)
 	}
 }
 
