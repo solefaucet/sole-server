@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/parnurzeal/gorequest"
 )
@@ -24,5 +25,10 @@ func bitcoinPriceWithByteFromBlockchain(data []byte) (int64, error) {
 		return 0, err
 	}
 
-	return MachineReadableUSD(m["USD"].Last), nil
+	p := MachineReadableUSD(m["USD"].Last)
+	if p == 0 {
+		return 0, errors.New("bitcoin price cannot be 0")
+	}
+
+	return p, nil
 }
