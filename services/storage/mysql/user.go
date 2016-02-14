@@ -92,3 +92,21 @@ func (s Storage) UpdateUser(user models.User) *errors.Error {
 
 	return nil
 }
+
+// GetRefereesSince gets user's referees since, id >= since
+func (s Storage) GetRefereesSince(userID, id, limit int64) ([]models.User, *errors.Error) {
+	rawSQL := "SELECT * FROM users WHERE `referer_id` = ? AND `id` >= ? ORDER BY `id` ASC LIMIT ?"
+	args := []interface{}{userID, id, limit}
+	dest := []models.User{}
+	err := s.selects(&dest, rawSQL, args...)
+	return dest, err
+}
+
+// GetRefereesUntil gets user's referees since, id < until
+func (s Storage) GetRefereesUntil(userID, id, limit int64) ([]models.User, *errors.Error) {
+	rawSQL := "SELECT * FROM users WHERE `referer_id` = ? AND `id` < ? ORDER BY `id` DESC LIMIT ?"
+	args := []interface{}{userID, id, limit}
+	dest := []models.User{}
+	err := s.selects(&dest, rawSQL, args...)
+	return dest, err
+}

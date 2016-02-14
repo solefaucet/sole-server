@@ -14,6 +14,8 @@ type Storage interface {
 	GetUserByEmail(string) (models.User, *errors.Error)
 	CreateUser(models.User) *errors.Error
 	UpdateUser(models.User) *errors.Error
+	GetRefereesSince(userID, id, limit int64) ([]models.User, *errors.Error)
+	GetRefereesUntil(userID, id, limit int64) ([]models.User, *errors.Error)
 
 	// AuthToken
 	GetAuthToken(string) (models.AuthToken, *errors.Error)
