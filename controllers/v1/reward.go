@@ -2,7 +2,6 @@ package v1
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -73,44 +72,29 @@ func RewardList(
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 
-		// parse limit
-		queryLimit := c.DefaultQuery("limit", "10")
-		limit, err := strconv.ParseInt(queryLimit, 10, 64)
-		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		limit = max(limit, 100)
-
-		// parse time
-		querySince := c.Query("since")
-		queryUntil := c.Query("until")
-		var f func(int64, time.Time, int64) ([]models.Income, *errors.Error)
-		var t time.Time
-		switch {
-		case querySince != "":
-			f = getRewardIncomesSince
-			t, err = time.Parse(time.RFC3339, querySince)
-		case queryUntil != "":
-			f = getRewardIncomesUntil
-			t, err = time.Parse(time.RFC3339, queryUntil)
-		default:
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-
+		// parse pagination args
+		isSince, separator, limit, err := parsePagination(c)
 		if err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		// response with incomes
-		incomes, syserr := f(authToken.UserID, t, limit)
+		// get result according to args
+		t := time.Unix(separator, 0)
+		result := []models.Income{}
+		var syserr *errors.Error
+		if isSince {
+			result, syserr = getRewardIncomesSince(authToken.UserID, t, limit)
+		} else {
+			result, syserr = getRewardIncomesUntil(authToken.UserID, t, limit)
+		}
+
+		// response with result or error
 		if syserr != nil {
 			c.AbortWithError(http.StatusInternalServerError, syserr)
 			return
 		}
 
-		c.JSON(http.StatusOK, incomes)
+		c.JSON(http.StatusOK, result)
 	}
 }

@@ -170,7 +170,7 @@ func TestRewardList(t *testing.T) {
 				c.Set("auth_token", models.AuthToken{})
 			})
 			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?since=2016-02-12T15:04:05Z", nil)
+			req, _ := http.NewRequest("GET", route+"?since=1234567890", nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 500", func() {
@@ -190,7 +190,7 @@ func TestRewardList(t *testing.T) {
 				c.Set("auth_token", models.AuthToken{})
 			})
 			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?until=2016-02-12T15:04:05Z", nil)
+			req, _ := http.NewRequest("GET", route+"?until=1234567890", nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 200", func() {
