@@ -8,7 +8,7 @@ CREATE TABLE `incomes` (
   `type` INT(2) NOT NULL COMMENT '0: reward, 1: offerwall',
   `income` INT(11) NOT NULL,
   `referer_income` INT(11) NOT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
