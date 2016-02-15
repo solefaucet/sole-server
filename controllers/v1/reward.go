@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -72,29 +73,63 @@ func RewardList(
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 
-		// parse pagination args
-		isSince, separator, limit, err := parsePagination(c)
-		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-
-		// get result according to args
-		t := time.Unix(separator, 0)
-		result := []models.Income{}
-		var syserr *errors.Error
-		if isSince {
-			result, syserr = getRewardIncomesSince(authToken.UserID, t, limit)
-		} else {
-			result, syserr = getRewardIncomesUntil(authToken.UserID, t, limit)
-		}
-
-		// response with result or error
-		if syserr != nil {
-			c.AbortWithError(http.StatusInternalServerError, syserr)
-			return
-		}
-
-		c.JSON(http.StatusOK, result)
+		// response
+		getRewards(c, authToken.UserID, getRewardIncomesSince, getRewardIncomesUntil)
 	}
+}
+
+// RefereeRewardList returns user's referee's reward list as response
+func RefereeRewardList(
+	getUserByID dependencyGetUserByID,
+	getRewardIncomesSince dependencyGetRewardIncomesSince,
+	getRewardIncomesUntil dependencyGetRewardIncomesUntil,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authToken := c.MustGet("auth_token").(models.AuthToken)
+
+		// check if user is referer of :referee_id
+		refereeID, _ := strconv.ParseInt(c.Param("referee_id"), 10, 64)
+		referee, _ := getUserByID(refereeID)
+		if referee.HasReferer() && referee.RefererID != authToken.UserID {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		// response
+		getRewards(c, refereeID, getRewardIncomesSince, getRewardIncomesUntil)
+	}
+}
+
+// common get rewards logic
+func getRewards(
+	c *gin.Context,
+	userID int64,
+	getRewardIncomesSince dependencyGetRewardIncomesSince,
+	getRewardIncomesUntil dependencyGetRewardIncomesUntil,
+) {
+	// parse pagination args
+	isSince, separator, limit, err := parsePagination(c)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	// get result according to args
+	t := time.Unix(separator, 0)
+	result := []models.Income{}
+	var syserr *errors.Error
+	if isSince {
+		result, syserr = getRewardIncomesSince(userID, t, limit)
+	} else {
+		result, syserr = getRewardIncomesUntil(userID, t, limit)
+	}
+
+	// response with result or error
+	if syserr != nil {
+		c.AbortWithError(http.StatusInternalServerError, syserr)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+
 }

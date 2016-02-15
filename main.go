@@ -79,6 +79,7 @@ func main() {
 			memoryCache.GetRewardRatesByType,
 			createRewardIncome))
 	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
+	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
 	if err := router.Run(config.HTTP.Port); err != nil {
