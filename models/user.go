@@ -20,7 +20,7 @@ type User struct {
 	RewardedAt     time.Time `db:"rewarded_at" json:"rewarded_at"`
 	RefererID      int64     `db:"referer_id" json:"-"`
 	UpdatedAt      time.Time `db:"updated_at" json:"-"`
-	CreatedAt      time.Time `db:"created_at" json:"-"`
+	CreatedAt      time.Time `db:"created_at" json:"created_at"`
 }
 
 // HasReferer indicates if the user is referred by another user
