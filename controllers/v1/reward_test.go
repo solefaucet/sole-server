@@ -46,8 +46,8 @@ func TestGetReward(t *testing.T) {
 			req, _ := http.NewRequest("POST", route, nil)
 			r.ServeHTTP(resp, req)
 
-			Convey("Response code should be 403", func() {
-				So(resp.Code, ShouldEqual, 403)
+			Convey("Response code should be 429", func() {
+				So(resp.Code, ShouldEqual, statusCodeTooManyRequests)
 			})
 		})
 	})

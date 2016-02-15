@@ -32,7 +32,7 @@ func GetReward(
 
 		// check last rewarded time
 		if user.RewardedAt.Add(time.Second * time.Duration(user.RewardInterval)).After(now) {
-			c.AbortWithStatus(http.StatusForbidden)
+			c.AbortWithStatus(statusCodeTooManyRequests)
 			return
 		}
 
