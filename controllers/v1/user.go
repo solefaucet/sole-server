@@ -135,3 +135,37 @@ func UserInfo(getUserByID dependencyGetUserByID) gin.HandlerFunc {
 		c.JSON(http.StatusOK, user)
 	}
 }
+
+// RefereeList returns user's referee list as response
+func RefereeList(
+	getRefereesSinceID dependencyGetRefereesSince,
+	getRefereesUntilID dependencyGetRefereesUntil,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authToken := c.MustGet("auth_token").(models.AuthToken)
+
+		// parse pagination args
+		isSince, separator, limit, err := parsePagination(c)
+		if err != nil {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		// get result according to args
+		result := []models.User{}
+		var syserr *errors.Error
+		if isSince {
+			result, syserr = getRefereesSinceID(authToken.UserID, separator, limit)
+		} else {
+			result, syserr = getRefereesUntilID(authToken.UserID, separator, limit)
+		}
+
+		// response with result or error
+		if syserr != nil {
+			c.AbortWithError(http.StatusInternalServerError, syserr)
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
+}

@@ -59,6 +59,7 @@ func main() {
 	v1UserEndpoints.GET("", authRequired, v1.UserInfo(store.GetUserByID))
 	v1UserEndpoints.POST("", v1.Signup(store.CreateUser, store.GetUserByID))
 	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(store.GetSessionByToken, store.GetUserByID, store.UpdateUser))
+	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetRefereesSince, store.GetRefereesUntil))
 
 	// auth token endpoints
 	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")

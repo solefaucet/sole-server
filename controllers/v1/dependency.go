@@ -10,10 +10,12 @@ import (
 // dependencies
 type (
 	// user
-	dependencyGetUserByID    func(int64) (models.User, *errors.Error)
-	dependencyGetUserByEmail func(string) (models.User, *errors.Error)
-	dependencyCreateUser     func(models.User) *errors.Error
-	dependencyUpdateUser     func(models.User) *errors.Error
+	dependencyGetUserByID      func(int64) (models.User, *errors.Error)
+	dependencyGetUserByEmail   func(string) (models.User, *errors.Error)
+	dependencyCreateUser       func(models.User) *errors.Error
+	dependencyUpdateUser       func(models.User) *errors.Error
+	dependencyGetRefereesSince func(userID int64, sinceID int64, limit int64) ([]models.User, *errors.Error)
+	dependencyGetRefereesUntil func(userID int64, untilID int64, limit int64) ([]models.User, *errors.Error)
 
 	// auth token
 	dependencyCreateAuthToken func(models.AuthToken) *errors.Error

@@ -96,3 +96,15 @@ func mockGetRewardIncomesUntil(incomes []models.Income, err *errors.Error) depen
 		return incomes, err
 	}
 }
+
+func mockGetRefereesSince(users []models.User, err *errors.Error) dependencyGetRefereesSince {
+	return func(int64, int64, int64) ([]models.User, *errors.Error) {
+		return users, err
+	}
+}
+
+func mockGetRefereesUntil(users []models.User, err *errors.Error) dependencyGetRefereesUntil {
+	return func(int64, int64, int64) ([]models.User, *errors.Error) {
+		return users, err
+	}
+}

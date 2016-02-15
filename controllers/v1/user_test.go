@@ -267,3 +267,64 @@ func TestGetUserInfo(t *testing.T) {
 		})
 	})
 }
+
+func TestGetReferees(t *testing.T) {
+	Convey("Given referee list controller", t, func() {
+		handler := RefereeList(nil, nil)
+
+		Convey("When get reward list with invalid limit", func() {
+			route := "/users/referees"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?limit=3i", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 400", func() {
+				So(resp.Code, ShouldEqual, 400)
+			})
+		})
+	})
+
+	Convey("Given referee list controller with errored getRefereesSinceID dependency", t, func() {
+		since := mockGetRefereesSince(nil, errors.New(errors.ErrCodeUnknown))
+		handler := RefereeList(since, nil)
+
+		Convey("When get referee list", func() {
+			route := "/users/referees"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?since=1234567890", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given referee list controller with correct dependencies injected", t, func() {
+		until := mockGetRefereesUntil(nil, nil)
+		handler := RefereeList(nil, until)
+
+		Convey("When get referee list", func() {
+			route := "/users/referees"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.GET(route, handler)
+			req, _ := http.NewRequest("GET", route+"?until=1234567890", nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 200", func() {
+				So(resp.Code, ShouldEqual, 200)
+			})
+		})
+	})
+}
