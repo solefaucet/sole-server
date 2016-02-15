@@ -190,8 +190,8 @@ func TestVerifyEmail(t *testing.T) {
 	Convey("Given verify email controller with errored updateUser dependency", t, func() {
 		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		updateUser := mockUpdateUser(errors.New(errors.ErrCodeUnknown))
-		handler := VerifyEmail(getSessionByToken, getUserByID, updateUser)
+		updateUserStatus := mockUpdateUserStatus(errors.New(errors.ErrCodeUnknown))
+		handler := VerifyEmail(getSessionByToken, getUserByID, updateUserStatus)
 
 		Convey("When verify email", func() {
 			route := "/users/1/status"
@@ -209,8 +209,8 @@ func TestVerifyEmail(t *testing.T) {
 	Convey("Given verify email controller with correct dependencies injected", t, func() {
 		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		updateUser := mockUpdateUser(nil)
-		handler := VerifyEmail(getSessionByToken, getUserByID, updateUser)
+		updateUserStatus := mockUpdateUserStatus(nil)
+		handler := VerifyEmail(getSessionByToken, getUserByID, updateUserStatus)
 
 		Convey("When verify email", func() {
 			route := "/users/1/status"

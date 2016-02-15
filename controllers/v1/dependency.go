@@ -13,7 +13,7 @@ type (
 	dependencyGetUserByID      func(int64) (models.User, *errors.Error)
 	dependencyGetUserByEmail   func(string) (models.User, *errors.Error)
 	dependencyCreateUser       func(models.User) *errors.Error
-	dependencyUpdateUser       func(models.User) *errors.Error
+	dependencyUpdateUserStatus func(int64, string) *errors.Error
 	dependencyGetRefereesSince func(userID int64, sinceID int64, limit int64) ([]models.User, *errors.Error)
 	dependencyGetRefereesUntil func(userID int64, untilID int64, limit int64) ([]models.User, *errors.Error)
 

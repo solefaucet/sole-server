@@ -25,8 +25,8 @@ func mockCreateUser(err *errors.Error) dependencyCreateUser {
 	}
 }
 
-func mockUpdateUser(err *errors.Error) dependencyUpdateUser {
-	return func(models.User) *errors.Error {
+func mockUpdateUserStatus(err *errors.Error) dependencyUpdateUserStatus {
+	return func(int64, string) *errors.Error {
 		return err
 	}
 }

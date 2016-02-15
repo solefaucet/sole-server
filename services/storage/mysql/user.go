@@ -79,9 +79,9 @@ func (s Storage) CreateUser(u models.User) *errors.Error {
 	return nil
 }
 
-// UpdateUser updates a user's info
-func (s Storage) UpdateUser(user models.User) *errors.Error {
-	_, err := s.db.NamedExec("UPDATE users SET `status` = :status WHERE `id` = :id", user)
+// UpdateUserStatus updates a user's status
+func (s Storage) UpdateUserStatus(id int64, status string) *errors.Error {
+	_, err := s.db.Exec("UPDATE users SET `status` = ? WHERE `id` = ?", status, id)
 
 	if err != nil {
 		return &errors.Error{

@@ -76,7 +76,7 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 func VerifyEmail(
 	getSessionByToken dependencyGetSessionByToken,
 	getUserByID dependencyGetUserByID,
-	updateUser dependencyUpdateUser,
+	updateUserStatus dependencyUpdateUserStatus,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Query("token")
@@ -106,8 +106,7 @@ func VerifyEmail(
 		}
 
 		// update user
-		user.Status = models.UserStatusVerified
-		if err := updateUser(user); err != nil {
+		if err := updateUserStatus(user.ID, models.UserStatusVerified); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

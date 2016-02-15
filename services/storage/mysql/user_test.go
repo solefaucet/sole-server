@@ -126,13 +126,13 @@ func TestCreateUser(t *testing.T) {
 	})
 }
 
-func TestUpdateUser(t *testing.T) {
+func TestUpdateUserStatus(t *testing.T) {
 	Convey("Given mysql storage with user data", t, func() {
 		s := prepareDatabaseForTesting()
 		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
 
-		Convey("When update user", func() {
-			err := s.UpdateUser(models.User{ID: 1, Status: models.UserStatusVerified})
+		Convey("When update user's status", func() {
+			err := s.UpdateUserStatus(1, models.UserStatusVerified)
 			user, _ := s.GetUserByID(1)
 
 			Convey("Error should be nil", func() {
@@ -146,7 +146,7 @@ func TestUpdateUser(t *testing.T) {
 	})
 
 	withClosedConn(t, "When update user", func(s Storage) *errors.Error {
-		return s.UpdateUser(models.User{})
+		return s.UpdateUserStatus(0, "")
 	})
 }
 

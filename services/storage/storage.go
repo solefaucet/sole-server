@@ -13,7 +13,7 @@ type Storage interface {
 	GetUserByID(int64) (models.User, *errors.Error)
 	GetUserByEmail(string) (models.User, *errors.Error)
 	CreateUser(models.User) *errors.Error
-	UpdateUser(models.User) *errors.Error
+	UpdateUserStatus(int64, string) *errors.Error
 	GetRefereesSince(userID, id, limit int64) ([]models.User, *errors.Error)
 	GetRefereesUntil(userID, id, limit int64) ([]models.User, *errors.Error)
 
