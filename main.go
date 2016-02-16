@@ -30,6 +30,7 @@ var (
 )
 
 func init() {
+	// ORDER MATTERs
 	initConfig()
 	initMailer()
 	initStorage()
@@ -135,6 +136,7 @@ func initCache() {
 func initCronjob() {
 	c := cron.New()
 	panicIfErrored(c.AddFunc("@every 1m", updateBitcoinPrice))
+	panicIfErrored(c.AddFunc("@daily", createWithdrawl))
 	c.Start()
 }
 
@@ -163,6 +165,54 @@ func updateBitcoinPrice() {
 	memoryCache.UpdateBitcoinPrice(p)
 
 	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
+}
+
+// automatically create withdrawl
+func createWithdrawl() {
+	// critical for the system
+	// use panicWriter for error log instead of logWriter
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Fprintf(panicWriter, "Create withdrawl panic: %v\n", err)
+		}
+	}()
+
+	users, err := store.GetWithdrawableUsers()
+	if err != nil {
+		fmt.Fprintf(panicWriter, "Get withdrawable users error: %v\n", err)
+		return
+	}
+
+	f := func(users []models.User, handler func(err error, u models.User)) {
+		for i := range users {
+			handler(store.CreateWithdrawl(models.Withdrawl{
+				UserID:         users[i].ID,
+				Amount:         users[i].Balance,
+				BitcoinAddress: users[i].BitcoinAddress,
+			}), users[i])
+		}
+	}
+
+	// create withdrawl, move errored ones into retry queue
+	retryUsers := []models.User{}
+	f(users, func(err error, u models.User) {
+		if err != nil {
+			retryUsers = append(retryUsers, u)
+		}
+	})
+
+	// retry with error output
+	errored := false
+	f(retryUsers, func(err error, u models.User) {
+		if err != nil {
+			fmt.Fprintf(panicWriter, "Create withdrawl for user %v error: %v\n", u, err)
+			errored = true
+		}
+	})
+
+	if !errored {
+		fmt.Fprintf(logWriter, "Create withdrawls successfully...\n")
+	}
 }
 
 // fail fast on initialization
