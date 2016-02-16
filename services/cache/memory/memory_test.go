@@ -33,4 +33,10 @@ func TestMemory(t *testing.T) {
 	if config.TotalRewardThreshold != 1000 {
 		t.Errorf("expected total reward threshold should be 1000 but get %v", config.TotalRewardThreshold)
 	}
+
+	c.UpdateBitcoinPrice(1)
+	bitcoinPrice := c.GetLatestConfig().BitcoinPrice
+	if bitcoinPrice != 1 {
+		t.Errorf("expected bitcoin price should be 1 but get %v", bitcoinPrice)
+	}
 }
