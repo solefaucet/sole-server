@@ -168,3 +168,57 @@ func income(userID, refererID, income, refererIncome int64) models.Income {
 		RefererIncome: refererIncome,
 	}
 }
+
+func BenchmarkCreateRewardIncome10000(b *testing.B) {
+	benchmarkCreateRewardIncomeLevel(10000, b)
+}
+
+func BenchmarkCreateRewardIncome100000(b *testing.B) {
+	benchmarkCreateRewardIncomeLevel(100000, b)
+}
+
+func BenchmarkCreateRewardIncome1000000(b *testing.B) {
+	benchmarkCreateRewardIncomeLevel(1000000, b)
+}
+
+func benchmarkCreateRewardIncomeLevel(n int64, b *testing.B) {
+	s, err := prepareDatabaseForBenchmarkingCreateRewardIncome(n)
+	if err != nil {
+		b.Errorf("Prepare database error: %v", err)
+	}
+	b.Logf("Successfully create %v reward incomes in database", n)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		if err := s.CreateRewardIncome(income(2, 1, 10, 1), time.Now()); err != nil {
+			b.Errorf("Create reward income error: %v", err)
+		}
+	}
+}
+
+func prepareDatabaseForBenchmarkingCreateRewardIncome(n int64) (Storage, error) {
+	s := prepareDatabaseForTesting()
+	s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
+	s.CreateUser(models.User{Email: "e2", BitcoinAddress: "b2", RefererID: 1})
+
+	for i := n / 1000; i > 0; i-- {
+		insertIncomes(s)
+	}
+
+	var count int64
+	s.db.Get(&count, "SELECT COUNT(*) FROM incomes")
+	if count != n {
+		return s, fmt.Errorf("Count should be %v but get %v", n, count)
+	}
+
+	return s, nil
+}
+
+func insertIncomes(s Storage) {
+	tx := s.db.MustBegin()
+	for count := 0; count < 1000; count++ {
+		tx.Exec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (2, 1, 0, 10, 1)")
+	}
+	tx.Commit()
+}

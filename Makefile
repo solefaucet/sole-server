@@ -35,3 +35,7 @@ test:
 	go test -cover ./...
 	# cleanup
 	mysql -uroot -e 'drop database if exists solebtc_test;'
+
+benchmark:
+	# benchmark
+	go test -v -bench=. -benchmem -timeout 30m ./...
