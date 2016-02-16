@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"time"
 
@@ -28,7 +27,6 @@ var (
 	mailer      mail.Mailer
 	store       storage.Storage
 	memoryCache cache.Cache
-	err         error
 )
 
 func init() {
@@ -84,10 +82,7 @@ func main() {
 	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
-	if err := router.Run(config.HTTP.Port); err != nil {
-		fmt.Fprintf(panicWriter, "HTTP listen and serve error: %v\n", err)
-		os.Exit(1)
-	}
+	panicIfErrored(router.Run(config.HTTP.Port))
 }
 
 func createRewardIncome(income models.Income, now time.Time) *errors.Error {
@@ -111,10 +106,9 @@ func initMailer() {
 
 func initStorage() {
 	// storage service
+	var err error
 	store, err = mysql.New(config.DB.DataSourceName)
-	if err != nil {
-		log.Fatalf("Cannot create mysql storage: %v", err)
-	}
+	panicIfErrored(err)
 }
 
 func initCache() {
@@ -122,21 +116,16 @@ func initCache() {
 
 	// init config in cache
 	config, err := store.GetLatestConfig()
-	if err != nil {
-		log.Fatalf("Cannot get latest config: %v", err)
-	}
+	panicIfErrored(err)
 	memoryCache.SetLatestConfig(config)
 
 	// init rates in cache
 	lessRates, err := store.GetRewardRatesByType(models.RewardRateTypeLess)
-	if err != nil {
-		log.Fatalf("Cannot get reward rates with type less: %v", err)
-	}
-	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
-	if err != nil {
-		log.Fatalf("Cannot get reward rates with type more: %v", err)
-	}
+	panicIfErrored(err)
 	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
+
+	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
+	panicIfErrored(err)
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 
 	// update bitcoin price on start
@@ -145,7 +134,7 @@ func initCache() {
 
 func initCronjob() {
 	c := cron.New()
-	c.AddFunc("@every 1m", updateBitcoinPrice)
+	panicIfErrored(c.AddFunc("@every 1m", updateBitcoinPrice))
 	c.Start()
 }
 
@@ -174,4 +163,11 @@ func updateBitcoinPrice() {
 	memoryCache.UpdateBitcoinPrice(p)
 
 	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
+}
+
+// fail fast on initialization
+func panicIfErrored(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
