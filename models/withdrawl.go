@@ -7,7 +7,6 @@ const (
 	WithdrawalStatusPending    = 0
 	WithdrawalStatusProcessing = 1
 	WithdrawalStatusProcessed  = 2
-	WithdrawalStatusRejected   = 3
 )
 
 // Withdrawal model

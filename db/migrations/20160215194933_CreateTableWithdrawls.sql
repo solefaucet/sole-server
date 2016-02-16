@@ -6,7 +6,7 @@ CREATE TABLE `withdrawals` (
   `user_id` INT(11) NOT NULL,
   `bitcoin_address` VARCHAR(63) NOT NULL COMMENT 'withdraw to bitcoin address',
   `amount` INT(11) NOT NULL,
-  `status` INT(2) NOT NULL DEFAULT 0 COMMENT '0: pending, 1: processing 2: processed 3: rejected',
+  `status` INT(2) NOT NULL DEFAULT 0 COMMENT '0: pending, 1: processing 2: processed',
   `transaction_hash` VARCHAR(127) NOT NULL DEFAULT '' COMMENT 'transaction_hash identifies the transaction in bitcoin blockchain',
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
