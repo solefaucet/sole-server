@@ -5,6 +5,7 @@ const (
 	_ Code = iota
 	ErrCodeUnknown
 	ErrCodeNotFound
+	ErrCodeInsufficientBalance
 )
 
 // duplicate error

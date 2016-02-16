@@ -41,4 +41,7 @@ type Storage interface {
 	CreateRewardIncome(models.Income, time.Time) *errors.Error
 	GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
 	GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
+
+	// Withdrawl
+	CreateWithdrawl(models.Withdrawl) *errors.Error
 }
