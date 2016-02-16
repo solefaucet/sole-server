@@ -2,16 +2,16 @@ package models
 
 import "time"
 
-// WithdrawlStatus
+// WithdrawalStatus
 const (
-	WithdrawlStatusPending    = 0
-	WithdrawlStatusProcessing = 1
-	WithdrawlStatusProcessed  = 2
-	WithdrawlStatusRejected   = 3
+	WithdrawalStatusPending    = 0
+	WithdrawalStatusProcessing = 1
+	WithdrawalStatusProcessed  = 2
+	WithdrawalStatusRejected   = 3
 )
 
-// Withdrawl model
-type Withdrawl struct {
+// Withdrawal model
+type Withdrawal struct {
 	ID              int64     `db:"id" json:"id"`
 	UserID          int64     `db:"user_id" json:"user_id"`
 	BitcoinAddress  string    `db:"bitcoin_address" json:"bitcoin_address"`

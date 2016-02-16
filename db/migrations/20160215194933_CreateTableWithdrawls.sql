@@ -1,7 +1,7 @@
 
 -- +goose Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE `withdrawls` (
+CREATE TABLE `withdrawals` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
   `bitcoin_address` VARCHAR(63) NOT NULL COMMENT 'withdraw to bitcoin address',
@@ -13,7 +13,7 @@ CREATE TABLE `withdrawls` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `withdrawls`
+ALTER TABLE `withdrawals`
 ADD INDEX (`user_id`),
 ADD INDEX (`bitcoin_address`),
 ADD INDEX (`status`),
@@ -21,4 +21,4 @@ ADD INDEX (`created_at`);
 
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE `withdrawls`;
+DROP TABLE `withdrawals`;

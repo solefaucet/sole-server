@@ -8,12 +8,12 @@ import (
 	"github.com/freeusd/solebtc/models"
 )
 
-// CreateWithdrawl creates a new withdrawl
-func (s Storage) CreateWithdrawl(withdrawl models.Withdrawl) *errors.Error {
+// CreateWithdrawal creates a new withdrawal
+func (s Storage) CreateWithdrawal(withdrawal models.Withdrawal) *errors.Error {
 	tx := s.db.MustBegin()
 
-	// create withdrawl with transaction
-	if err := createWithdrawl(tx, withdrawl); err != nil {
+	// create withdrawal with transaction
+	if err := createWithdrawal(tx, withdrawal); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -22,18 +22,18 @@ func (s Storage) CreateWithdrawl(withdrawl models.Withdrawl) *errors.Error {
 	if err := tx.Commit(); err != nil {
 		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Create withdrawl commit transaction error: %v", err),
+			ErrStringForLogging: fmt.Sprintf("Create withdrawal commit transaction error: %v", err),
 		}
 	}
 
 	return nil
 }
 
-func createWithdrawl(tx *sqlx.Tx, withdrawl models.Withdrawl) *errors.Error {
-	if err := deductUserBalanceBy(tx, withdrawl.UserID, withdrawl.Amount); err != nil {
+func createWithdrawal(tx *sqlx.Tx, withdrawal models.Withdrawal) *errors.Error {
+	if err := deductUserBalanceBy(tx, withdrawal.UserID, withdrawal.Amount); err != nil {
 		return err
 	}
-	return insertWithdrawl(tx, withdrawl.UserID, withdrawl.BitcoinAddress, withdrawl.Amount)
+	return insertWithdrawal(tx, withdrawal.UserID, withdrawal.BitcoinAddress, withdrawal.Amount)
 }
 
 func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta int64) *errors.Error {
@@ -56,12 +56,12 @@ func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta int64) *errors.Error {
 	return nil
 }
 
-func insertWithdrawl(tx *sqlx.Tx, userID int64, bitcoinAddress string, amount int64) *errors.Error {
-	rawSQL := "INSERT INTO withdrawls (`user_id`, `bitcoin_address`, `amount`) VALUES (?, ?, ?)"
+func insertWithdrawal(tx *sqlx.Tx, userID int64, bitcoinAddress string, amount int64) *errors.Error {
+	rawSQL := "INSERT INTO withdrawals (`user_id`, `bitcoin_address`, `amount`) VALUES (?, ?, ?)"
 	if _, err := tx.Exec(rawSQL, userID, bitcoinAddress, amount); err != nil {
 		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Create withdrawl error error: %v", err),
+			ErrStringForLogging: fmt.Sprintf("Create withdrawal error error: %v", err),
 		}
 	}
 

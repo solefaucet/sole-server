@@ -7,7 +7,7 @@ CREATE TABLE `users` (
   `bitcoin_address` VARCHAR(63) NOT NULL COMMENT 'unique bitcoin address',
   `status` VARCHAR(15) NOT NULL DEFAULT 'unverified' COMMENT 'indicate account status, can be unverified|verified|banned',
   `balance` BIGINT(19) NOT NULL DEFAULT 0 COMMENT 'user account balance count in bitcoin satonish',
-  `min_withdrawl_amount` INT(11) NOT NULL DEFAULT 100000 COMMENT 'minimum withdrawl amount',
+  `min_withdrawal_amount` INT(11) NOT NULL DEFAULT 100000 COMMENT 'minimum withdrawal amount',
   `reward_interval` INT(11) NOT NULL DEFAULT 900 COMMENT 'users can get reward every $reward_interval seconds',
   `rewarded_at` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:01',
   `referer_id` INT(11) NOT NULL DEFAULT 0 COMMENT 'default no referer',

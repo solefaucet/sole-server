@@ -113,7 +113,7 @@ func (s Storage) GetRefereesUntil(userID, id, limit int64) ([]models.User, *erro
 
 // GetWithdrawableUsers gets users who are able to withdraw their bitcoin
 func (s Storage) GetWithdrawableUsers() ([]models.User, *errors.Error) {
-	rawSQL := "SELECT * FROM users WHERE `status` = ? AND `balance` > `min_withdrawl_amount`"
+	rawSQL := "SELECT * FROM users WHERE `status` = ? AND `balance` > `min_withdrawal_amount`"
 	args := []interface{}{models.UserStatusVerified}
 	dest := []models.User{}
 	err := s.selects(&dest, rawSQL, args...)

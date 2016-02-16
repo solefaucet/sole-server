@@ -136,7 +136,7 @@ func initCache() {
 func initCronjob() {
 	c := cron.New()
 	panicIfErrored(c.AddFunc("@every 1m", updateBitcoinPrice))
-	panicIfErrored(c.AddFunc("@daily", createWithdrawl))
+	panicIfErrored(c.AddFunc("@daily", createWithdrawal))
 	c.Start()
 }
 
@@ -167,13 +167,13 @@ func updateBitcoinPrice() {
 	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
 }
 
-// automatically create withdrawl
-func createWithdrawl() {
+// automatically create withdrawal
+func createWithdrawal() {
 	// critical for the system
 	// use panicWriter for error log instead of logWriter
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Fprintf(panicWriter, "Create withdrawl panic: %v\n", err)
+			fmt.Fprintf(panicWriter, "Create withdrawal panic: %v\n", err)
 		}
 	}()
 
@@ -185,7 +185,7 @@ func createWithdrawl() {
 
 	f := func(users []models.User, handler func(err error, u models.User)) {
 		for i := range users {
-			handler(store.CreateWithdrawl(models.Withdrawl{
+			handler(store.CreateWithdrawal(models.Withdrawal{
 				UserID:         users[i].ID,
 				Amount:         users[i].Balance,
 				BitcoinAddress: users[i].BitcoinAddress,
@@ -193,7 +193,7 @@ func createWithdrawl() {
 		}
 	}
 
-	// create withdrawl, move errored ones into retry queue
+	// create withdrawal, move errored ones into retry queue
 	retryUsers := []models.User{}
 	f(users, func(err error, u models.User) {
 		if err != nil {
@@ -205,13 +205,13 @@ func createWithdrawl() {
 	errored := false
 	f(retryUsers, func(err error, u models.User) {
 		if err != nil {
-			fmt.Fprintf(panicWriter, "Create withdrawl for user %v error: %v\n", u, err)
+			fmt.Fprintf(panicWriter, "Create withdrawal for user %v error: %v\n", u, err)
 			errored = true
 		}
 	})
 
 	if !errored {
-		fmt.Fprintf(logWriter, "Create withdrawls successfully...\n")
+		fmt.Fprintf(logWriter, "Create withdrawals successfully...\n")
 	}
 }
 
