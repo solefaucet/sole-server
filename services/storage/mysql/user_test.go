@@ -198,3 +198,25 @@ func TestGetRefereesUntil(t *testing.T) {
 		})
 	})
 }
+
+func TestGetWithdrawableUser(t *testing.T) {
+	Convey("Given mysql storage", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.Exec("INSERT INTO users(email, bitcoin_address, status, balance, min_withdrawl_amount) VALUES('e1', 'b1', 'verified', 10, 5)")
+		s.db.Exec("INSERT INTO users(email, bitcoin_address, status, balance, min_withdrawl_amount) VALUES('e2', 'b2', 'verified', 5, 10)")
+
+		Convey("When get withdrawable users", func() {
+			result, _ := s.GetWithdrawableUsers()
+
+			Convey("Users should equal", func() {
+				So(result, func(actual interface{}, expected ...interface{}) string {
+					users := actual.([]models.User)
+					if len(users) == 1 && users[0].Email == "e1" {
+						return ""
+					}
+					return fmt.Sprintf("Users %v is not expected", result)
+				})
+			})
+		})
+	})
+}
