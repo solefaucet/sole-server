@@ -218,6 +218,19 @@ func createWithdrawl() {
 // fail fast on initialization
 func panicIfErrored(err error) {
 	if err != nil {
-		panic(err)
+		// Tricky:
+		// pass a nil *errors.Error into this function
+		// err is not nil
+		// see discussion here:
+		// https://github.com/go-playground/validator/issues/134
+		// or
+		// http://stackoverflow.com/questions/29138591/hiding-nil-values-understanding-why-golang-fails-here/29138676#29138676
+		if e, ok := err.(*errors.Error); ok {
+			if e != nil {
+				panic(e.ErrStringForLogging)
+			}
+		} else {
+			panic(err)
+		}
 	}
 }
