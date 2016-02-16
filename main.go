@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/robfig/cron"
 	"github.com/freeusd/solebtc/controllers/v1"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/middlewares"
@@ -35,6 +36,7 @@ func init() {
 	initMailer()
 	initStorage()
 	initCache()
+	initCronjob()
 }
 
 func main() {
@@ -137,9 +139,14 @@ func initCache() {
 	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 
-	// update bitcoin price in background
+	// update bitcoin price on start
 	updateBitcoinPrice()
-	go every(time.Minute, updateBitcoinPrice)
+}
+
+func initCronjob() {
+	c := cron.New()
+	c.AddFunc("@every 1m", updateBitcoinPrice)
+	c.Start()
 }
 
 func updateBitcoinPrice() {
@@ -168,14 +175,4 @@ func updateBitcoinPrice() {
 	memoryCache.SetLatestConfig(c)
 
 	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
-}
-
-func every(duration time.Duration, f func()) {
-	ticker := time.NewTicker(duration)
-	for {
-		select {
-		case <-ticker.C:
-			f()
-		}
-	}
 }

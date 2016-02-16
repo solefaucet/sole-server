@@ -82,6 +82,11 @@
 			"Rev": "c73179dd31355d86bd7692de9b47623d6d0fa696"
 		},
 		{
+			"ImportPath": "github.com/robfig/cron",
+			"Comment": "v1-7-g32d9c27",
+			"Rev": "32d9c273155a0506d27cf73dd1246e86a470997e"
+		},
+		{
 			"ImportPath": "github.com/satori/go.uuid",
 			"Rev": "d41af8bb6a7704f00bc3b7cba9355ae6a5a80048"
 		},
