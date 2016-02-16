@@ -16,4 +16,5 @@ type Cache interface {
 
 	GetLatestConfig() models.Config
 	SetLatestConfig(models.Config)
+	UpdateBitcoinPrice(int64)
 }

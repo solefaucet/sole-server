@@ -149,6 +149,7 @@ func initCronjob() {
 	c.Start()
 }
 
+// update bitcoin price in cache
 func updateBitcoinPrice() {
 	defer func() {
 		if err := recover(); err != nil {
@@ -170,9 +171,7 @@ func updateBitcoinPrice() {
 	}
 
 	// update bitcoin price in cache
-	c := memoryCache.GetLatestConfig()
-	c.BitcoinPrice = p
-	memoryCache.SetLatestConfig(c)
+	memoryCache.UpdateBitcoinPrice(p)
 
 	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
 }
