@@ -17,8 +17,13 @@ func AuthRequired(
 	authTokenLifetime time.Duration,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authToken, err := getAuthToken(c.Request.Header.Get("Auth-Token"))
+		authTokenHeader := c.Request.Header.Get("Auth-Token")
+		if authTokenHeader == "" {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 
+		authToken, err := getAuthToken(authTokenHeader)
 		if err != nil && err.ErrCode != errors.ErrCodeNotFound {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
