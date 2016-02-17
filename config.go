@@ -14,6 +14,8 @@ type configuration struct {
 	}
 	DB struct {
 		DataSourceName string
+		MaxOpenConns   int
+		MaxIdleConns   int
 	}
 	AuthToken struct {
 		Lifetime time.Duration
@@ -40,6 +42,8 @@ func initConfig() {
 	viper.SetDefault("mandrill_key", "SANDBOX_SUCCESS")
 	viper.SetDefault("mandrill_from_email", "no_reply@solebtc.com")
 	viper.SetDefault("mandrill_from_name", "SoleBTC")
+	viper.SetDefault("max_open_conns", 256)
+	viper.SetDefault("max_idle_conns", 128)
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
@@ -56,6 +60,8 @@ func initConfig() {
 	config.Mandrill.Key = viper.GetString("mandrill_key")
 	config.Mandrill.FromEmail = viper.GetString("mandrill_from_email")
 	config.Mandrill.FromName = viper.GetString("mandrill_from_name")
+	config.DB.MaxOpenConns = viper.GetInt("max_open_conns")
+	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
 }
 
 func ginEnvMode() string {

@@ -107,9 +107,11 @@ func initMailer() {
 
 func initStorage() {
 	// storage service
-	var err error
-	store, err = mysql.New(config.DB.DataSourceName)
+	s, err := mysql.New(config.DB.DataSourceName)
 	panicIfErrored(err)
+	s.SetMaxOpenConns(config.DB.MaxOpenConns)
+	s.SetMaxIdleConns(config.DB.MaxIdleConns)
+	store = s
 }
 
 func initCache() {

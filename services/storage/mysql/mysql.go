@@ -28,6 +28,16 @@ func New(dsn string) (s Storage, err error) {
 	return
 }
 
+// SetMaxOpenConns alias sql.DB.SetMaxOpenConns
+func (s *Storage) SetMaxOpenConns(n int) {
+	s.db.SetMaxOpenConns(n)
+}
+
+// SetMaxIdleConns alias sql.DB.SetMaxIdleConns
+func (s *Storage) SetMaxIdleConns(n int) {
+	s.db.SetMaxIdleConns(n)
+}
+
 // mysql error codes
 const (
 	errcodeDuplicate = 1062
