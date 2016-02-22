@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -38,5 +39,29 @@ func TestMemory(t *testing.T) {
 	bitcoinPrice := c.GetLatestConfig().BitcoinPrice
 	if bitcoinPrice != 1 {
 		t.Errorf("expected bitcoin price should be 1 but get %v", bitcoinPrice)
+	}
+
+	c.InsertIncome(map[string]interface{}{"k": 1})
+	c.InsertIncome(map[string]interface{}{"k": 2})
+	expectedLatestIncomes := `[{"k":2},{"k":1}]`
+	actualLatestIncomes, _ := json.Marshal(c.GetLatestIncomes())
+	if actual := string(actualLatestIncomes); actual != expectedLatestIncomes {
+		t.Errorf("expected bytes %v but get %v", expectedLatestIncomes, actual)
+	}
+}
+
+func BenchmarkInsertIncome(b *testing.B) {
+	c := New()
+	object := map[string]interface{}{
+		"key1": 123.4123,
+		"key2": "sdflkjei",
+		"key3": time.Now(),
+		"key4": "bitcoin_address_very_long_string",
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		c.InsertIncome(object)
 	}
 }

@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"container/ring"
 	"sync"
 	"time"
 
@@ -18,6 +19,10 @@ type Cache struct {
 
 	config      models.Config
 	configMutex sync.RWMutex
+
+	incomesRing   *ring.Ring
+	latestIncomes []interface{}
+	incomesMutex  sync.RWMutex
 }
 
 var _ cache.Cache = &Cache{}
@@ -26,6 +31,7 @@ var _ cache.Cache = &Cache{}
 func New() *Cache {
 	return &Cache{
 		rewardRatesMapping: make(map[string][]models.RewardRate),
+		incomesRing:        ring.New(100),
 	}
 }
 
@@ -81,4 +87,28 @@ func (c *Cache) UpdateBitcoinPrice(p int64) {
 	c.configMutex.Lock()
 	defer c.configMutex.Unlock()
 	c.config.BitcoinPrice = p
+}
+
+// InsertIncome inserts a new income
+func (c *Cache) InsertIncome(income interface{}) {
+	c.incomesMutex.Lock()
+	defer c.incomesMutex.Unlock()
+	// put it in head
+	c.incomesRing = c.incomesRing.Prev()
+	c.incomesRing.Value = income
+
+	// re-calculate bytes
+	c.latestIncomes = []interface{}{}
+	c.incomesRing.Do(func(i interface{}) {
+		if i != nil {
+			c.latestIncomes = append(c.latestIncomes, i)
+		}
+	})
+}
+
+// GetLatestIncomes returns incomes
+func (c *Cache) GetLatestIncomes() []interface{} {
+	c.incomesMutex.RLock()
+	defer c.incomesMutex.RUnlock()
+	return c.latestIncomes
 }
