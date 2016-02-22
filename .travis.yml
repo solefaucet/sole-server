@@ -3,7 +3,8 @@ language: go
 sudo: true
 
 go:
-  - 1.5.3
+  - 1.5
+  - 1.6
 
 install:
   # Add Godeps dependencies to GOPATH and PATH

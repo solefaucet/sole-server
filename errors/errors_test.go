@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func ExampleErrors() {
+func ExampleError() {
 	errorString := "error"
 
 	e := New(ErrCodeInvalidBitcoinAddress)
