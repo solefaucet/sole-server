@@ -5,9 +5,9 @@ CREATE TABLE `incomes` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
   `referer_id` INT(11) NOT NULL,
-  `type` INT(2) NOT NULL COMMENT '0: reward, 1: offerwall',
-  `income` INT(11) NOT NULL,
-  `referer_income` INT(11) NOT NULL,
+  `type` TINYINT(4) NOT NULL COMMENT '0: reward, 1: offerwall',
+  `income` MEDIUMINT(8) NOT NULL,
+  `referer_income` MEDIUMINT(8) NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
