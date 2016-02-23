@@ -3,6 +3,8 @@ package v1
 import (
 	"time"
 
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -42,4 +44,7 @@ type (
 	dependencyCreateRewardIncome    func(models.Income, time.Time) *errors.Error
 	dependencyGetRewardIncomesSince func(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
 	dependencyGetRewardIncomesUntil func(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
+
+	// websocket
+	dependencyPutConn func(*websocket.Conn)
 )
