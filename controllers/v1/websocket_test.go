@@ -38,7 +38,7 @@ func TestWebsocket(t *testing.T) {
 			conn.ReadJSON(&m)
 			Convey("Receive data through websocket should resemble", func() {
 				So(m, ShouldResemble, models.WebsocketMessage{
-					BitcoinPrice:  300,
+					BitcoinPrice:  0.03,
 					UsersOnline:   2,
 					LatestIncomes: []interface{}{123.456, "hello"},
 				})
