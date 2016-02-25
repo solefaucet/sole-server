@@ -14,7 +14,7 @@ import (
 func TestGetReward(t *testing.T) {
 	Convey("Given get reward controller with errored getUserByID dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
-		handler := GetReward(getUserByID, nil, nil, nil, nil)
+		handler := GetReward(getUserByID, nil, nil, nil, nil, nil, nil)
 
 		Convey("When get reward", func() {
 			route := "/incomes/rewards"
@@ -34,7 +34,7 @@ func TestGetReward(t *testing.T) {
 
 	Convey("Given get reward controller with not valid last_rewarded", t, func() {
 		getUserByID := mockGetUserByID(models.User{RewardedAt: time.Now(), RewardInterval: 5}, nil)
-		handler := GetReward(getUserByID, nil, nil, nil, nil)
+		handler := GetReward(getUserByID, nil, nil, nil, nil, nil, nil)
 
 		Convey("When get reward", func() {
 			route := "/incomes/rewards"
@@ -62,7 +62,7 @@ func TestGetReward(t *testing.T) {
 			{Weight: 3, Min: 21, Max: 30},
 		})
 		createRewardIncome := mockCreateRewardIncome(errors.New(errors.ErrCodeUnknown))
-		handler := GetReward(getUserByID, getLatestTotalReward, getSystemConfig, getRewardRatesByType, createRewardIncome)
+		handler := GetReward(getUserByID, getLatestTotalReward, getSystemConfig, getRewardRatesByType, createRewardIncome, nil, nil)
 
 		Convey("When get reward", func() {
 			route := "/incomes/rewards"
@@ -90,7 +90,16 @@ func TestGetReward(t *testing.T) {
 			{Weight: 3, Min: 21, Max: 30},
 		})
 		createRewardIncome := mockCreateRewardIncome(nil)
-		handler := GetReward(getUserByID, getLatestTotalReward, getSystemConfig, getRewardRatesByType, createRewardIncome)
+		insertIncome := mockInsertIncome()
+		broadcast := mockBroadcast()
+		handler := GetReward(getUserByID,
+			getLatestTotalReward,
+			getSystemConfig,
+			getRewardRatesByType,
+			createRewardIncome,
+			insertIncome,
+			broadcast,
+		)
 
 		Convey("When get reward", func() {
 			route := "/incomes/rewards"

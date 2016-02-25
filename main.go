@@ -82,17 +82,21 @@ func main() {
 			memoryCache.GetLatestTotalReward,
 			memoryCache.GetLatestConfig,
 			memoryCache.GetRewardRatesByType,
-			createRewardIncome))
+			createRewardIncome,
+			memoryCache.InsertIncome,
+			connsHub.Broadcast),
+	)
 	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
 	// websocket endpoint
-	v1Endpoints.GET("/websocket", v1.Websocket(
-		connsHub.Len,
-		memoryCache.GetLatestConfig,
-		memoryCache.GetLatestIncomes,
-		connsHub.Broadcast,
-		hub.WrapPutWebsocketConn(connsHub.PutConn)),
+	v1Endpoints.GET("/websocket",
+		v1.Websocket(
+			connsHub.Len,
+			memoryCache.GetLatestConfig,
+			memoryCache.GetLatestIncomes,
+			connsHub.Broadcast,
+			hub.WrapPutWebsocketConn(connsHub.PutConn)),
 	)
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)

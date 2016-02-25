@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,6 +19,8 @@ func GetReward(
 	getSystemConfig dependencyGetSystemConfig,
 	getRewardRatesByType dependencyGetRewardRatesByType,
 	createRewardIncome dependencyCreateRewardIncome,
+	insertIncome dependencyInsertIncome,
+	broadcast dependencyBroadcast,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
@@ -60,6 +63,19 @@ func GetReward(
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
+
+		// cache delta income
+		deltaIncome := struct {
+			BitcoinAddress string    `json:"bitcoin_address"`
+			Amount         float64   `json:"amount"`
+			Type           string    `json:"type"`
+			Time           time.Time `json:"time"`
+		}{user.BitcoinAddress, utils.HumanReadableBTC(reward), "reward", now}
+		insertIncome(deltaIncome)
+
+		// broadcast delta income to all clients
+		msg, _ := json.Marshal(models.WebsocketMessage{DeltaIncome: deltaIncome})
+		broadcast(msg)
 
 		c.JSON(http.StatusOK, income)
 	}

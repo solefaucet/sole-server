@@ -44,6 +44,7 @@ type (
 	dependencyCreateRewardIncome    func(models.Income, time.Time) *errors.Error
 	dependencyGetRewardIncomesSince func(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
 	dependencyGetRewardIncomesUntil func(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
+	dependencyInsertIncome          func(interface{}) // cache for broadcasting
 
 	// websocket
 	dependencyPutConn          func(*websocket.Conn)

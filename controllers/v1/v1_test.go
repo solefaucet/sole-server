@@ -130,3 +130,7 @@ func mockGetLatestIncomes(i []interface{}) dependencyGetLatestIncomes {
 		return i
 	}
 }
+
+func mockInsertIncome() dependencyInsertIncome {
+	return func(interface{}) {}
+}
