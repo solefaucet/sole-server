@@ -14,6 +14,8 @@ import (
 	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/services/cache"
 	"github.com/freeusd/solebtc/services/cache/memory"
+	"github.com/freeusd/solebtc/services/hub"
+	"github.com/freeusd/solebtc/services/hub/list"
 	"github.com/freeusd/solebtc/services/mail"
 	"github.com/freeusd/solebtc/services/mail/mandrill"
 	"github.com/freeusd/solebtc/services/storage"
@@ -27,6 +29,7 @@ var (
 	mailer      mail.Mailer
 	store       storage.Storage
 	memoryCache cache.Cache
+	connsHub    hub.Hub
 )
 
 func init() {
@@ -35,6 +38,7 @@ func init() {
 	initMailer()
 	initStorage()
 	initCache()
+	initHub()
 	initCronjob()
 }
 
@@ -81,6 +85,15 @@ func main() {
 			createRewardIncome))
 	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
+
+	// websocket endpoint
+	v1Endpoints.GET("/websocket", v1.Websocket(
+		connsHub.Len,
+		memoryCache.GetLatestConfig,
+		memoryCache.GetLatestIncomes,
+		connsHub.Broadcast,
+		hub.WrapPutWebsocketConn(connsHub.PutConn)),
+	)
 
 	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
 	panicIfErrored(router.Run(config.HTTP.Port))
@@ -133,6 +146,12 @@ func initCache() {
 
 	// update bitcoin price on start
 	updateBitcoinPrice()
+}
+
+func initHub() {
+	connsHub = list.New(func(err error) {
+		fmt.Fprintf(panicWriter, "Send message over hub error: %v", err)
+	})
 }
 
 func initCronjob() {
