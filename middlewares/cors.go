@@ -10,8 +10,8 @@ import (
 // CORS allow cross domain resources sharing
 func CORS() gin.HandlerFunc {
 	config := cors.Config{}
-	config.AllowedHeaders = []string{"*"}
-	config.AllowedMethods = []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
+	config.AllowedHeaders = []string{"Content-Type", "Auth-Token"}
+	config.AllowedMethods = []string{"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"}
 	config.AbortOnError = true
 	config.AllowAllOrigins = true
 	config.AllowCredentials = true
