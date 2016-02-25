@@ -46,5 +46,8 @@ type (
 	dependencyGetRewardIncomesUntil func(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
 
 	// websocket
-	dependencyPutConn func(*websocket.Conn)
+	dependencyPutConn          func(*websocket.Conn)
+	dependencyBroadcast        func([]byte)
+	dependencyGetUsersOnline   func() int
+	dependencyGetLatestIncomes func() []interface{}
 )

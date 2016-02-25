@@ -9,32 +9,50 @@ import (
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
 	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
+	"github.com/freeusd/solebtc/models"
 )
 
 func TestWebsocket(t *testing.T) {
 	Convey("Given a webserver with websocket controller", t, func() {
-		handler := Websocket(func(*websocket.Conn) {})
+		handler := Websocket(
+			mockGetUsersOnline(1),
+			mockGetSystemConfig(models.Config{BitcoinPrice: 300}),
+			mockGetLatestIncomes([]interface{}{123.456, "hello"}),
+			mockBroadcast(),
+			mockPutConn(),
+		)
 
-		Convey("Websocket connect", func() {
+		Convey("When websocket connect", func() {
 			route := "/websocket"
 			_, _, r := gin.CreateTestContext()
 			r.GET(route, handler)
 			server := httptest.NewServer(r)
 
-			_, resp, _ := websocket.DefaultDialer.Dial("ws"+strings.TrimPrefix(server.URL, "http")+route, nil)
+			conn, resp, _ := websocket.DefaultDialer.Dial("ws"+strings.TrimPrefix(server.URL, "http")+route, nil)
 
 			Convey("Response code should be 101", func() {
 				So(resp.StatusCode, ShouldEqual, 101)
 			})
 
+			m := models.WebsocketMessage{}
+			conn.ReadJSON(&m)
+			Convey("Receive data through websocket should resemble", func() {
+				So(m, ShouldResemble, models.WebsocketMessage{
+					BitcoinPrice:  300,
+					UsersOnline:   2,
+					LatestIncomes: []interface{}{123.456, "hello"},
+				})
+			})
+
 			Reset(func() {
 				server.Close()
+				conn.Close()
 			})
 		})
 	})
 
 	Convey("Given websocket controller", t, func() {
-		handler := Websocket(func(*websocket.Conn) {})
+		handler := Websocket(nil, nil, nil, nil, nil)
 
 		Convey("HTTP connect", func() {
 			route := "/websocket"

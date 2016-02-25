@@ -3,6 +3,8 @@ package v1
 import (
 	"time"
 
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
@@ -106,5 +108,25 @@ func mockGetRefereesSince(users []models.User, err *errors.Error) dependencyGetR
 func mockGetRefereesUntil(users []models.User, err *errors.Error) dependencyGetRefereesUntil {
 	return func(int64, int64, int64) ([]models.User, *errors.Error) {
 		return users, err
+	}
+}
+
+func mockGetUsersOnline(i int) dependencyGetUsersOnline {
+	return func() int {
+		return i
+	}
+}
+
+func mockPutConn() dependencyPutConn {
+	return func(*websocket.Conn) {}
+}
+
+func mockBroadcast() dependencyBroadcast {
+	return func([]byte) {}
+}
+
+func mockGetLatestIncomes(i []interface{}) dependencyGetLatestIncomes {
+	return func() []interface{} {
+		return i
 	}
 }
