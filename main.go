@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -188,6 +189,12 @@ func updateBitcoinPrice() {
 
 	// update bitcoin price in cache
 	memoryCache.UpdateBitcoinPrice(p)
+
+	// broadcast bitcoin price to all users
+	msg, _ := json.Marshal(models.WebsocketMessage{
+		BitcoinPrice: utils.HumanReadableUSD(p),
+	})
+	connsHub.Broadcast(msg)
 
 	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
 }
