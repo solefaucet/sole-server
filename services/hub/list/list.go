@@ -11,17 +11,14 @@ import (
 type Hub struct {
 	conns  *list.List
 	rwlock sync.RWMutex
-
-	onSendError func(error)
 }
 
 var _ hub.Hub = &Hub{}
 
 // New creates a new Hub
-func New(onSendError func(error)) *Hub {
+func New() *Hub {
 	return &Hub{
-		conns:       list.New(),
-		onSendError: onSendError,
+		conns: list.New(),
 	}
 }
 
@@ -47,7 +44,7 @@ func (h *Hub) Broadcast(m []byte) {
 		}
 	}
 
-	broadcast := func(msg []byte, onError func(error, *list.Element)) {
+	broadcast := func(msg []byte, onError func(*list.Element)) {
 		errConns := []*list.Element{}
 		defer removeErrConns(errConns)
 
@@ -58,7 +55,7 @@ func (h *Hub) Broadcast(m []byte) {
 				// NOTE:
 				// DO NOT remove element from list here
 				// it can cause race condition because it's a read lock
-				onError(err, e)
+				onError(e)
 			}
 		}
 	}
@@ -66,9 +63,8 @@ func (h *Hub) Broadcast(m []byte) {
 	go func(msg []byte) {
 		// collect errored connections
 		errConns := []*list.Element{}
-		onError := func(err error, e *list.Element) {
+		onError := func(e *list.Element) {
 			errConns = append(errConns, e)
-			h.onSendError(err)
 		}
 
 		broadcast(msg, onError)

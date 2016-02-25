@@ -154,9 +154,7 @@ func initCache() {
 }
 
 func initHub() {
-	connsHub = list.New(func(err error) {
-		fmt.Fprintf(panicWriter, "Send message over hub error: %v", err)
-	})
+	connsHub = list.New()
 }
 
 func initCronjob() {

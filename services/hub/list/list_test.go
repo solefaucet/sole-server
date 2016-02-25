@@ -15,7 +15,7 @@ func (m mockConn) Write([]byte) error {
 }
 
 func TestHub(t *testing.T) {
-	h := New(func(error) {})
+	h := New()
 	n := 10000
 
 	go func(count int) {
