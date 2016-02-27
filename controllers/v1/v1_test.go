@@ -3,11 +3,16 @@ package v1
 import (
 	"time"
 
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
+
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
 
 func mockGetUserByEmail(user models.User, err *errors.Error) dependencyGetUserByEmail {
 	return func(string) (models.User, *errors.Error) {
