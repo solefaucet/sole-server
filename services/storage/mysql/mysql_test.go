@@ -39,6 +39,8 @@ func prepareDatabaseForTesting() Storage {
 
 	dsn := "root:@/solebtc_test"
 	s, _ := New(dsn)
+	s.SetMaxOpenConns(4)
+	s.SetMaxIdleConns(4)
 	return s
 }
 
