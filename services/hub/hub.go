@@ -1,6 +1,10 @@
 package hub
 
-import "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+import (
+	"sync"
+
+	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+)
 
 // Hub maintains active connections and broadcast messages
 type Hub interface {
@@ -16,9 +20,12 @@ type Conn interface {
 
 type connWrapper struct {
 	write func([]byte) error
+	mutex sync.Mutex
 }
 
 func (c *connWrapper) Write(raw []byte) error {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 	return c.write(raw)
 }
 

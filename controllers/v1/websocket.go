@@ -29,9 +29,6 @@ func Websocket(
 			return
 		}
 
-		// DO NOT allow client side send msg other than PING
-		conn.SetReadLimit(1)
-
 		// increment usersOnline by 1
 		usersOnline := getUsersOnline() + 1
 
