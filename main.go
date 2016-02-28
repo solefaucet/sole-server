@@ -200,14 +200,6 @@ func updateBitcoinPrice() {
 
 // automatically create withdrawal
 func createWithdrawal() {
-	// critical for the system
-	// use panicWriter for error log instead of logWriter
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Fprintf(panicWriter, "Create withdrawal panic: %v\n", err)
-		}
-	}()
-
 	users, err := store.GetWithdrawableUsers()
 	if err != nil {
 		fmt.Fprintf(panicWriter, "Get withdrawable users error: %v\n", err)
