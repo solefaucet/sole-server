@@ -45,8 +45,8 @@ func initConfig() {
 	viper.SetDefault("mandrill_key", "SANDBOX_SUCCESS")
 	viper.SetDefault("mandrill_from_email", "no_reply@solebtc.com")
 	viper.SetDefault("mandrill_from_name", "SoleBTC")
-	viper.SetDefault("max_open_conns", 256)
-	viper.SetDefault("max_idle_conns", 128)
+	viper.SetDefault("max_open_conns", 2)
+	viper.SetDefault("max_idle_conns", 2)
 	viper.SetDefault("num_cached_incomes", 20)
 
 	// See Viper doc, config is get in the following order
