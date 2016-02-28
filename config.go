@@ -25,6 +25,9 @@ type configuration struct {
 		FromEmail string
 		FromName  string
 	}
+	Cache struct {
+		NumCachedIncomes int
+	}
 }
 
 var config configuration
@@ -44,6 +47,7 @@ func initConfig() {
 	viper.SetDefault("mandrill_from_name", "SoleBTC")
 	viper.SetDefault("max_open_conns", 256)
 	viper.SetDefault("max_idle_conns", 128)
+	viper.SetDefault("num_cached_incomes", 20)
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
@@ -62,6 +66,7 @@ func initConfig() {
 	config.Mandrill.FromName = viper.GetString("mandrill_from_name")
 	config.DB.MaxOpenConns = viper.GetInt("max_open_conns")
 	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
+	config.Cache.NumCachedIncomes = viper.GetInt("num_cached_incomes")
 }
 
 func ginEnvMode() string {

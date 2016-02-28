@@ -133,7 +133,7 @@ func initStorage() {
 }
 
 func initCache() {
-	memoryCache = memory.New()
+	memoryCache = memory.New(config.Cache.NumCachedIncomes)
 
 	// init config in cache
 	config, err := store.GetLatestConfig()

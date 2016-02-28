@@ -9,7 +9,7 @@ import (
 )
 
 func TestMemory(t *testing.T) {
-	c := New()
+	c := New(20)
 
 	now := time.Now()
 
@@ -51,7 +51,7 @@ func TestMemory(t *testing.T) {
 }
 
 func BenchmarkInsertIncome(b *testing.B) {
-	c := New()
+	c := New(20)
 	object := map[string]interface{}{
 		"key1": 123.4123,
 		"key2": "sdflkjei",

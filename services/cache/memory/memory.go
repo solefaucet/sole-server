@@ -28,10 +28,11 @@ type Cache struct {
 var _ cache.Cache = &Cache{}
 
 // New creates a new in-memory cache
-func New() *Cache {
+// number of cached incomes
+func New(numCachedIncomes int) *Cache {
 	return &Cache{
 		rewardRatesMapping: make(map[string][]models.RewardRate),
-		incomesRing:        ring.New(100),
+		incomesRing:        ring.New(numCachedIncomes),
 	}
 }
 
