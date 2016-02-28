@@ -20,7 +20,6 @@ type signupPayload struct {
 func (p *signupPayload) validate() error {
 	if ok, err := utils.ValidateBitcoinAddress(p.BitcoinAddress); err != nil || !ok {
 		e := errors.New(errors.ErrCodeInvalidBitcoinAddress)
-		e.ErrString = fmt.Sprintf("%s is invalid bitcoin address", p.BitcoinAddress)
 		if err != nil {
 			e.ErrStringForLogging = fmt.Sprintf("validate bitcoin address error: %v", err)
 		}
@@ -57,10 +56,8 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 		if err := createUser(user); err != nil {
 			switch err.ErrCode {
 			case errors.ErrCodeDuplicateEmail:
-				err.ErrString = fmt.Sprintf("Email %s is duplicated", payload.Email)
 				c.AbortWithError(http.StatusConflict, err)
 			case errors.ErrCodeDuplicateBitcoinAddress:
-				err.ErrString = fmt.Sprintf("Bitcoin address %s is duplicated", payload.BitcoinAddress)
 				c.AbortWithError(http.StatusConflict, err)
 			default:
 				c.AbortWithError(http.StatusInternalServerError, err)

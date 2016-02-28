@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -29,7 +28,6 @@ func Login(
 		if err != nil {
 			switch err.ErrCode {
 			case errors.ErrCodeNotFound:
-				err.ErrString = fmt.Sprintf("User with email %s does not exist", payload.Email)
 				c.AbortWithError(http.StatusNotFound, err)
 			default:
 				c.AbortWithError(http.StatusInternalServerError, err)

@@ -6,17 +6,14 @@ import (
 )
 
 func ExampleError() {
-	errorString := "error"
-
 	e := New(ErrCodeInvalidBitcoinAddress)
-	e.ErrString = errorString
 	e.ErrStringForLogging = "for logging purpose"
-	fmt.Println(e, e.ErrCode)
+	fmt.Println(e)
 
 	raw, _ := json.Marshal(e)
 	fmt.Println(string(raw))
 
 	// Output:
-	// error 4001
-	// {"error":"error"}
+	// 4001
+	// {"code":4001}
 }

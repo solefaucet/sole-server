@@ -1,6 +1,9 @@
 package errors
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 var (
 	_ error          = New(0)
@@ -10,7 +13,6 @@ var (
 // Error is custom error
 type Error struct {
 	ErrCode             Code
-	ErrString           string
 	ErrStringForLogging string
 }
 
@@ -26,12 +28,12 @@ func New(c Code) *Error {
 
 // err implements error interface
 func (e *Error) Error() string {
-	return e.ErrString
+	return strconv.Itoa(int(e.ErrCode))
 }
 
 // MarshalJSON implements json.Marshaler interface
 func (e *Error) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"error": e.Error(),
+		"code": e.ErrCode,
 	})
 }
