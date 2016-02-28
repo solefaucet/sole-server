@@ -159,6 +159,7 @@ func initHub() {
 
 func initCronjob() {
 	c := cron.New()
+	panicIfErrored(c.AddFunc("@every 1m", syncCache))
 	panicIfErrored(c.AddFunc("@every 1m", updateBitcoinPrice))
 	panicIfErrored(c.AddFunc("@daily", createWithdrawal))
 	c.Start()
@@ -243,6 +244,35 @@ func createWithdrawal() {
 	if !errored {
 		fmt.Fprintf(logWriter, "Create withdrawals successfully...\n")
 	}
+}
+
+// sync cache with storage
+func syncCache() {
+	// update config in cache
+	config, err := store.GetLatestConfig()
+	if err != nil {
+		fmt.Fprintf(panicWriter, "Update latest config error: %v", err)
+		return
+	}
+	memoryCache.SetLatestConfig(config)
+
+	// update rates in cache
+	lessRates, err := store.GetRewardRatesByType(models.RewardRateTypeLess)
+	if err != nil {
+		fmt.Fprintf(panicWriter, "Update less rate error: %v", err)
+		return
+	}
+
+	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
+	if err != nil {
+		fmt.Fprintf(panicWriter, "Update more rate error: %v", err)
+		return
+	}
+
+	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
+	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
+
+	fmt.Fprintf(logWriter, "Successfully sync cache\n")
 }
 
 // fail fast on initialization
