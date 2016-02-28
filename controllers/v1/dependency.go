@@ -51,4 +51,8 @@ type (
 	dependencyBroadcast        func([]byte)
 	dependencyGetUsersOnline   func() int
 	dependencyGetLatestIncomes func() []interface{}
+
+	// withdrawals
+	dependencyGetWithdrawalsSince func(userID int64, since time.Time, limit int64) ([]models.Withdrawal, *errors.Error)
+	dependencyGetWithdrawalsUntil func(userID int64, until time.Time, limit int64) ([]models.Withdrawal, *errors.Error)
 )

@@ -139,3 +139,15 @@ func mockGetLatestIncomes(i []interface{}) dependencyGetLatestIncomes {
 func mockInsertIncome() dependencyInsertIncome {
 	return func(interface{}) {}
 }
+
+func mockGetWithdrawalsSince(withdrawals []models.Withdrawal, err *errors.Error) dependencyGetWithdrawalsSince {
+	return func(int64, time.Time, int64) ([]models.Withdrawal, *errors.Error) {
+		return withdrawals, err
+	}
+}
+
+func mockGetWithdrawalsUntil(withdrawals []models.Withdrawal, err *errors.Error) dependencyGetWithdrawalsUntil {
+	return func(int64, time.Time, int64) ([]models.Withdrawal, *errors.Error) {
+		return withdrawals, err
+	}
+}

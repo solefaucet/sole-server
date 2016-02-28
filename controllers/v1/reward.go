@@ -147,5 +147,4 @@ func getRewards(
 	}
 
 	c.JSON(http.StatusOK, result)
-
 }
