@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/jmoiron/sqlx"
 	"github.com/freeusd/solebtc/errors"
@@ -66,4 +67,22 @@ func insertWithdrawal(tx *sqlx.Tx, userID int64, bitcoinAddress string, amount i
 	}
 
 	return nil
+}
+
+// GetWithdrawalsSince get user's withdrawal since, created_at >= since
+func (s Storage) GetWithdrawalsSince(userID int64, since time.Time, limit int64) ([]models.Withdrawal, *errors.Error) {
+	rawSQL := "SELECT * FROM withdrawals WHERE `user_id` = ? AND `created_at` >= ? ORDER BY `id` ASC LIMIT ?"
+	args := []interface{}{userID, since, limit}
+	dest := []models.Withdrawal{}
+	err := s.selects(&dest, rawSQL, args...)
+	return dest, err
+}
+
+// GetWithdrawalsUntil get user's withdrawal until, created_at < until
+func (s Storage) GetWithdrawalsUntil(userID int64, until time.Time, limit int64) ([]models.Withdrawal, *errors.Error) {
+	rawSQL := "SELECT * FROM withdrawals WHERE `user_id` = ? AND `created_at` < ? ORDER BY `id` DESC LIMIT ?"
+	args := []interface{}{userID, until, limit}
+	dest := []models.Withdrawal{}
+	err := s.selects(&dest, rawSQL, args...)
+	return dest, err
 }
