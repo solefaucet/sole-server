@@ -55,7 +55,7 @@ func TestGetReward(t *testing.T) {
 	Convey("Given get reward controller with errored createRewardIncome dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
 		getLatestTotalReward := mockGetLatestTotalReward(models.TotalReward{CreatedAt: time.Now(), Total: 11})
-		getSystemConfig := mockGetSystemConfig(models.Config{TotalRewardThreshold: 10, RefererRewardRate: 0.1})
+		getSystemConfig := mockGetSystemConfig(models.Config{TotalRewardThreshold: 10, RefererRewardRate: 10})
 		getRewardRatesByType := mockGetRewardRatesByType([]models.RewardRate{
 			{Weight: 1, Min: 1, Max: 10},
 			{Weight: 2, Min: 11, Max: 20},
@@ -83,7 +83,7 @@ func TestGetReward(t *testing.T) {
 	Convey("Given get reward controller with everything correctly configured", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
 		getLatestTotalReward := mockGetLatestTotalReward(models.TotalReward{CreatedAt: time.Now().UTC(), Total: 11})
-		getSystemConfig := mockGetSystemConfig(models.Config{TotalRewardThreshold: 10, RefererRewardRate: 0.1})
+		getSystemConfig := mockGetSystemConfig(models.Config{TotalRewardThreshold: 10, RefererRewardRate: 10})
 		getRewardRatesByType := mockGetRewardRatesByType([]models.RewardRate{
 			{Weight: 1, Min: 1, Max: 10},
 			{Weight: 2, Min: 11, Max: 20},
