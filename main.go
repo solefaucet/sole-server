@@ -37,10 +37,10 @@ var (
 func init() {
 	// ORDER MATTERs
 	initConfig()
+	initHub()
 	initMailer()
 	initStorage()
 	initCache()
-	initHub()
 	initCronjob()
 }
 
