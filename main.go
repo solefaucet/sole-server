@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -164,19 +165,13 @@ func initHub() {
 func initCronjob() {
 	c := cron.New()
 	panicIfErrored(c.AddFunc("@every 1m", syncCache))
-	panicIfErrored(c.AddFunc("@every 1m", updateBitcoinPrice))
+	panicIfErrored(c.AddFunc("@every 1m", safeFuncWrapper(updateBitcoinPrice)))
 	panicIfErrored(c.AddFunc("@daily", createWithdrawal))
 	c.Start()
 }
 
 // update bitcoin price in cache
 func updateBitcoinPrice() {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Fprintf(logWriter, "Update bitcoin price panic: %v\n", err)
-		}
-	}()
-
 	// get bitcoin price from blockchain.info
 	p, err := utils.BitcoinPrice()
 	if err != nil {
@@ -288,5 +283,19 @@ func panicIfErrored(err error) {
 		} else {
 			panic(err)
 		}
+	}
+}
+
+// wrap a function with recover
+func safeFuncWrapper(f func()) func() {
+	return func() {
+		defer func() {
+			if err := recover(); err != nil {
+				buf := make([]byte, 1024)
+				runtime.Stack(buf, true)
+				fmt.Fprintf(panicWriter, "%v\n%s\n", err, buf)
+			}
+		}()
+		f()
 	}
 }
