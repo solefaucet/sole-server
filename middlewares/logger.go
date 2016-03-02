@@ -1,8 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
-	"io"
+	"log"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -22,9 +21,8 @@ var (
 	reset   = string([]byte{27, 91, 48, 109})
 )
 
-// LoggerWithWriter instance a Logger middleware with the specified writter buffer.
-// Example: os.Stdout, a file opened in write mode, a socket...
-func LoggerWithWriter(out io.Writer, notlogged ...string) gin.HandlerFunc {
+// LoggerWithLogger instance a Logger middleware with a *log.Logger
+func LoggerWithLogger(out *log.Logger, notlogged ...string) gin.HandlerFunc {
 	var skip map[string]struct{}
 
 	if length := len(notlogged); length > 0 {
@@ -55,8 +53,7 @@ func LoggerWithWriter(out io.Writer, notlogged ...string) gin.HandlerFunc {
 			statusColor := colorForStatus(statusCode)
 			methodColor := colorForMethod(method)
 
-			fmt.Fprintf(out, "[SoleBTC] %v |%s %3d %s| %13v | %s |%s  %s %-7s %s\n",
-				end.Format("2006/01/02 - 15:04:05"),
+			out.Printf("|%s %3d %s| %13v | %s |%s  %s %-7s %s\n",
 				statusColor, statusCode, reset,
 				latency,
 				clientIP,
@@ -68,7 +65,7 @@ func LoggerWithWriter(out io.Writer, notlogged ...string) gin.HandlerFunc {
 			if lastError != nil {
 				v := lastError.Err.(*errors.Error).ErrStringForLogging
 				if v != "" {
-					fmt.Fprintf(out, "%s\n", v)
+					out.Printf("%s\n", v)
 				}
 			}
 		}

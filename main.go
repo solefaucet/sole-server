@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"os"
 	"runtime"
 	"time"
@@ -27,8 +27,9 @@ import (
 )
 
 var (
-	logWriter   io.Writer = os.Stdout
-	panicWriter io.Writer = os.Stderr
+	errWriter   io.Writer = os.Stderr
+	outLogger             = log.New(os.Stdout, "[SoleBTC] ", log.LstdFlags)
+	errLogger             = log.New(errWriter, "[SoleBTC] ", log.LstdFlags)
 	mailer      mail.Mailer
 	store       storage.Storage
 	memoryCache cache.Cache
@@ -46,13 +47,12 @@ func init() {
 }
 
 func main() {
-	fmt.Fprintf(logWriter, "Running in %s mode...", ginEnvMode())
 	gin.SetMode(ginEnvMode())
 	router := gin.New()
 
 	// middlewares
-	recovery := gin.RecoveryWithWriter(panicWriter)
-	logger := middlewares.LoggerWithWriter(logWriter)
+	recovery := gin.RecoveryWithWriter(errWriter)
+	logger := middlewares.LoggerWithLogger(outLogger)
 	cors := middlewares.CORS()
 	errorWriter := middlewares.ErrorWriter()
 	authRequired := middlewares.AuthRequired(store.GetAuthToken, config.AuthToken.Lifetime)
@@ -106,7 +106,7 @@ func main() {
 			hub.WrapPutWebsocketConn(connsHub.PutConn)),
 	)
 
-	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Address)
+	outLogger.Printf("Running on %s\n", config.HTTP.Address)
 	panicIfErrored(router.Run(config.HTTP.Address))
 }
 
@@ -176,13 +176,13 @@ func updateBitcoinPrice() {
 	// get bitcoin price from blockchain.info
 	p, err := utils.BitcoinPrice()
 	if err != nil {
-		fmt.Fprintf(logWriter, "Fetch bitcoin price error: %v\n", err)
+		outLogger.Printf("Fetch bitcoin price error: %v\n", err)
 		return
 	}
 
 	// update bitcoin price in database
 	if err := store.UpdateLatestBitcoinPrice(p); err != nil {
-		fmt.Fprintf(logWriter, "Update bitcoin price in database error: %v\n", err)
+		outLogger.Printf("Update bitcoin price in database error: %v\n", err)
 		return
 	}
 
@@ -195,14 +195,14 @@ func updateBitcoinPrice() {
 	})
 	connsHub.Broadcast(msg)
 
-	fmt.Fprintf(logWriter, "Successfully update bitcoin price to %v\n", p)
+	outLogger.Printf("Successfully update bitcoin price to %v\n", p)
 }
 
 // automatically create withdrawal
 func createWithdrawal() {
 	users, err := store.GetWithdrawableUsers()
 	if err != nil {
-		fmt.Fprintf(panicWriter, "Get withdrawable users error: %v\n", err)
+		errLogger.Printf("Get withdrawable users error: %v\n", err)
 		return
 	}
 
@@ -228,13 +228,13 @@ func createWithdrawal() {
 	errored := false
 	f(retryUsers, func(err error, u models.User) {
 		if err != nil {
-			fmt.Fprintf(panicWriter, "Create withdrawal for user %v error: %v\n", u, err)
+			errLogger.Printf("Create withdrawal for user %v error: %v\n", u, err)
 			errored = true
 		}
 	})
 
 	if !errored {
-		fmt.Fprintf(logWriter, "Create withdrawals successfully...\n")
+		outLogger.Println("Create withdrawals successfully...")
 	}
 }
 
@@ -243,7 +243,7 @@ func syncCache() {
 	// update config in cache
 	config, err := store.GetLatestConfig()
 	if err != nil {
-		fmt.Fprintf(panicWriter, "Update latest config error: %v", err)
+		errLogger.Printf("Update latest config error: %v\n", err)
 		return
 	}
 	memoryCache.SetLatestConfig(config)
@@ -251,20 +251,20 @@ func syncCache() {
 	// update rates in cache
 	lessRates, err := store.GetRewardRatesByType(models.RewardRateTypeLess)
 	if err != nil {
-		fmt.Fprintf(panicWriter, "Update less rate error: %v", err)
+		errLogger.Printf("Update less rate error: %v\n", err)
 		return
 	}
 
 	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
 	if err != nil {
-		fmt.Fprintf(panicWriter, "Update more rate error: %v", err)
+		errLogger.Printf("Update more rate error: %v\n", err)
 		return
 	}
 
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
 
-	fmt.Fprintf(logWriter, "Successfully sync cache\n")
+	outLogger.Println("Successfully sync cache")
 }
 
 // fail fast on initialization
@@ -294,7 +294,7 @@ func safeFuncWrapper(f func()) func() {
 			if err := recover(); err != nil {
 				buf := make([]byte, 1024)
 				runtime.Stack(buf, true)
-				fmt.Fprintf(panicWriter, "%v\n%s\n", err, buf)
+				errLogger.Printf("%v\n%s\n", err, buf)
 			}
 		}()
 		f()
