@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"os"
 	"time"
@@ -74,7 +75,10 @@ func main() {
 
 	// session endpoints
 	v1SessionEndpoints := v1Endpoints.Group("/sessions")
-	v1SessionEndpoints.POST("", authRequired, v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail))
+	emailVerificationTemplate := template.Must(template.ParseFiles(config.Template.EmailVerificationTemplate))
+	v1SessionEndpoints.POST("", authRequired,
+		v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail, emailVerificationTemplate),
+	)
 
 	// income endpoints
 	v1IncomeEndpoints := v1Endpoints.Group("/incomes", authRequired)

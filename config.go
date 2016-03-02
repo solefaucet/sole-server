@@ -28,6 +28,9 @@ type configuration struct {
 	Cache struct {
 		NumCachedIncomes int
 	}
+	Template struct {
+		EmailVerificationTemplate string
+	}
 }
 
 var config configuration
@@ -48,6 +51,7 @@ func initConfig() {
 	viper.SetDefault("max_open_conns", 2)
 	viper.SetDefault("max_idle_conns", 2)
 	viper.SetDefault("num_cached_incomes", 20)
+	viper.SetDefault("email_verification_template", "./templates/email_verification_staging.html")
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
@@ -67,6 +71,7 @@ func initConfig() {
 	config.DB.MaxOpenConns = viper.GetInt("max_open_conns")
 	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
 	config.Cache.NumCachedIncomes = viper.GetInt("num_cached_incomes")
+	config.Template.EmailVerificationTemplate = viper.GetString("email_verification_template")
 }
 
 func ginEnvMode() string {

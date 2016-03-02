@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"html/template"
 	"net/http"
 	"testing"
 
@@ -13,7 +14,7 @@ import (
 func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored getUserByID dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
-		handler := RequestVerifyEmail(getUserByID, nil, nil)
+		handler := RequestVerifyEmail(getUserByID, nil, nil, nil)
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
@@ -34,7 +35,7 @@ func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored upsertSession dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
 		upsertSession := mockUpsertSession(errors.New(errors.ErrCodeUnknown))
-		handler := RequestVerifyEmail(getUserByID, upsertSession, nil)
+		handler := RequestVerifyEmail(getUserByID, upsertSession, nil, nil)
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
@@ -53,10 +54,11 @@ func TestRequestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given request verify email controller with errored sendEmail dependency", t, func() {
-		getUserByID := mockGetUserByID(models.User{}, nil)
+		getUserByID := mockGetUserByID(models.User{Email: "help@solebtc.com"}, nil)
 		upsertSession := mockUpsertSession(nil)
 		sendEmail := mockSendEmail(errors.New(errors.ErrCodeUnknown))
-		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail)
+		tmpl := template.Must(template.New("template").Parse(`email: {{.email}} token: {{.token}}`))
+		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl)
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
@@ -75,10 +77,11 @@ func TestRequestVerifyEmail(t *testing.T) {
 	})
 
 	Convey("Given request verify email controller with correct dependencies injected", t, func() {
-		getUserByID := mockGetUserByID(models.User{}, nil)
+		getUserByID := mockGetUserByID(models.User{Email: "help@solebtc.com"}, nil)
 		upsertSession := mockUpsertSession(nil)
 		sendEmail := mockSendEmail(nil)
-		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail)
+		tmpl := template.Must(template.New("template").Parse(`email: {{.email}} token: {{.token}}`))
+		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl)
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
