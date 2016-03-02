@@ -29,6 +29,9 @@ func New(key, fromEmail, fromName string) Mailer {
 // SendEmail sends email using mandrill api
 func (m Mailer) SendEmail(recipients []string, subject, html string) *errors.Error {
 	message := &mandrill.Message{}
+	message.Async = true
+	message.InlineCSS = true
+	message.Important = true
 	for _, recipient := range recipients {
 		message.AddRecipient(recipient, "", "to")
 	}
