@@ -46,6 +46,7 @@ func init() {
 }
 
 func main() {
+	fmt.Fprintf(logWriter, "Running in %s mode...", ginEnvMode())
 	gin.SetMode(ginEnvMode())
 	router := gin.New()
 
