@@ -105,8 +105,8 @@ func main() {
 			hub.WrapPutWebsocketConn(connsHub.PutConn)),
 	)
 
-	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Port)
-	panicIfErrored(router.Run(config.HTTP.Port))
+	fmt.Fprintf(logWriter, "SoleBTC is running on %s\n", config.HTTP.Address)
+	panicIfErrored(router.Run(config.HTTP.Address))
 }
 
 func createRewardIncome(income models.Income, now time.Time) *errors.Error {

@@ -9,8 +9,8 @@ import (
 
 type configuration struct {
 	HTTP struct {
-		Port string
-		Env  string // production, development, test
+		Address string
+		Env     string // production, development, test
 	}
 	DB struct {
 		DataSourceName string
@@ -42,7 +42,7 @@ func initConfig() {
 
 	// set default
 	viper.SetDefault("env", "development")
-	viper.SetDefault("port", "3000")
+	viper.SetDefault("address", "0.0.0.0:3000")
 	viper.SetDefault("dsn", "/solebtc_dev")
 	viper.SetDefault("auth_token_lifetime", "720h")
 	viper.SetDefault("mandrill_key", "SANDBOX_SUCCESS")
@@ -57,7 +57,7 @@ func initConfig() {
 	// override, flag, env, config file, key/value store, default
 
 	config.HTTP.Env = viper.GetString("env")
-	config.HTTP.Port = ":" + viper.GetString("port")
+	config.HTTP.Address = viper.GetString("address")
 	config.DB.DataSourceName = viper.GetString("dsn")
 
 	authTokenLifetime, err := time.ParseDuration(viper.GetString("auth_token_lifetime"))
