@@ -12,7 +12,8 @@ env.roledefs.update({
 # Heaven will execute fab -R staging deploy:branch_name=master
 def deploy(branch_name):
     print("Executing on %s as %s" % (env.host, env.user))
-
+    
+    run('rm -rf $GOPATH/src/github.com/freeusd/solebtc')
     run('go get -u github.com/freeusd/solebtc')
     run('go get -u bitbucket.org/liamstask/goose/cmd/goose')
     with cd('$GOPATH/src/github.com/freeusd/solebtc'):
