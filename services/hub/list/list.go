@@ -31,45 +31,28 @@ func (h *Hub) PutConn(c hub.Conn) {
 
 // Broadcast broadcast message to all connections
 func (h *Hub) Broadcast(m []byte) {
-	removeErrConns := func(errConns []*list.Element) {
-		if len(errConns) == 0 {
-			return
-		}
+	go func() {
+		// construct slice of connections
+		elems := h.elems()
 
-		h.rwlock.Lock()
-		defer h.rwlock.Unlock()
-
-		for i := range errConns {
-			h.conns.Remove(errConns[i])
-		}
-	}
-
-	broadcast := func(msg []byte, onError func(*list.Element)) {
-		errConns := []*list.Element{}
-		defer removeErrConns(errConns)
-
-		h.rwlock.RLock()
-		defer h.rwlock.RUnlock()
-		for e := h.conns.Front(); e != nil; e = e.Next() {
-			if err := e.Value.(hub.Conn).Write(msg); err != nil {
-				// NOTE:
-				// DO NOT remove element from list here
-				// it can cause race condition because it's a read lock
-				onError(e)
-			}
-		}
-	}
-
-	go func(msg []byte) {
+		// broadcast message
 		// collect errored connections
-		errConns := []*list.Element{}
-		onError := func(e *list.Element) {
-			errConns = append(errConns, e)
+		errElems := []*list.Element{}
+		wg := &sync.WaitGroup{}
+		for i := range elems {
+			wg.Add(1)
+			go func(e *list.Element) {
+				defer wg.Done()
+				if err := e.Value.(hub.Conn).Write(m); err != nil {
+					errElems = append(errElems, e)
+				}
+			}(elems[i])
 		}
+		wg.Wait()
 
-		broadcast(msg, onError)
-		removeErrConns(errConns)
-	}(m)
+		// remove errored connections
+		h.removeErrElems(errElems)
+	}()
 }
 
 // Len returns number of active connections
@@ -77,4 +60,29 @@ func (h *Hub) Len() int {
 	h.rwlock.RLock()
 	defer h.rwlock.RUnlock()
 	return h.conns.Len()
+}
+
+// iterate list, construct slice of connections
+func (h *Hub) elems() []*list.Element {
+	h.rwlock.RLock()
+	defer h.rwlock.RUnlock()
+	elems := make([]*list.Element, h.conns.Len())
+	for e, i := h.conns.Front(), 0; e != nil; e, i = e.Next(), i+1 {
+		elems[i] = e
+	}
+
+	return elems
+}
+
+// remove errored connections from list
+func (h *Hub) removeErrElems(errElems []*list.Element) {
+	if len(errElems) == 0 {
+		return
+	}
+
+	h.rwlock.Lock()
+	defer h.rwlock.Unlock()
+	for i := range errElems {
+		h.conns.Remove(errElems[i])
+	}
 }
