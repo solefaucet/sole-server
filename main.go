@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"runtime"
 	"time"
@@ -105,6 +106,13 @@ func main() {
 			connsHub.Broadcast,
 			hub.WrapPutWebsocketConn(connsHub.PutConn)),
 	)
+
+	// test endpoint
+	v1Endpoints.GET("/status", func(c *gin.Context) {
+		c.IndentedJSON(http.StatusOK, map[string]interface{}{
+			"status": "I am new now",
+		})
+	})
 
 	outLogger.Printf("Running on %s\n", config.HTTP.Address)
 	panicIfErrored(router.Run(config.HTTP.Address))
