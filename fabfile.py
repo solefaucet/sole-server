@@ -11,12 +11,32 @@ env.roledefs.update({
 
 # Heaven will execute fab -R staging deploy:branch_name=master
 def deploy(branch_name):
-    print("Executing on %s as %s" % (env.host, env.user))
+    deployProduction(branch_name) if env.roles[0] == 'production' else deployStaging(branch_name)
     
-    run('rm -rf $GOPATH/src/github.com/freeusd/solebtc')
-    run('go get -u github.com/freeusd/solebtc')
-    run('go get -u bitbucket.org/liamstask/goose/cmd/goose')
-    with cd('$GOPATH/src/github.com/freeusd/solebtc'):
-        run('goose up')
+def deployStaging(branch_name):
+    printMessage("staging")
+
+    codedir = '$GOPATH/src/github.com/freeusd/solebtc'
+    run('rm -rf %s' % codedir)
+    run('mkdir -p %s' % codedir)
+    with cd(codedir):
+        run('git clone -b %s --single-branch https://github.com/freeusd/solebtc.git .' % branch_name)
         run('go install')
-        run('supervisorctl restart solebtc')
+
+        # database version control
+        run("mysql -e 'create database if not exists solebtc_dev';")
+        run('go get -u bitbucket.org/liamstask/goose/cmd/goose')
+        run('goose up')
+
+    # restart solebtc service with supervisorctl
+    run('supervisorctl restart solebtc')
+
+def deployProduction(branch_name):
+    printMessage("production")
+
+    # TODO
+    # scp executable file from staging to production, database up, restart service
+    # mark current timestamp or commit as version number so we can rollback easily
+
+def printMessage(server):
+    print("Deploying to %s server at %s as %s" % (server, env.host, env.user))
