@@ -82,3 +82,26 @@ func ginEnvMode() string {
 		"test":        gin.TestMode,
 	}[config.HTTP.Env]
 }
+
+func test() {
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+	if true {
+	}
+}
