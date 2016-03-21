@@ -1,6 +1,6 @@
 from fabric.api import env
 from fabric.context_managers import cd
-from fabric.operations import run
+from fabric.operations import run, local, put
 
 env.shell = '/bin/bash -l -c'
 env.user = 'd'
@@ -19,13 +19,20 @@ def deployStaging(branch_name):
     codedir = '$GOPATH/src/github.com/freeusd/solebtc'
     run('rm -rf %s' % codedir)
     run('mkdir -p %s' % codedir)
+
+    local('git archive --format=tar --output=/tmp/archive.tar %s' % branch_name)
+    local('ls /tmp')
+    put('/tmp/archive.tar', '~/')
+    local('rm /tmp/archive.tar')
+    run('mv archive.tar %s' % codedir)
+
     with cd(codedir):
-        run('git clone -b %s --single-branch https://github.com/freeusd/solebtc.git .' % branch_name)
+        run('tar xf archive.tar')
         run('go install')
 
         # database version control
         run("mysql -e 'create database if not exists solebtc_dev';")
-        run('go get -u bitbucket.org/liamstask/goose/cmd/goose')
+        run('go get bitbucket.org/liamstask/goose/cmd/goose')
         run('goose up')
 
     # restart solebtc service with supervisorctl
