@@ -10,19 +10,19 @@ import (
 )
 
 type signupPayload struct {
-	Email          string `json:"email" binding:"required,email"`
-	BitcoinAddress string `json:"bitcoin_address" binding:"required"`
-	RefererID      int64  `json:"referer_id,omitempty" binding:"-"`
+	Email     string `json:"email" binding:"required,email"`
+	Address   string `json:"address" binding:"required"`
+	RefererID int64  `json:"referer_id,omitempty" binding:"-"`
 }
 
 func userWithSignupPayload(p signupPayload) models.User {
 	return models.User{
-		Email:          p.Email,
-		BitcoinAddress: p.BitcoinAddress,
+		Email:   p.Email,
+		Address: p.Address,
 	}
 }
 
-// Signup creates a new user with unique email, bitcoin address
+// Signup creates a new user with unique email, address
 func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := signupPayload{}
@@ -39,7 +39,7 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 			switch err.ErrCode {
 			case errors.ErrCodeDuplicateEmail:
 				c.AbortWithError(http.StatusConflict, err)
-			case errors.ErrCodeDuplicateBitcoinAddress:
+			case errors.ErrCodeDuplicateAddress:
 				c.AbortWithError(http.StatusConflict, err)
 			default:
 				c.AbortWithError(http.StatusInternalServerError, err)

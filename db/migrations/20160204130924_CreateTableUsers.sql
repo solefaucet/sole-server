@@ -4,9 +4,9 @@
 CREATE TABLE `users` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL COMMENT 'unique email',
-  `bitcoin_address` VARCHAR(63) NOT NULL COMMENT 'unique bitcoin address',
+  `address` VARCHAR(63) NOT NULL COMMENT 'unique withdraw address',
   `status` VARCHAR(15) NOT NULL DEFAULT 'unverified' COMMENT 'indicate account status, can be unverified|verified|banned',
-  `balance` INT(11) NOT NULL DEFAULT 0 COMMENT 'user account balance count in bitcoin satonish',
+  `balance` INT(11) NOT NULL DEFAULT 0 COMMENT 'user account balance count',
   `min_withdrawal_amount` MEDIUMINT(8) NOT NULL DEFAULT 100000 COMMENT 'minimum withdrawal amount',
   `reward_interval` SMALLINT(6) NOT NULL DEFAULT 900 COMMENT 'users can get reward every $reward_interval seconds',
   `rewarded_at` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:01',
@@ -18,7 +18,7 @@ CREATE TABLE `users` (
 
 ALTER TABLE `users` 
 ADD UNIQUE INDEX (`email`), 
-ADD UNIQUE INDEX (`bitcoin_address`),
+ADD UNIQUE INDEX (`address`),
 ADD INDEX (`status`),
 ADD INDEX (`balance`),
 ADD INDEX (`reward_interval`),

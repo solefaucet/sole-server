@@ -24,17 +24,17 @@ func TestGetUserByID(t *testing.T) {
 
 	Convey("Given mysql storage with user data", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+		s.CreateUser(models.User{Email: "e", Address: "b"})
 
 		Convey("When get user by id", func() {
 			user, _ := s.GetUserByID(1)
 
-			Convey("ID should be 1, Email should be e, BitcoinAddress should be b", func() {
+			Convey("ID should be 1, Email should be e, Address should be b", func() {
 				So(user, func(actual interface{}, expected ...interface{}) string {
 					u := actual.(models.User)
 					if u.ID == 1 &&
 						u.Email == "e" &&
-						u.BitcoinAddress == "b" {
+						u.Address == "b" {
 						return ""
 					}
 					return fmt.Sprintf("User %v is not expected", u)
@@ -64,15 +64,15 @@ func TestGetUserByEmail(t *testing.T) {
 
 	Convey("Given mysql storage with user data", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+		s.CreateUser(models.User{Email: "e", Address: "b"})
 
 		Convey("When get user by email", func() {
 			user, _ := s.GetUserByEmail("e")
 
-			Convey("Email should be e, BitcoinAddress should be b", func() {
+			Convey("Email should be e, Address should be b", func() {
 				So(user, func(actual interface{}, expected ...interface{}) string {
 					u := actual.(models.User)
-					if u.Email == "e" && u.BitcoinAddress == "b" {
+					if u.Email == "e" && u.Address == "b" {
 						return ""
 					}
 					return fmt.Sprintf("User %v is not expected", u)
@@ -92,7 +92,7 @@ func TestCreateUser(t *testing.T) {
 		s := prepareDatabaseForTesting()
 
 		Convey("When create user", func() {
-			err := s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+			err := s.CreateUser(models.User{Email: "e", Address: "b"})
 
 			Convey("Error should be nil", func() {
 				So(err, ShouldBeNil)
@@ -102,34 +102,34 @@ func TestCreateUser(t *testing.T) {
 
 	Convey("Given mysql storage with user data", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+		s.CreateUser(models.User{Email: "e", Address: "b"})
 
 		Convey("When create user with duplicate email", func() {
-			err := s.CreateUser(models.User{Email: "e", BitcoinAddress: ""})
+			err := s.CreateUser(models.User{Email: "e", Address: ""})
 
 			Convey("Error should be duplicate email", func() {
 				So(err.ErrCode, ShouldEqual, errors.ErrCodeDuplicateEmail)
 			})
 		})
 
-		Convey("When create user with duplicate bitcoin address", func() {
-			err := s.CreateUser(models.User{Email: "", BitcoinAddress: "b"})
+		Convey("When create user with duplicate address", func() {
+			err := s.CreateUser(models.User{Email: "", Address: "b"})
 
-			Convey("Error should be duplicate bitcoin address", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeDuplicateBitcoinAddress)
+			Convey("Error should be duplicate address", func() {
+				So(err.ErrCode, ShouldEqual, errors.ErrCodeDuplicateAddress)
 			})
 		})
 	})
 
 	withClosedConn(t, "When create user", func(s Storage) *errors.Error {
-		return s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+		return s.CreateUser(models.User{Email: "e", Address: "b"})
 	})
 }
 
 func TestUpdateUserStatus(t *testing.T) {
 	Convey("Given mysql storage with user data", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+		s.CreateUser(models.User{Email: "e", Address: "b"})
 
 		Convey("When update user's status", func() {
 			err := s.UpdateUserStatus(1, models.UserStatusVerified)
@@ -153,9 +153,9 @@ func TestUpdateUserStatus(t *testing.T) {
 func TestGetRefereesSince(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
-		s.CreateUser(models.User{RefererID: 1, Email: "e2", BitcoinAddress: "b2"})
-		s.CreateUser(models.User{RefererID: 1, Email: "e3", BitcoinAddress: "b3"})
+		s.CreateUser(models.User{Email: "e1", Address: "b1"})
+		s.CreateUser(models.User{RefererID: 1, Email: "e2", Address: "b2"})
+		s.CreateUser(models.User{RefererID: 1, Email: "e3", Address: "b3"})
 
 		Convey("When get referees since 1", func() {
 			result, _ := s.GetRefereesSince(1, 1, 2)
@@ -178,9 +178,9 @@ func TestGetRefereesSince(t *testing.T) {
 func TestGetRefereesUntil(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
-		s.CreateUser(models.User{RefererID: 1, Email: "e2", BitcoinAddress: "b2"})
-		s.CreateUser(models.User{RefererID: 1, Email: "e3", BitcoinAddress: "b3"})
+		s.CreateUser(models.User{Email: "e1", Address: "b1"})
+		s.CreateUser(models.User{RefererID: 1, Email: "e2", Address: "b2"})
+		s.CreateUser(models.User{RefererID: 1, Email: "e3", Address: "b3"})
 
 		Convey("When get referees until 1", func() {
 			result, _ := s.GetRefereesUntil(1, 10, 1)
@@ -202,8 +202,8 @@ func TestGetRefereesUntil(t *testing.T) {
 func TestGetWithdrawableUser(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.db.Exec("INSERT INTO users(email, bitcoin_address, status, balance, min_withdrawal_amount) VALUES('e1', 'b1', 'verified', 10, 5)")
-		s.db.Exec("INSERT INTO users(email, bitcoin_address, status, balance, min_withdrawal_amount) VALUES('e2', 'b2', 'verified', 5, 10)")
+		s.db.Exec("INSERT INTO users(email, address, status, balance, min_withdrawal_amount) VALUES('e1', 'b1', 'verified', 10, 5)")
+		s.db.Exec("INSERT INTO users(email, address, status, balance, min_withdrawal_amount) VALUES('e2', 'b2', 'verified', 5, 10)")
 
 		Convey("When get withdrawable users", func() {
 			result, _ := s.GetWithdrawableUsers()

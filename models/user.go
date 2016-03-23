@@ -13,7 +13,7 @@ const (
 type User struct {
 	ID                  int64     `db:"id" json:"id,omitempty"`
 	Email               string    `db:"email" json:"email,omitempty"`
-	BitcoinAddress      string    `db:"bitcoin_address" json:"bitcoin_address,omitempty"`
+	Address             string    `db:"address" json:"address,omitempty"`
 	Status              string    `db:"status" json:"status,omitempty"`
 	Balance             int64     `db:"balance" json:"balance"`
 	MinWithdrawalAmount int64     `db:"min_withdrawal_amount" json:"min_withdrawal_amount"`

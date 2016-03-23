@@ -50,7 +50,7 @@ func BenchmarkInsertIncome(b *testing.B) {
 		"key1": 123.4123,
 		"key2": "sdflkjei",
 		"key3": time.Now(),
-		"key4": "bitcoin_address_very_long_string",
+		"key4": "address_very_long_string",
 	}
 
 	b.ResetTimer()

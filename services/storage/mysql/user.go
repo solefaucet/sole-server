@@ -50,7 +50,7 @@ func (s Storage) GetUserByEmail(email string) (models.User, *errors.Error) {
 
 // CreateUser creates a new user
 func (s Storage) CreateUser(u models.User) *errors.Error {
-	_, err := s.db.NamedExec("INSERT INTO users (`email`, `bitcoin_address`, `referer_id`) VALUES (:email, :bitcoin_address, :referer_id)", u)
+	_, err := s.db.NamedExec("INSERT INTO users (`email`, `address`, `referer_id`) VALUES (:email, :address, :referer_id)", u)
 
 	if err != nil {
 		switch e := err.(type) {
@@ -58,8 +58,8 @@ func (s Storage) CreateUser(u models.User) *errors.Error {
 			if e.Number == errcodeDuplicate {
 				syserr := errors.New(errors.ErrCodeUnknown)
 				errcodeMapping := map[string]errors.Code{
-					"key 'email'":           errors.ErrCodeDuplicateEmail,
-					"key 'bitcoin_address'": errors.ErrCodeDuplicateBitcoinAddress,
+					"key 'email'":   errors.ErrCodeDuplicateEmail,
+					"key 'address'": errors.ErrCodeDuplicateAddress,
 				}
 				for k, v := range errcodeMapping {
 					if strings.Contains(e.Message, k) {
@@ -111,7 +111,7 @@ func (s Storage) GetRefereesUntil(userID, id, limit int64) ([]models.User, *erro
 	return dest, err
 }
 
-// GetWithdrawableUsers gets users who are able to withdraw their bitcoin
+// GetWithdrawableUsers gets users who are able to withdraw
 func (s Storage) GetWithdrawableUsers() ([]models.User, *errors.Error) {
 	rawSQL := "SELECT * FROM users WHERE `status` = ? AND `balance` > `min_withdrawal_amount`"
 	args := []interface{}{models.UserStatusVerified}

@@ -39,7 +39,7 @@ func GetReward(
 			return
 		}
 
-		// get random bitcoin reward in Satonish
+		// get random reward
 		latestTotalReward := getLatestTotalReward()
 		rewardRateType := models.RewardRateTypeLess
 		if latestTotalReward.IsSameDay(now) && latestTotalReward.Total > getSystemConfig().TotalRewardThreshold {
@@ -64,11 +64,11 @@ func GetReward(
 
 		// cache delta income
 		deltaIncome := struct {
-			BitcoinAddress string    `json:"bitcoin_address"`
-			Amount         float64   `json:"amount"`
-			Type           string    `json:"type"`
-			Time           time.Time `json:"time"`
-		}{user.BitcoinAddress, utils.HumanReadableBTC(reward), "reward", now}
+			Address string    `json:"address"`
+			Amount  float64   `json:"amount"`
+			Type    string    `json:"type"`
+			Time    time.Time `json:"time"`
+		}{user.Address, utils.HumanReadableBTC(reward), "reward", now}
 		insertIncome(deltaIncome)
 
 		// broadcast delta income to all clients

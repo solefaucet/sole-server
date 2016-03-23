@@ -92,8 +92,8 @@ func TestIncrementTotalRewardByRewardIncome(t *testing.T) {
 func TestCreateRewardIncome(t *testing.T) {
 	Convey("Given mysql storage with two users", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
-		s.CreateUser(models.User{Email: "e2", BitcoinAddress: "b2", RefererID: 1})
+		s.CreateUser(models.User{Email: "e1", Address: "b1"})
+		s.CreateUser(models.User{Email: "e2", Address: "b2", RefererID: 1})
 
 		Convey("When create reward income", func() {
 			err := s.CreateRewardIncome(income(1, 2, 100, 4), time.Now())
@@ -108,7 +108,7 @@ func TestCreateRewardIncome(t *testing.T) {
 func TestGetRewardIncomesSince(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
+		s.CreateUser(models.User{Email: "e1", Address: "b1"})
 		rewardedAt := time.Now()
 		s.CreateRewardIncome(income(1, 2, 91, 1), rewardedAt)
 		s.CreateRewardIncome(income(1, 2, 92, 1), rewardedAt)
@@ -135,7 +135,7 @@ func TestGetRewardIncomesSince(t *testing.T) {
 func TestGetRewardIncomesUntil(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
+		s.CreateUser(models.User{Email: "e1", Address: "b1"})
 		rewardedAt := time.Now()
 		s.CreateRewardIncome(income(1, 2, 91, 1), rewardedAt)
 		s.CreateRewardIncome(income(1, 2, 92, 1), rewardedAt)
@@ -199,8 +199,8 @@ func benchmarkCreateRewardIncomeLevel(n int64, b *testing.B) {
 
 func prepareDatabaseForBenchmarkingCreateRewardIncome(n int64) (Storage, error) {
 	s := prepareDatabaseForTesting()
-	s.CreateUser(models.User{Email: "e1", BitcoinAddress: "b1"})
-	s.CreateUser(models.User{Email: "e2", BitcoinAddress: "b2", RefererID: 1})
+	s.CreateUser(models.User{Email: "e1", Address: "b1"})
+	s.CreateUser(models.User{Email: "e2", Address: "b2", RefererID: 1})
 
 	for i := n / 1000; i > 0; i-- {
 		insertIncomes(s)

@@ -16,7 +16,7 @@ func TestWebsocket(t *testing.T) {
 	Convey("Given a webserver with websocket controller", t, func() {
 		handler := Websocket(
 			mockGetUsersOnline(1),
-			mockGetSystemConfig(models.Config{BitcoinPrice: 300}),
+			mockGetSystemConfig(models.Config{}),
 			mockGetLatestIncomes([]interface{}{123.456, "hello"}),
 			mockBroadcast(),
 			mockPutConn(),
@@ -38,7 +38,6 @@ func TestWebsocket(t *testing.T) {
 			conn.ReadJSON(&m)
 			Convey("Receive data through websocket should resemble", func() {
 				So(m, ShouldResemble, models.WebsocketMessage{
-					BitcoinPrice:  0.03,
 					UsersOnline:   2,
 					LatestIncomes: []interface{}{123.456, "hello"},
 				})

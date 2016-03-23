@@ -16,18 +16,18 @@ import (
 
 const (
 	validBTCAddr   = "1EFJFaeATfp2442TGcHS5mgadXJjsSSP2T"
-	invalidBTCAddr = "bitcoin"
+	invalidBTCAddr = "address"
 
 	validEmail   = "valid@email.cc"
 	invalidEmail = "invalid@.ee.cc"
 )
 
 func TestSignup(t *testing.T) {
-	requestDataJSON := func(email, btcAddr string) []byte {
+	requestDataJSON := func(email string) []byte {
 		raw, _ := json.Marshal(map[string]interface{}{
-			"email":           email,
-			"bitcoin_address": btcAddr,
-			"referer_id":      2,
+			"email":      email,
+			"address":    "address",
+			"referer_id": 2,
 		})
 		return raw
 	}
@@ -47,50 +47,29 @@ func TestSignup(t *testing.T) {
 			nil,
 		},
 		{
-			"invalid email, invalid bitcoin address",
-			requestDataJSON(invalidEmail, invalidBTCAddr),
+			"invalid email",
+			requestDataJSON(invalidEmail),
 			400,
 			nil,
 			nil,
 		},
 		{
-			"valid email, invalid bitcoin address",
-			requestDataJSON(validEmail, invalidEmail),
-			400,
-			nil,
-			nil,
-		},
-		{
-			"invalid email, valid bitcoin address",
-			requestDataJSON(invalidEmail, validBTCAddr),
-			400,
-			nil,
-			nil,
-		},
-		{
-			"duplicate email, valid bitcoin address",
-			requestDataJSON(validEmail, validBTCAddr),
+			"duplicate email",
+			requestDataJSON(validEmail),
 			409,
 			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
 		},
 		{
-			"valid email, duplicate bitcoin address",
-			requestDataJSON(validEmail, validBTCAddr),
-			409,
-			mockGetUserByID(models.User{}, nil),
-			mockCreateUser(errors.New(errors.ErrCodeDuplicateBitcoinAddress)),
-		},
-		{
-			"valid email, valid bitcoin address, but create user unknown error",
-			requestDataJSON(validEmail, validBTCAddr),
+			"valid email, but create user unknown error",
+			requestDataJSON(validEmail),
 			500,
 			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeUnknown)),
 		},
 		{
-			"valid email, valid bitcoin address",
-			requestDataJSON(validEmail, validBTCAddr),
+			"valid email",
+			requestDataJSON(validEmail),
 			200,
 			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(nil),

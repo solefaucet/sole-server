@@ -4,10 +4,10 @@
 CREATE TABLE `withdrawals` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
-  `bitcoin_address` VARCHAR(63) NOT NULL COMMENT 'withdraw to bitcoin address',
+  `address` VARCHAR(63) NOT NULL COMMENT 'withdraw to address',
   `amount` INT(11) NOT NULL,
   `status` TINYINT(4) NOT NULL DEFAULT 0 COMMENT '0: pending, 1: processing 2: processed',
-  `transaction_hash` VARCHAR(127) NOT NULL DEFAULT '' COMMENT 'transaction_hash identifies the transaction in bitcoin blockchain',
+  `transaction_id` VARCHAR(127) NOT NULL DEFAULT '' COMMENT 'transaction_id identifies the transaction',
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -15,7 +15,7 @@ CREATE TABLE `withdrawals` (
 
 ALTER TABLE `withdrawals`
 ADD INDEX (`user_id`),
-ADD INDEX (`bitcoin_address`),
+ADD INDEX (`address`),
 ADD INDEX (`status`),
 ADD INDEX (`created_at`);
 

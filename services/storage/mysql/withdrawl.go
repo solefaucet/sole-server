@@ -34,7 +34,7 @@ func createWithdrawal(tx *sqlx.Tx, withdrawal models.Withdrawal) *errors.Error {
 	if err := deductUserBalanceBy(tx, withdrawal.UserID, withdrawal.Amount); err != nil {
 		return err
 	}
-	return insertWithdrawal(tx, withdrawal.UserID, withdrawal.BitcoinAddress, withdrawal.Amount)
+	return insertWithdrawal(tx, withdrawal.UserID, withdrawal.Address, withdrawal.Amount)
 }
 
 func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta int64) *errors.Error {
@@ -57,9 +57,9 @@ func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta int64) *errors.Error {
 	return nil
 }
 
-func insertWithdrawal(tx *sqlx.Tx, userID int64, bitcoinAddress string, amount int64) *errors.Error {
-	rawSQL := "INSERT INTO withdrawals (`user_id`, `bitcoin_address`, `amount`) VALUES (?, ?, ?)"
-	if _, err := tx.Exec(rawSQL, userID, bitcoinAddress, amount); err != nil {
+func insertWithdrawal(tx *sqlx.Tx, userID int64, address string, amount int64) *errors.Error {
+	rawSQL := "INSERT INTO withdrawals (`user_id`, `address`, `amount`) VALUES (?, ?, ?)"
+	if _, err := tx.Exec(rawSQL, userID, address, amount); err != nil {
 		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
 			ErrStringForLogging: fmt.Sprintf("Create withdrawal error error: %v", err),

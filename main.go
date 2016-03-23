@@ -176,9 +176,9 @@ func createWithdrawal() {
 	f := func(users []models.User, handler func(err error, u models.User)) {
 		for i := range users {
 			handler(store.CreateWithdrawal(models.Withdrawal{
-				UserID:         users[i].ID,
-				Amount:         users[i].Balance,
-				BitcoinAddress: users[i].BitcoinAddress,
+				UserID:  users[i].ID,
+				Amount:  users[i].Balance,
+				Address: users[i].Address,
 			}), users[i])
 		}
 	}

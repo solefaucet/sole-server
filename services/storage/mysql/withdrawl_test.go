@@ -57,14 +57,14 @@ func TestInsertWithdrawal(t *testing.T) {
 func TestCreateWithdrawal(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e", BitcoinAddress: "b"})
+		s.CreateUser(models.User{Email: "e", Address: "b"})
 		s.CreateRewardIncome(models.Income{UserID: 1, Income: 10}, time.Now())
 
 		Convey("When create withdrawal", func() {
 			err := s.CreateWithdrawal(models.Withdrawal{
-				UserID:         1,
-				BitcoinAddress: "b",
-				Amount:         5,
+				UserID:  1,
+				Address: "b",
+				Amount:  5,
 			})
 
 			Convey("Error should be nil", func() {
@@ -77,10 +77,10 @@ func TestCreateWithdrawal(t *testing.T) {
 func TestGetWithdrawalsSince(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.db.MustExec("INSERT INTO `users` (email, bitcoin_address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, BitcoinAddress: "b", Amount: 1})
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, BitcoinAddress: "b", Amount: 2})
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, BitcoinAddress: "b", Amount: 3})
+		s.db.MustExec("INSERT INTO `users` (email, address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 1})
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 2})
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 3})
 
 		Convey("When get withdrawals since now", func() {
 			result, _ := s.GetWithdrawalsSince(1, time.Now().AddDate(0, 0, -1), 2)
@@ -103,10 +103,10 @@ func TestGetWithdrawalsSince(t *testing.T) {
 func TestGetWithdrawalsUntil(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		s.db.MustExec("INSERT INTO `users` (email, bitcoin_address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, BitcoinAddress: "b", Amount: 1})
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, BitcoinAddress: "b", Amount: 2})
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, BitcoinAddress: "b", Amount: 3})
+		s.db.MustExec("INSERT INTO `users` (email, address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 1})
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 2})
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 3})
 
 		Convey("When get withdrawals until now", func() {
 			result, _ := s.GetWithdrawalsUntil(1, time.Now().AddDate(0, 0, 1), 2)

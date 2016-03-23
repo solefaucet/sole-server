@@ -12,7 +12,7 @@ const (
 const (
 	_ Code = iota + 5000
 	ErrCodeDuplicateEmail
-	ErrCodeDuplicateBitcoinAddress
+	ErrCodeDuplicateAddress
 	ErrCodeDuplicateAuthToken
 )
 
