@@ -22,16 +22,3 @@ func (s Storage) GetLatestConfig() (models.Config, *errors.Error) {
 
 	return result, nil
 }
-
-// UpdateLatestBitcoinPrice updates bitcoin price
-func (s Storage) UpdateLatestBitcoinPrice(p int64) *errors.Error {
-	_, err := s.db.Exec("UPDATE configs SET `bitcoin_price` = ?", p)
-	if err != nil {
-		return &errors.Error{
-			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Update latest bitcoin price unknown error: %v", err),
-		}
-	}
-
-	return nil
-}

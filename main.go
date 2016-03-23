@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"html/template"
 	"io"
 	"log"
@@ -23,7 +22,6 @@ import (
 	"github.com/freeusd/solebtc/services/mail/mandrill"
 	"github.com/freeusd/solebtc/services/storage"
 	"github.com/freeusd/solebtc/services/storage/mysql"
-	"github.com/freeusd/solebtc/utils"
 )
 
 var (
@@ -154,9 +152,6 @@ func initCache() {
 	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
 	panicIfErrored(err)
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
-
-	// update bitcoin price on start
-	updateBitcoinPrice()
 }
 
 func initHub() {
@@ -166,36 +161,8 @@ func initHub() {
 func initCronjob() {
 	c := cron.New()
 	panicIfErrored(c.AddFunc("@every 1m", syncCache))
-	panicIfErrored(c.AddFunc("@every 1m", safeFuncWrapper(updateBitcoinPrice)))
 	panicIfErrored(c.AddFunc("@daily", createWithdrawal))
 	c.Start()
-}
-
-// update bitcoin price in cache
-func updateBitcoinPrice() {
-	// get bitcoin price from blockchain.info
-	p, err := utils.BitcoinPrice()
-	if err != nil {
-		outLogger.Printf("Fetch bitcoin price error: %v\n", err)
-		return
-	}
-
-	// update bitcoin price in database
-	if err := store.UpdateLatestBitcoinPrice(p); err != nil {
-		outLogger.Printf("Update bitcoin price in database error: %v\n", err)
-		return
-	}
-
-	// update bitcoin price in cache
-	memoryCache.UpdateBitcoinPrice(p)
-
-	// broadcast bitcoin price to all users
-	msg, _ := json.Marshal(models.WebsocketMessage{
-		BitcoinPrice: utils.HumanReadableUSD(p),
-	})
-	connsHub.Broadcast(msg)
-
-	outLogger.Printf("Successfully update bitcoin price to %v\n", p)
 }
 
 // automatically create withdrawal

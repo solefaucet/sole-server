@@ -83,13 +83,6 @@ func (c *Cache) SetLatestConfig(config models.Config) {
 	c.config = config
 }
 
-// UpdateBitcoinPrice updates bitcoin price
-func (c *Cache) UpdateBitcoinPrice(p int64) {
-	c.configMutex.Lock()
-	defer c.configMutex.Unlock()
-	c.config.BitcoinPrice = p
-}
-
 // InsertIncome inserts a new income
 func (c *Cache) InsertIncome(income interface{}) {
 	c.incomesMutex.Lock()

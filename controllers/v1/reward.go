@@ -46,9 +46,7 @@ func GetReward(
 			rewardRateType = models.RewardRateTypeMore
 		}
 		rewardRates := getRewardRatesByType(rewardRateType)
-		rewardUSD := utils.RandomReward(rewardRates)
-		btcPrice := getSystemConfig().BitcoinPrice
-		reward := utils.MachineReadableBTC(float64(rewardUSD) / float64(btcPrice))
+		reward := utils.RandomReward(rewardRates)
 		rewardReferer := reward * getSystemConfig().RefererRewardRate / 100
 
 		// create income reward

@@ -38,21 +38,3 @@ func TestGetLatestConfig(t *testing.T) {
 		return err
 	})
 }
-
-func TestUpdateLatestBitcoinPrice(t *testing.T) {
-	Convey("Given mysql storage", t, func() {
-		s := prepareDatabaseForTesting()
-
-		Convey("When update bitcoin price", func() {
-			err := s.UpdateLatestBitcoinPrice(10000000)
-
-			Convey("Error should be nil", func() {
-				So(err, ShouldBeNil)
-			})
-		})
-	})
-
-	withClosedConn(t, "When update bitcoin price", func(s Storage) *errors.Error {
-		return s.UpdateLatestBitcoinPrice(100)
-	})
-}

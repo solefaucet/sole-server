@@ -36,7 +36,6 @@ type Storage interface {
 
 	// Config
 	GetLatestConfig() (models.Config, *errors.Error)
-	UpdateLatestBitcoinPrice(int64) *errors.Error
 
 	// Income
 	CreateRewardIncome(models.Income, time.Time) *errors.Error
