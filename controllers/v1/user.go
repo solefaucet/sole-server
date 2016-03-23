@@ -1,32 +1,18 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
-	"github.com/freeusd/solebtc/utils"
 )
 
 type signupPayload struct {
 	Email          string `json:"email" binding:"required,email"`
 	BitcoinAddress string `json:"bitcoin_address" binding:"required"`
 	RefererID      int64  `json:"referer_id,omitempty" binding:"-"`
-}
-
-func (p *signupPayload) validate() error {
-	if ok, err := utils.ValidateBitcoinAddress(p.BitcoinAddress); err != nil || !ok {
-		e := errors.New(errors.ErrCodeInvalidBitcoinAddress)
-		if err != nil {
-			e.ErrStringForLogging = fmt.Sprintf("validate bitcoin address error: %v", err)
-		}
-		return e
-	}
-
-	return nil
 }
 
 func userWithSignupPayload(p signupPayload) models.User {
@@ -41,10 +27,6 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
-			return
-		}
-		if err := payload.validate(); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 

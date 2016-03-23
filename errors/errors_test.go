@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleError() {
-	e := New(ErrCodeInvalidBitcoinAddress)
+	e := New(ErrCodeDuplicateEmail)
 	e.ErrStringForLogging = "for logging purpose"
 	fmt.Println(e)
 
@@ -14,6 +14,6 @@ func ExampleError() {
 	fmt.Println(string(raw))
 
 	// Output:
-	// 4001
-	// {"code":4001}
+	// 5001
+	// {"code":5001}
 }

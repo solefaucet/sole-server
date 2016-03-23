@@ -19,7 +19,6 @@ const (
 // validate error
 const (
 	_ Code = iota + 4000
-	ErrCodeInvalidBitcoinAddress
 )
 
 // external service error
