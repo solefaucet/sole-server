@@ -68,7 +68,7 @@ func GetReward(
 			Amount  float64   `json:"amount"`
 			Type    string    `json:"type"`
 			Time    time.Time `json:"time"`
-		}{user.Address, utils.HumanReadableBTC(reward), "reward", now}
+		}{user.Address, utils.ToHuman(reward), "reward", now}
 		insertIncome(deltaIncome)
 
 		// broadcast delta income to all clients

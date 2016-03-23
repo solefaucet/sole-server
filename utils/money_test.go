@@ -2,30 +2,37 @@ package utils
 
 import "fmt"
 
-func ExampleHumanReadableUSD() {
-	fmt.Println(HumanReadableUSD(10))
+func ExampleInitializePriceConverter() {
+	for _, typ := range []string{"usd", "btc", "unknown"} {
+		fmt.Println(InitializePriceConverter(typ))
+	}
 
 	// Output:
-	// 0.001
+	// <nil>
+	// <nil>
+	// converter unknown not exist
 }
 
-func ExampleMachineReadableUSD() {
-	fmt.Println(MachineReadableUSD(0.01))
+func ExampleToMachine() {
+	InitializePriceConverter("usd")
+	fmt.Println(ToMachine(0.01))
+
+	InitializePriceConverter("btc")
+	fmt.Println(machineReadableBTC(0.01))
 
 	// Output:
 	// 100
+	// 1000000
 }
 
-func ExampleHumanReadableBTC() {
-	fmt.Println(HumanReadableBTC(100000))
+func ExampleToHuman() {
+	InitializePriceConverter("usd")
+	fmt.Println(humanReadableUSD(10))
+
+	InitializePriceConverter("btc")
+	fmt.Println(ToHuman(100000))
 
 	// Output:
 	// 0.001
-}
-
-func ExampleMachineReadableBTC() {
-	fmt.Println(MachineReadableBTC(0.01))
-
-	// Output:
-	// 1000000
+	// 0.001
 }

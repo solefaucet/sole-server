@@ -22,6 +22,7 @@ import (
 	"github.com/freeusd/solebtc/services/mail/mandrill"
 	"github.com/freeusd/solebtc/services/storage"
 	"github.com/freeusd/solebtc/services/storage/mysql"
+	"github.com/freeusd/solebtc/utils"
 )
 
 var (
@@ -37,6 +38,7 @@ var (
 func init() {
 	// ORDER MATTERs
 	initConfig()
+	initPriceConverter()
 	initHub()
 	initMailer()
 	initStorage()
@@ -120,6 +122,10 @@ func createRewardIncome(income models.Income, now time.Time) *errors.Error {
 	memoryCache.IncrementTotalReward(now, totalReward)
 
 	return nil
+}
+
+func initPriceConverter() {
+	panicIfErrored(utils.InitializePriceConverter(config.Currency))
 }
 
 func initMailer() {

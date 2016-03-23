@@ -1,25 +1,54 @@
 package utils
 
+import "fmt"
+
+var (
+	toHuman   func(int64) float64
+	toMachine func(float64) int64
+)
+
+// InitializePriceConverter initialize price converter only once
+func InitializePriceConverter(typ string) error {
+	switch typ {
+	case "usd":
+		toHuman = humanReadableUSD
+		toMachine = machineReadableUSD
+	case "btc":
+		toHuman = humanReadableBTC
+		toMachine = machineReadableBTC
+	default:
+		return fmt.Errorf("converter %s not exist", typ)
+	}
+
+	return nil
+}
+
+// ToHuman converts to human readable price
+func ToHuman(i int64) float64 {
+	return toHuman(i)
+}
+
+// ToMachine converts to what machine want to save in db
+func ToMachine(f float64) int64 {
+	return toMachine(f)
+}
+
 const k10 = 1e4
 
-// HumanReadableUSD converts MachineReadableUSD to HumanReadableUSD
-func HumanReadableUSD(v int64) float64 {
+func humanReadableUSD(v int64) float64 {
 	return float64(v) / k10
 }
 
-// MachineReadableUSD converts HumanReadableUSD to HumanReadableUSD
-func MachineReadableUSD(v float64) int64 {
+func machineReadableUSD(v float64) int64 {
 	return int64(v * k10)
 }
 
 const satonish = 1e8
 
-// HumanReadableBTC converts MachineReadableBTC to HumanReadableBTC
-func HumanReadableBTC(v int64) float64 {
+func humanReadableBTC(v int64) float64 {
 	return float64(v) / satonish
 }
 
-// MachineReadableBTC converts HumanReadableBTC to MachineReadableBTC
-func MachineReadableBTC(v float64) int64 {
+func machineReadableBTC(v float64) int64 {
 	return int64(v * satonish)
 }

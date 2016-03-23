@@ -5,6 +5,7 @@ import (
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+	"github.com/freeusd/solebtc/utils"
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
@@ -12,6 +13,7 @@ import (
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
+	utils.InitializePriceConverter("btc")
 }
 
 func mockGetUserByEmail(user models.User, err *errors.Error) dependencyGetUserByEmail {
