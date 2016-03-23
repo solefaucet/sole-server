@@ -15,9 +15,6 @@ import (
 )
 
 const (
-	validBTCAddr   = "1EFJFaeATfp2442TGcHS5mgadXJjsSSP2T"
-	invalidBTCAddr = "address"
-
 	validEmail   = "valid@email.cc"
 	invalidEmail = "invalid@.ee.cc"
 )
