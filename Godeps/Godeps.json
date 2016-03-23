@@ -77,15 +77,6 @@
 			"Rev": "d2dd0262208475919e1a362f675cfc0e7c10e905"
 		},
 		{
-			"ImportPath": "github.com/moul/http2curl",
-			"Rev": "1812aee76a1ce98d604a44200c6a23c689b17a89"
-		},
-		{
-			"ImportPath": "github.com/parnurzeal/gorequest",
-			"Comment": "v0.2.13-9-gc73179d",
-			"Rev": "c73179dd31355d86bd7692de9b47623d6d0fa696"
-		},
-		{
 			"ImportPath": "github.com/robfig/cron",
 			"Comment": "v1-7-g32d9c27",
 			"Rev": "32d9c273155a0506d27cf73dd1246e86a470997e"
@@ -122,10 +113,6 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "cbbbe2bc0f2efdd2afb318d93f1eadb19350e4a3"
-		},
-		{
-			"ImportPath": "golang.org/x/net/publicsuffix",
 			"Rev": "cbbbe2bc0f2efdd2afb318d93f1eadb19350e4a3"
 		},
 		{
