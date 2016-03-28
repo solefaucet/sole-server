@@ -104,8 +104,8 @@ func TestVerifyEmail(t *testing.T) {
 			req, _ := http.NewRequest("PUT", route, nil)
 			r.ServeHTTP(resp, req)
 
-			Convey("Response code should be 401", func() {
-				So(resp.Code, ShouldEqual, 401)
+			Convey("Response code should be 500", func() {
+				So(resp.Code, ShouldEqual, http.StatusInternalServerError)
 			})
 		})
 	})

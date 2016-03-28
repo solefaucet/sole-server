@@ -62,12 +62,13 @@ func VerifyEmail(
 
 		// check session lifetime
 		session, err := getSessionByToken(token)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
 		if session.UpdatedAt.Add(3 * time.Hour).Before(time.Now()) {
-			if err != nil {
-				c.AbortWithError(http.StatusUnauthorized, err)
-			} else {
-				c.AbortWithStatus(http.StatusUnauthorized)
-			}
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
