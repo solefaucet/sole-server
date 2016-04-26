@@ -37,7 +37,7 @@ func createWithdrawal(tx *sqlx.Tx, withdrawal models.Withdrawal) *errors.Error {
 	return insertWithdrawal(tx, withdrawal.UserID, withdrawal.Address, withdrawal.Amount)
 }
 
-func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta int64) *errors.Error {
+func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta float64) *errors.Error {
 	result, err := tx.Exec("UPDATE users SET `balance` = `balance` - ? WHERE `id` = ? AND `balance` >= ?", delta, userID, delta)
 	if err != nil {
 		return &errors.Error{
@@ -57,7 +57,7 @@ func deductUserBalanceBy(tx *sqlx.Tx, userID int64, delta int64) *errors.Error {
 	return nil
 }
 
-func insertWithdrawal(tx *sqlx.Tx, userID int64, address string, amount int64) *errors.Error {
+func insertWithdrawal(tx *sqlx.Tx, userID int64, address string, amount float64) *errors.Error {
 	rawSQL := "INSERT INTO withdrawals (`user_id`, `address`, `amount`) VALUES (?, ?, ?)"
 	if _, err := tx.Exec(rawSQL, userID, address, amount); err != nil {
 		return &errors.Error{

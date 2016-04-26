@@ -23,8 +23,8 @@ func TestGetLatestConfig(t *testing.T) {
 			Convey("Result should be zero value", func() {
 				So(result, func(actual interface{}, expected ...interface{}) string {
 					config := actual.(models.Config)
-					if config.TotalRewardThreshold == 100000000 &&
-						config.RefererRewardRate == 10 {
+					if config.TotalRewardThreshold == 10 &&
+						config.RefererRewardRate == 0.1 {
 						return ""
 					}
 					return fmt.Sprintf("Config %v is not expected", config)

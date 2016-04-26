@@ -5,7 +5,7 @@ CREATE TABLE `withdrawals` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
   `address` VARCHAR(63) NOT NULL COMMENT 'withdraw to address',
-  `amount` INT(11) NOT NULL,
+  `amount` DECIMAL(19, 8) NOT NULL,
   `status` TINYINT(4) NOT NULL DEFAULT 0 COMMENT '0: pending, 1: processing 2: processed',
   `transaction_id` VARCHAR(127) NOT NULL DEFAULT '' COMMENT 'transaction_id identifies the transaction',
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

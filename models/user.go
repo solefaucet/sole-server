@@ -15,8 +15,8 @@ type User struct {
 	Email               string    `db:"email" json:"email,omitempty"`
 	Address             string    `db:"address" json:"address,omitempty"`
 	Status              string    `db:"status" json:"status,omitempty"`
-	Balance             int64     `db:"balance" json:"balance"`
-	MinWithdrawalAmount int64     `db:"min_withdrawal_amount" json:"min_withdrawal_amount"`
+	Balance             float64   `db:"balance" json:"balance"`
+	MinWithdrawalAmount float64   `db:"min_withdrawal_amount" json:"min_withdrawal_amount"`
 	RewardInterval      int64     `db:"reward_interval" json:"reward_interval"`
 	RewardedAt          time.Time `db:"rewarded_at" json:"rewarded_at"`
 	RefererID           int64     `db:"referer_id" json:"-"`

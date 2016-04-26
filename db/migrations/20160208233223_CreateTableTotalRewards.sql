@@ -3,7 +3,7 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE `total_rewards` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `total` BIGINT(19) NOT NULL DEFAULT 0 COMMENT 'total reward today, count as 1 / 10,000 USD',
+  `total` DECIMAL(19, 8) NOT NULL DEFAULT 0 COMMENT 'total reward today',
   `created_at` DATE NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

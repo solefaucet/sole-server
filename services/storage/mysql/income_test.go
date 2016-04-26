@@ -159,7 +159,7 @@ func TestGetRewardIncomesUntil(t *testing.T) {
 	})
 }
 
-func income(userID, refererID, income, refererIncome int64) models.Income {
+func income(userID int64, refererID int64, income float64, refererIncome float64) models.Income {
 	return models.Income{
 		UserID:        userID,
 		RefererID:     refererID,

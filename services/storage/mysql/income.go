@@ -79,7 +79,7 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 }
 
 // update user balance
-func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta int64, now time.Time) *errors.Error {
+func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta float64, now time.Time) *errors.Error {
 	if result, err := tx.Exec("UPDATE users SET `balance` = `balance` + ?, `rewarded_at` = ? WHERE id = ?", delta, now, userID); err != nil {
 		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,
@@ -96,7 +96,7 @@ func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta int64, 
 }
 
 // update referer balance
-func incrementRefererBalanceByRewardIncome(tx *sqlx.Tx, refererID int64, delta int64) (int64, *errors.Error) {
+func incrementRefererBalanceByRewardIncome(tx *sqlx.Tx, refererID int64, delta float64) (int64, *errors.Error) {
 	result, err := tx.Exec("UPDATE users SET `balance` = `balance` + ? WHERE id = ?", delta, refererID)
 	if err != nil {
 		return 0, &errors.Error{
@@ -123,7 +123,7 @@ func insertIntoIncomesTableByRewardIncome(tx *sqlx.Tx, income models.Income) *er
 }
 
 // increment total reward
-func incrementTotalRewardByRewardIncome(tx *sqlx.Tx, totalReward int64, now time.Time) *errors.Error {
+func incrementTotalRewardByRewardIncome(tx *sqlx.Tx, totalReward float64, now time.Time) *errors.Error {
 	if _, err := tx.NamedExec(incrementTotalRewardSQL(now, totalReward)); err != nil {
 		return &errors.Error{
 			ErrCode:             errors.ErrCodeUnknown,

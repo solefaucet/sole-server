@@ -14,7 +14,7 @@ type Withdrawal struct {
 	ID            int64     `db:"id" json:"id"`
 	UserID        int64     `db:"user_id" json:"user_id"`
 	Address       string    `db:"address" json:"address"`
-	Amount        int64     `db:"amount" json:"amount"`
+	Amount        float64   `db:"amount" json:"amount"`
 	Status        int64     `db:"status" json:"status"`
 	TransactionID string    `db:"transaction_id" json:"tx_id"`
 	UpdatedAt     time.Time `db:"updated_at" json:"updated_at"`

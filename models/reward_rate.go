@@ -11,8 +11,8 @@ const (
 // RewardRate model
 type RewardRate struct {
 	ID        int64     `db:"id"`
-	Min       int64     `db:"min"`
-	Max       int64     `db:"max"`
+	Min       float64   `db:"min"`
+	Max       float64   `db:"max"`
 	Weight    int64     `db:"weight"`
 	Type      string    `db:"type"`
 	CreatedAt time.Time `db:"created_at"`

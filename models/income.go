@@ -18,8 +18,8 @@ type Income struct {
 	UserID        int64     `db:"user_id"`
 	RefererID     int64     `db:"referer_id"`
 	Type          int64     `db:"type"`
-	Income        int64     `db:"income"`
-	RefererIncome int64     `db:"referer_income"`
+	Income        float64   `db:"income"`
+	RefererIncome float64   `db:"referer_income"`
 	CreatedAt     time.Time `db:"created_at"`
 }
 

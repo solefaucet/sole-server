@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/freeusd/solebtc/models"
-	"github.com/freeusd/solebtc/services/cache"
 )
 
 // Cache implements cache.Cache interface with memory
@@ -25,7 +24,7 @@ type Cache struct {
 	incomesMutex  sync.RWMutex
 }
 
-var _ cache.Cache = &Cache{}
+// var _ cache.Cache = &Cache{}
 
 // New creates a new in-memory cache
 // number of cached incomes
@@ -44,7 +43,7 @@ func (c *Cache) GetLatestTotalReward() models.TotalReward {
 }
 
 // IncrementTotalReward increment total reward today by delta if day matches
-func (c *Cache) IncrementTotalReward(t time.Time, delta int64) {
+func (c *Cache) IncrementTotalReward(t time.Time, delta float64) {
 	c.totalRewardMutex.Lock()
 	defer c.totalRewardMutex.Unlock()
 

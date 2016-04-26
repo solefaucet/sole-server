@@ -2,13 +2,14 @@ package utils
 
 import (
 	"crypto/rand"
+	"math"
 	"math/big"
 
 	"github.com/freeusd/solebtc/models"
 )
 
 // RandomReward generates a random reward with rates given
-func RandomReward(rates []models.RewardRate) int64 {
+func RandomReward(rates []models.RewardRate) float64 {
 	var sum int64
 	for i := range rates {
 		sum += rates[i].Weight
@@ -26,7 +27,10 @@ func RandomReward(rates []models.RewardRate) int64 {
 	}
 
 	rate := rates[i]
-	return randInt64(rate.Min, rate.Max)
+	pow8 := math.Pow(10, 8)
+	min := int64(rate.Min * pow8)
+	max := int64(rate.Max * pow8)
+	return float64(randInt64(min, max)) / pow8
 }
 
 func randInt64(min, max int64) int64 {
