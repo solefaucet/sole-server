@@ -28,7 +28,7 @@ def deployStaging(branch_name):
 
     with cd(codedir):
         run('tar xf archive.tar')
-        run('go build -o ~/solebtc')
+        run('go build -o solebtc')
 
         # database version control
         run("mysql -e 'create database if not exists solebtc_prod';")
