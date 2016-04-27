@@ -28,10 +28,11 @@ def deployStaging(branch_name):
 
     with cd(codedir):
         run('tar xf archive.tar')
-        run('go install')
+        run('go build -o solebtc')
+        run('mv solebtc /usr/bin')
 
         # database version control
-        run("mysql -e 'create database if not exists solebtc_dev';")
+        run("mysql -e 'create database if not exists solebtc';")
         run('go get bitbucket.org/liamstask/goose/cmd/goose')
         run('goose up')
 
