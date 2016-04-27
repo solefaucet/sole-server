@@ -31,9 +31,9 @@ def deployStaging(branch_name):
         run('go build -o ~/solebtc')
 
         # database version control
-        run("mysql -e 'create database if not exists solebtc';")
+        run("mysql -e 'create database if not exists solebtc_prod';")
         run('go get bitbucket.org/liamstask/goose/cmd/goose')
-        run('goose up')
+        run('goose -env production up')
 
     # restart solebtc service with supervisorctl
     run('supervisorctl restart solebtc')
