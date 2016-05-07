@@ -3,10 +3,10 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/jmoiron/sqlx" // is needed for mysql driver registeration
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/services/storage"
+	"github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx" // is needed for mysql driver registeration
 )
 
 // Storage implements Storage interface for data storage

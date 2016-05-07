@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMysql(t *testing.T) {

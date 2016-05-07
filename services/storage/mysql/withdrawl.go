@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/jmoiron/sqlx"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	"github.com/jmoiron/sqlx"
 )
 
 // CreateWithdrawal creates a new withdrawal

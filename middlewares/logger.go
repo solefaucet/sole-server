@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/freeusd/solebtc/errors"
+	"github.com/gin-gonic/gin"
 )
 
 // copy from gin source code

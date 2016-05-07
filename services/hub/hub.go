@@ -3,7 +3,7 @@ package hub
 import (
 	"sync"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+	"github.com/gorilla/websocket"
 )
 
 // Hub maintains active connections and broadcast messages

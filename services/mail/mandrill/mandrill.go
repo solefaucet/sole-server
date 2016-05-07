@@ -3,9 +3,9 @@ package mandrill
 import (
 	"fmt"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/keighl/mandrill"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/services/mail"
+	"github.com/keighl/mandrill"
 )
 
 // Mailer implements Mail interface for sending email

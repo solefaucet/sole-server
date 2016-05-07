@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	"github.com/go-sql-driver/mysql"
 )
 
 // GetAuthToken gets models.AuthToken with auth_token given

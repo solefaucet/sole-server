@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/go-sql-driver/mysql"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	"github.com/go-sql-driver/mysql"
 )
 
 // GetUserByID gets a user with id given

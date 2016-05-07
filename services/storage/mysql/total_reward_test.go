@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetLatestTotalReward(t *testing.T) {

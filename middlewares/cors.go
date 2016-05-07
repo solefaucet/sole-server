@@ -3,8 +3,8 @@ package middlewares
 import (
 	"time"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/contrib/cors"
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/gin-gonic/contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // CORS allow cross domain resources sharing
