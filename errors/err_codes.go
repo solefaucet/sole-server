@@ -19,6 +19,7 @@ const (
 // validate error
 const (
 	_ Code = iota + 4000
+	ErrCodeInvalidAddress
 )
 
 // external service error

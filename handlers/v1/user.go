@@ -40,7 +40,9 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 			return
 		}
 		if !valid {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s is invalid address", payload.Address))
+			e := errors.New(errors.ErrCodeInvalidAddress)
+			e.ErrStringForLogging = fmt.Sprintf("%s is invalid address", payload.Address)
+			c.AbortWithError(http.StatusBadRequest, e)
 			return
 		}
 
