@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/freeusd/solebtc/controllers/v1"
 	"github.com/freeusd/solebtc/errors"
+	"github.com/freeusd/solebtc/handlers/v1"
 	"github.com/freeusd/solebtc/middlewares"
 	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/services/cache"
