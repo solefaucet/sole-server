@@ -14,28 +14,26 @@ type configuration struct {
 	HTTP struct {
 		Address string `validate:"required"`
 		Mode    string `validate:"required,eq=release|eq=test|eq=debug"`
-	}
-	DB        db `validate:"required,dive"`
+	} `validate:"required"`
+	DB struct {
+		DataSourceName string `validate:"required,dsn"`
+		MaxOpenConns   int    `validate:"required,min=1"`
+		MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
+	} `validate:"required"`
 	AuthToken struct {
 		Lifetime time.Duration `validate:"required"`
-	}
+	} `validate:"required"`
 	Mandrill struct {
 		Key       string `validate:"required"`
 		FromEmail string `validate:"required"`
 		FromName  string `validate:"required"`
-	}
+	} `validate:"required"`
 	Cache struct {
 		NumCachedIncomes int `validate:"required,gt=1"`
-	}
+	} `validate:"required"`
 	Template struct {
 		EmailVerificationTemplate string `validate:"required"`
-	}
-}
-
-type db struct {
-	DataSourceName string `validate:"required,dsn"`
-	MaxOpenConns   int    `validate:"required,min=1"`
-	MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
+	} `validate:"required"`
 }
 
 var config configuration
