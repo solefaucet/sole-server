@@ -1,36 +1,38 @@
 package main
 
 import (
-	"log"
+	"reflect"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"gopkg.in/go-playground/validator.v8"
+
+	"github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
 )
 
 type configuration struct {
 	HTTP struct {
-		Address string
-		Env     string // production, development, test
+		Address string `validate:"required"`
+		Mode    string `validate:"required,eq=release|eq=test|eq=debug"`
 	}
 	DB struct {
-		DataSourceName string
-		MaxOpenConns   int
-		MaxIdleConns   int
+		DataSourceName string `validate:"required,dsn"`
+		MaxOpenConns   int    `validate:"required,min=1"`
+		MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
 	}
 	AuthToken struct {
-		Lifetime time.Duration
+		Lifetime time.Duration `validate:"required"`
 	}
 	Mandrill struct {
-		Key       string
-		FromEmail string
-		FromName  string
+		Key       string `validate:"required"`
+		FromEmail string `validate:"required"`
+		FromName  string `validate:"required"`
 	}
 	Cache struct {
-		NumCachedIncomes int
+		NumCachedIncomes int `validate:"required,gt=1"`
 	}
 	Template struct {
-		EmailVerificationTemplate string
+		EmailVerificationTemplate string `validate:"required"`
 	}
 }
 
@@ -57,28 +59,34 @@ func initConfig() {
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
 
-	config.HTTP.Env = viper.GetString("env")
+	config.HTTP.Mode = viper.GetString("mode")
 	config.HTTP.Address = viper.GetString("address")
-	config.DB.DataSourceName = viper.GetString("dsn")
 
-	authTokenLifetime, err := time.ParseDuration(viper.GetString("auth_token_lifetime"))
-	if err != nil {
-		log.Fatalf("parse auth_token_lifetime error: %v", err)
-	}
-	config.AuthToken.Lifetime = authTokenLifetime
+	config.DB.DataSourceName = viper.GetString("dsn")
+	config.DB.MaxOpenConns = viper.GetInt("max_open_conns")
+	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
+
+	config.AuthToken.Lifetime = must(time.ParseDuration(viper.GetString("auth_token_lifetime"))).(time.Duration)
+
 	config.Mandrill.Key = viper.GetString("mandrill_key")
 	config.Mandrill.FromEmail = viper.GetString("mandrill_from_email")
 	config.Mandrill.FromName = viper.GetString("mandrill_from_name")
-	config.DB.MaxOpenConns = viper.GetInt("max_open_conns")
-	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
+
 	config.Cache.NumCachedIncomes = viper.GetInt("num_cached_incomes")
+
 	config.Template.EmailVerificationTemplate = viper.GetString("email_verification_template")
+
+	// validate config
+	must(nil, validateConfiguration(config))
 }
 
-func ginEnvMode() string {
-	return map[string]string{
-		"production":  gin.ReleaseMode,
-		"development": gin.DebugMode,
-		"test":        gin.TestMode,
-	}[config.HTTP.Env]
+func validateConfiguration(c configuration) error {
+	validate := validator.New(&validator.Config{TagName: "validate"})
+	must(nil, validate.RegisterValidation("dsn", dsnValidator))
+	return validate.Struct(c)
+}
+
+func dsnValidator(v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value, field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string) bool {
+	dsn, err := mysql.ParseDSN(field.String())
+	return err == nil && dsn.ParseTime
 }

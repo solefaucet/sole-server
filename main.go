@@ -44,7 +44,7 @@ func init() {
 }
 
 func main() {
-	gin.SetMode(ginEnvMode())
+	gin.SetMode(config.HTTP.Mode)
 	router := gin.New()
 
 	// middlewares
