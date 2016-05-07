@@ -80,6 +80,9 @@ func initConfig() {
 	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
 
 	config.Log.Level = viper.GetString("log_level")
+	config.Log.Graylog.Address = viper.GetString("graylog_address")
+	config.Log.Graylog.Level = viper.GetString("graylog_level")
+	config.Log.Graylog.Facility = viper.GetString("graylog_facility")
 
 	config.AuthToken.Lifetime = must(time.ParseDuration(viper.GetString("auth_token_lifetime"))).(time.Duration)
 
