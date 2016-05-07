@@ -104,7 +104,7 @@ func main() {
 	)
 
 	outLogger.Printf("Running on %s\n", config.HTTP.Address)
-	panicIfErrored(router.Run(config.HTTP.Address))
+	must(nil, router.Run(config.HTTP.Address))
 }
 
 func createRewardIncome(income models.Income, now time.Time) *errors.Error {
@@ -128,8 +128,7 @@ func initMailer() {
 
 func initStorage() {
 	// storage service
-	s, err := mysql.New(config.DB.DataSourceName)
-	panicIfErrored(err)
+	s := must(mysql.New(config.DB.DataSourceName)).(mysql.Storage)
 	s.SetMaxOpenConns(config.DB.MaxOpenConns)
 	s.SetMaxIdleConns(config.DB.MaxIdleConns)
 	store = s
@@ -139,17 +138,13 @@ func initCache() {
 	memoryCache = memory.New(config.Cache.NumCachedIncomes)
 
 	// init config in cache
-	config, err := store.GetLatestConfig()
-	panicIfErrored(err)
-	memoryCache.SetLatestConfig(config)
+	memoryCache.SetLatestConfig(must(store.GetLatestConfig()).(models.Config))
 
 	// init rates in cache
-	lessRates, err := store.GetRewardRatesByType(models.RewardRateTypeLess)
-	panicIfErrored(err)
+	lessRates := must(store.GetRewardRatesByType(models.RewardRateTypeLess)).([]models.RewardRate)
 	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
 
-	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
-	panicIfErrored(err)
+	moreRates := must(store.GetRewardRatesByType(models.RewardRateTypeMore)).([]models.RewardRate)
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 }
 
@@ -159,8 +154,8 @@ func initHub() {
 
 func initCronjob() {
 	c := cron.New()
-	panicIfErrored(c.AddFunc("@every 1m", syncCache))
-	panicIfErrored(c.AddFunc("@daily", createWithdrawal))
+	must(nil, c.AddFunc("@every 1m", syncCache))
+	must(nil, c.AddFunc("@daily", createWithdrawal))
 	c.Start()
 }
 
@@ -234,7 +229,7 @@ func syncCache() {
 }
 
 // fail fast on initialization
-func panicIfErrored(err error) {
+func must(i interface{}, err error) interface{} {
 	if err != nil {
 		// Tricky:
 		// pass a nil *errors.Error into this function
@@ -251,4 +246,6 @@ func panicIfErrored(err error) {
 			panic(err)
 		}
 	}
+
+	return i
 }
