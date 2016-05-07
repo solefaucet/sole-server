@@ -27,7 +27,6 @@ import (
 
 var (
 	errWriter   io.Writer = os.Stderr
-	outLogger             = log.New(os.Stdout, "[SoleBTC] ", log.LstdFlags)
 	errLogger             = log.New(errWriter, "[SoleBTC] ", log.LstdFlags)
 	mailer      mail.Mailer
 	store       storage.Storage
@@ -132,7 +131,7 @@ func main() {
 			hub.WrapPutWebsocketConn(connsHub.PutConn)),
 	)
 
-	outLogger.Printf("Running on %s\n", config.HTTP.Address)
+	logrus.WithField("address", config.HTTP.Address).Info("listen and serve http")
 	must(nil, router.Run(config.HTTP.Address))
 }
 
@@ -207,7 +206,7 @@ func createWithdrawal() {
 	})
 
 	if !errored {
-		outLogger.Println("Create withdrawals successfully...")
+		logrus.Info("succeed to create withdrawals")
 	}
 }
 
