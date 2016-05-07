@@ -1,13 +1,18 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	"github.com/freeusd/solebtc/utils"
 	"github.com/gin-gonic/gin"
 )
+
+// can be mocked out to test
+var validateAddress = utils.ValidateAddress
 
 type signupPayload struct {
 	Email     string `json:"email" binding:"required,email"`
@@ -27,6 +32,15 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
+			return
+		}
+		valid, err := validateAddress(payload.Address)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		if !valid {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s is invalid address", payload.Address))
 			return
 		}
 

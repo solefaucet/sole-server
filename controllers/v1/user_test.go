@@ -30,16 +30,18 @@ func TestSignup(t *testing.T) {
 	}
 
 	testdata := []struct {
-		when        string
-		requestData []byte
-		code        int
-		getUserByID dependencyGetUserByID
-		createUser  dependencyCreateUser
+		when            string
+		requestData     []byte
+		code            int
+		getUserByID     dependencyGetUserByID
+		createUser      dependencyCreateUser
+		validateAddress func(string) (bool, error)
 	}{
 		{
 			"invalid json data",
 			[]byte("huhu"),
 			400,
+			nil,
 			nil,
 			nil,
 		},
@@ -49,6 +51,23 @@ func TestSignup(t *testing.T) {
 			400,
 			nil,
 			nil,
+			nil,
+		},
+		{
+			"validate address error",
+			requestDataJSON(validEmail),
+			500,
+			nil,
+			nil,
+			func(string) (bool, error) { return false, fmt.Errorf("err") },
+		},
+		{
+			"invalid address",
+			requestDataJSON(validEmail),
+			400,
+			nil,
+			nil,
+			func(string) (bool, error) { return false, nil },
 		},
 		{
 			"duplicate email",
@@ -56,6 +75,7 @@ func TestSignup(t *testing.T) {
 			409,
 			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
+			func(string) (bool, error) { return true, nil },
 		},
 		{
 			"valid email, but create user unknown error",
@@ -63,6 +83,7 @@ func TestSignup(t *testing.T) {
 			500,
 			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(errors.New(errors.ErrCodeUnknown)),
+			func(string) (bool, error) { return true, nil },
 		},
 		{
 			"valid email",
@@ -70,12 +91,14 @@ func TestSignup(t *testing.T) {
 			200,
 			mockGetUserByID(models.User{}, nil),
 			mockCreateUser(nil),
+			func(string) (bool, error) { return true, nil },
 		},
 	}
 
 	for _, v := range testdata {
 		Convey("Given Signup controller", t, func() {
 			handler := Signup(v.createUser, v.getUserByID)
+			validateAddress = v.validateAddress
 
 			Convey(fmt.Sprintf("When request with %s", v.when), func() {
 				route := "/users"
