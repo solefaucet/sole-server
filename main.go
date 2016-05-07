@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"runtime"
 	"time"
 
 	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -251,19 +250,5 @@ func panicIfErrored(err error) {
 		} else {
 			panic(err)
 		}
-	}
-}
-
-// wrap a function with recover
-func safeFuncWrapper(f func()) func() {
-	return func() {
-		defer func() {
-			if err := recover(); err != nil {
-				buf := make([]byte, 1024)
-				runtime.Stack(buf, true)
-				errLogger.Printf("%v\n%s\n", err, buf)
-			}
-		}()
-		f()
 	}
 }
