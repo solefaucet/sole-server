@@ -76,14 +76,15 @@ func main() {
 	router := gin.New()
 
 	// middlewares
-	recovery := gin.RecoveryWithWriter(errWriter)
-	logger := middlewares.LoggerWithLogger(outLogger)
-	cors := middlewares.CORS()
-	errorWriter := middlewares.ErrorWriter()
 	authRequired := middlewares.AuthRequired(store.GetAuthToken, config.AuthToken.Lifetime)
 
 	// globally use middlewares
-	router.Use(recovery, logger, cors, errorWriter)
+	router.Use(
+		middlewares.RecoveryWithWriter(os.Stderr),
+		middlewares.Logger(),
+		middlewares.CORS(),
+		gin.ErrorLogger(),
+	)
 
 	// version 1 api endpoints
 	v1Endpoints := router.Group("/v1")
