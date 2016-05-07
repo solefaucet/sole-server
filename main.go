@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/freeusd/solebtc/errors"
@@ -35,12 +36,28 @@ var (
 
 func init() {
 	// ORDER MATTERs
+
+	// configuration
 	initConfig()
-	initHub()
-	initMailer()
-	initStorage()
-	initCache()
+
+	// connection hub
+	connsHub = list.New()
+
+	// storage
+	s := mysql.New(config.DB.DataSourceName)
+	s.SetMaxOpenConns(config.DB.MaxOpenConns)
+	s.SetMaxIdleConns(config.DB.MaxIdleConns)
+	store = s
+
+	// cache
+	memoryCache = memory.New(config.Cache.NumCachedIncomes)
+	setCacheFromStore(memoryCache, store)
+
+	// cronjob
 	initCronjob()
+
+	// mailer
+	mailer = mandrill.New(config.Mandrill.Key, config.Mandrill.FromEmail, config.Mandrill.FromName)
 }
 
 func main() {
@@ -121,40 +138,23 @@ func createRewardIncome(income models.Income, now time.Time) *errors.Error {
 	return nil
 }
 
-func initMailer() {
-	// mailer
-	mailer = mandrill.New(config.Mandrill.Key, config.Mandrill.FromEmail, config.Mandrill.FromName)
-}
+func setCacheFromStore(c cache.Cache, s storage.Storage) {
+	c.SetLatestConfig(must(s.GetLatestConfig()).(models.Config))
 
-func initStorage() {
-	// storage service
-	s := mysql.New(config.DB.DataSourceName)
-	s.SetMaxOpenConns(config.DB.MaxOpenConns)
-	s.SetMaxIdleConns(config.DB.MaxIdleConns)
-	store = s
-}
+	lessRates := must(s.GetRewardRatesByType(models.RewardRateTypeLess)).([]models.RewardRate)
+	c.SetRewardRates(models.RewardRateTypeLess, lessRates)
 
-func initCache() {
-	memoryCache = memory.New(config.Cache.NumCachedIncomes)
-
-	// init config in cache
-	memoryCache.SetLatestConfig(must(store.GetLatestConfig()).(models.Config))
-
-	// init rates in cache
-	lessRates := must(store.GetRewardRatesByType(models.RewardRateTypeLess)).([]models.RewardRate)
-	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
-
-	moreRates := must(store.GetRewardRatesByType(models.RewardRateTypeMore)).([]models.RewardRate)
-	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
-}
-
-func initHub() {
-	connsHub = list.New()
+	moreRates := must(s.GetRewardRatesByType(models.RewardRateTypeMore)).([]models.RewardRate)
+	c.SetRewardRates(models.RewardRateTypeMore, moreRates)
 }
 
 func initCronjob() {
 	c := cron.New()
-	must(nil, c.AddFunc("@every 1m", syncCache))
+	must(nil, c.AddFunc("@every 1m",
+		safeFuncWrapper(func() {
+			setCacheFromStore(memoryCache, store)
+		}),
+	))
 	must(nil, c.AddFunc("@daily", createWithdrawal))
 	c.Start()
 }
@@ -199,35 +199,6 @@ func createWithdrawal() {
 	}
 }
 
-// sync cache with storage
-func syncCache() {
-	// update config in cache
-	config, err := store.GetLatestConfig()
-	if err != nil {
-		errLogger.Printf("Update latest config error: %v\n", err)
-		return
-	}
-	memoryCache.SetLatestConfig(config)
-
-	// update rates in cache
-	lessRates, err := store.GetRewardRatesByType(models.RewardRateTypeLess)
-	if err != nil {
-		errLogger.Printf("Update less rate error: %v\n", err)
-		return
-	}
-
-	moreRates, err := store.GetRewardRatesByType(models.RewardRateTypeMore)
-	if err != nil {
-		errLogger.Printf("Update more rate error: %v\n", err)
-		return
-	}
-
-	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
-	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
-
-	outLogger.Println("Successfully sync cache")
-}
-
 // fail fast on initialization
 func must(i interface{}, err error) interface{} {
 	if err != nil {
@@ -248,4 +219,18 @@ func must(i interface{}, err error) interface{} {
 	}
 
 	return i
+}
+
+// wrap a function with recover
+func safeFuncWrapper(f func()) func() {
+	return func() {
+		defer func() {
+			if err := recover(); err != nil {
+				buf := make([]byte, 4096)
+				runtime.Stack(buf, false)
+				errLogger.Printf("%v\n%s\n", err, buf)
+			}
+		}()
+		f()
+	}
 }

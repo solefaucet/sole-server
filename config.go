@@ -15,11 +15,7 @@ type configuration struct {
 		Address string `validate:"required"`
 		Mode    string `validate:"required,eq=release|eq=test|eq=debug"`
 	}
-	DB struct {
-		DataSourceName string `validate:"required,dsn"`
-		MaxOpenConns   int    `validate:"required,min=1"`
-		MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
-	}
+	DB        db `validate:"required,dive"`
 	AuthToken struct {
 		Lifetime time.Duration `validate:"required"`
 	}
@@ -34,6 +30,12 @@ type configuration struct {
 	Template struct {
 		EmailVerificationTemplate string `validate:"required"`
 	}
+}
+
+type db struct {
+	DataSourceName string `validate:"required,dsn"`
+	MaxOpenConns   int    `validate:"required,min=1"`
+	MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
 }
 
 var config configuration
