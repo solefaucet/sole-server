@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os/exec"
 	"strconv"
+	"strings"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type runner interface {
@@ -14,7 +17,14 @@ type runner interface {
 type realRunner struct{}
 
 func (realRunner) run(cmd string, args ...string) ([]byte, error) {
-	return exec.Command(cmd, args...).CombinedOutput()
+	raw, err := exec.Command(cmd, args...).CombinedOutput()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+			"cmd":   strings.Join(append([]string{cmd}, args...), " "),
+		}).Debug("failed to execute command")
+	}
+	return raw, err
 }
 
 var r runner = realRunner{}
@@ -29,7 +39,7 @@ func ValidateAddress(address string) (bool, error) {
 	dest := struct {
 		IsValid bool `json:"isvalid"`
 	}{}
-	if err := json.Unmarshal(raw, &dest); err != nil {
+	if err := unmarshalJSON(raw, &dest); err != nil {
 		return false, err
 	}
 
@@ -44,7 +54,7 @@ func GetInputAddress() (string, error) {
 	}
 
 	dest := []string{}
-	if err := json.Unmarshal(raw, &dest); err != nil {
+	if err := unmarshalJSON(raw, &dest); err != nil {
 		return "", err
 	}
 
@@ -75,4 +85,16 @@ func SendTo(address string, amount float64) (string, error) {
 
 	transactionID := string(raw)
 	return transactionID, nil
+}
+
+func unmarshalJSON(data []byte, dest interface{}) error {
+	if err := json.Unmarshal(data, dest); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"json":  string(data),
+			"error": err,
+		}).Debug("failed to unmarshal json")
+		return err
+	}
+
+	return nil
 }
