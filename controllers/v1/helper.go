@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 func max(v1, v2 int64) int64 {

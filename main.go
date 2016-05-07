@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/robfig/cron"
 	"github.com/freeusd/solebtc/controllers/v1"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/middlewares"
@@ -21,6 +19,8 @@ import (
 	"github.com/freeusd/solebtc/services/mail/mandrill"
 	"github.com/freeusd/solebtc/services/storage"
 	"github.com/freeusd/solebtc/services/storage/mysql"
+	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron"
 )
 
 var (

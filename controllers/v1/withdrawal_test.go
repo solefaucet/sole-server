@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	. "github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/smartystreets/goconvey/convey"
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
+	"github.com/gin-gonic/gin"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestWithdrawalList(t *testing.T) {

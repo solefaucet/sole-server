@@ -3,7 +3,7 @@ package v1
 import (
 	"time"
 
-	"github.com/freeusd/solebtc/Godeps/_workspace/src/github.com/gorilla/websocket"
+	"github.com/gorilla/websocket"
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
