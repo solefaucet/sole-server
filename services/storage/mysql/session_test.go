@@ -17,7 +17,7 @@ func TestGetSessionByToken(t *testing.T) {
 			_, err := s.GetSessionByToken("token")
 
 			Convey("Error should be not found", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+				So(err, ShouldEqual, errors.ErrNotFound)
 			})
 		})
 	})
@@ -47,7 +47,7 @@ func TestGetSessionByToken(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get session", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get session", func(s Storage) error {
 		_, err := s.GetSessionByToken("token")
 		return err
 	})
@@ -84,7 +84,7 @@ func TestUpsertSession(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When upsert session", func(s Storage) *errors.Error {
+	withClosedConn(t, "When upsert session", func(s Storage) error {
 		return s.UpsertSession(sess)
 	})
 }

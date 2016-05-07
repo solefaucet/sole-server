@@ -1,10 +1,10 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
@@ -61,7 +61,7 @@ func TestWithdrawalList(t *testing.T) {
 	})
 
 	Convey("Given withdrawal list controller with errored getWithdrawalSince dependency", t, func() {
-		getWithdrawalsSince := mockGetWithdrawalsSince(nil, errors.New(errors.ErrCodeUnknown))
+		getWithdrawalsSince := mockGetWithdrawalsSince(nil, fmt.Errorf(""))
 		handler := WithdrawalList(getWithdrawalsSince, nil)
 
 		Convey("When get withdrawal list", func() {

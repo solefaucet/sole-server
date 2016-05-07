@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/gin-gonic/gin"
 )
@@ -27,16 +26,15 @@ func WithdrawalList(
 		// get result according to args
 		t := time.Unix(separator, 0)
 		result := []models.Withdrawal{}
-		var syserr *errors.Error
 		if isSince {
-			result, syserr = getWithdrawalsSince(authToken.UserID, t, limit)
+			result, err = getWithdrawalsSince(authToken.UserID, t, limit)
 		} else {
-			result, syserr = getWithdrawalsUntil(authToken.UserID, t, limit)
+			result, err = getWithdrawalsUntil(authToken.UserID, t, limit)
 		}
 
 		// response with result or error
-		if syserr != nil {
-			c.AbortWithError(http.StatusInternalServerError, syserr)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 

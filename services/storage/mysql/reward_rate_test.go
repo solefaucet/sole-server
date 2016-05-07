@@ -3,7 +3,6 @@ package mysql
 import (
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -21,7 +20,7 @@ func TestGetRewardRatesByType(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get reward rates", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get reward rates", func(s Storage) error {
 		_, err := s.GetRewardRatesByType(models.RewardRateTypeLess)
 		return err
 	})

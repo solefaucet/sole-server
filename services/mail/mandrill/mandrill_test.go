@@ -3,7 +3,6 @@ package mandrill
 import (
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -26,8 +25,8 @@ func TestMandrill(t *testing.T) {
 		Convey("When send email", func() {
 			err := m.SendEmail([]string{"email@address.com"}, "subject", "html")
 
-			Convey("Error should be mandrill error", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeMandrill)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 		})
 	})

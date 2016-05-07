@@ -1,39 +1,14 @@
 package errors
 
-import (
-	"encoding/json"
-	"strconv"
-)
+import "errors"
 
+// errors
 var (
-	_ error          = New(0)
-	_ json.Marshaler = New(0)
+	ErrUnknown             = errors.New("unknown")
+	ErrNotFound            = errors.New("not found")
+	ErrInsufficientBalance = errors.New("insufficient balance")
+	ErrDuplicatedEmail     = errors.New("duplicated email")
+	ErrDuplicatedAddress   = errors.New("duplicated address")
+	ErrDuplicatedAuthToken = errors.New("duplicated auth token")
+	ErrInvalidAddress      = errors.New("invalid address")
 )
-
-// Error is custom error
-type Error struct {
-	ErrCode             Code
-	ErrStringForLogging string
-}
-
-// Code is custom error code
-type Code int
-
-// New creates new *Error with error code
-func New(c Code) *Error {
-	return &Error{
-		ErrCode: c,
-	}
-}
-
-// err implements error interface
-func (e *Error) Error() string {
-	return strconv.Itoa(int(e.ErrCode))
-}
-
-// MarshalJSON implements json.Marshaler interface
-func (e *Error) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"code": e.ErrCode,
-	})
-}

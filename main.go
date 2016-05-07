@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/handlers/v1"
 	"github.com/freeusd/solebtc/middlewares"
 	"github.com/freeusd/solebtc/models"
@@ -124,7 +123,7 @@ func main() {
 	must(nil, router.Run(config.HTTP.Address))
 }
 
-func createRewardIncome(income models.Income, now time.Time) *errors.Error {
+func createRewardIncome(income models.Income, now time.Time) error {
 	if err := store.CreateRewardIncome(income, now); err != nil {
 		return err
 	}
@@ -202,20 +201,7 @@ func createWithdrawal() {
 // fail fast on initialization
 func must(i interface{}, err error) interface{} {
 	if err != nil {
-		// Tricky:
-		// pass a nil *errors.Error into this function
-		// err is not nil
-		// see discussion here:
-		// https://github.com/go-playground/validator/issues/134
-		// or
-		// http://stackoverflow.com/questions/29138591/hiding-nil-values-understanding-why-golang-fails-here/29138676#29138676
-		if e, ok := err.(*errors.Error); ok {
-			if e != nil {
-				panic(e.ErrStringForLogging)
-			}
-		} else {
-			panic(err)
-		}
+		panic(err)
 	}
 
 	return i

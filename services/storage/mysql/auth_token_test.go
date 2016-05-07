@@ -16,7 +16,7 @@ func TestGetAuthToken(t *testing.T) {
 			_, err := s.GetAuthToken("token")
 
 			Convey("Error should be not found", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+				So(err, ShouldEqual, errors.ErrNotFound)
 			})
 		})
 	})
@@ -34,7 +34,7 @@ func TestGetAuthToken(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get auth token", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get auth token", func(s Storage) error {
 		_, err := s.GetAuthToken("token")
 		return err
 	})
@@ -61,12 +61,12 @@ func TestCreateAuthToken(t *testing.T) {
 			err := s.CreateAuthToken(models.AuthToken{AuthToken: "token"})
 
 			Convey("Error should be duplicate auth token", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeDuplicateAuthToken)
+				So(err, ShouldEqual, errors.ErrDuplicatedAuthToken)
 			})
 		})
 	})
 
-	withClosedConn(t, "When create auth token", func(s Storage) *errors.Error {
+	withClosedConn(t, "When create auth token", func(s Storage) error {
 		return s.CreateAuthToken(models.AuthToken{AuthToken: "token"})
 	})
 }
@@ -85,7 +85,7 @@ func TestDeleteAuthToken(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When delete auth token", func(s Storage) *errors.Error {
+	withClosedConn(t, "When delete auth token", func(s Storage) error {
 		return s.DeleteAuthToken("token")
 	})
 }

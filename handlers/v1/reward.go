@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/freeusd/solebtc/utils"
 	"github.com/gin-gonic/gin"
@@ -131,16 +130,15 @@ func getRewards(
 	// get result according to args
 	t := time.Unix(separator, 0)
 	result := []models.Income{}
-	var syserr *errors.Error
 	if isSince {
-		result, syserr = getRewardIncomesSince(userID, t, limit)
+		result, err = getRewardIncomesSince(userID, t, limit)
 	} else {
-		result, syserr = getRewardIncomesUntil(userID, t, limit)
+		result, err = getRewardIncomesUntil(userID, t, limit)
 	}
 
 	// response with result or error
-	if syserr != nil {
-		c.AbortWithError(http.StatusInternalServerError, syserr)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 

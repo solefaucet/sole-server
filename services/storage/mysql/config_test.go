@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -33,7 +32,7 @@ func TestGetLatestConfig(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get latest config", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get latest config", func(s Storage) error {
 		_, err := s.GetLatestConfig()
 		return err
 	})

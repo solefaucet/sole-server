@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -40,9 +39,7 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 			return
 		}
 		if !valid {
-			e := errors.New(errors.ErrCodeInvalidAddress)
-			e.ErrStringForLogging = fmt.Sprintf("%s is invalid address", payload.Address)
-			c.AbortWithError(http.StatusBadRequest, e)
+			c.AbortWithError(http.StatusBadRequest, errors.ErrInvalidAddress)
 			return
 		}
 
@@ -52,10 +49,10 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 		user.RefererID = referer.ID
 
 		if err := createUser(user); err != nil {
-			switch err.ErrCode {
-			case errors.ErrCodeDuplicateEmail:
+			switch err {
+			case errors.ErrDuplicatedEmail:
 				c.AbortWithError(http.StatusConflict, err)
-			case errors.ErrCodeDuplicateAddress:
+			case errors.ErrDuplicatedAddress:
 				c.AbortWithError(http.StatusConflict, err)
 			default:
 				c.AbortWithError(http.StatusInternalServerError, err)
@@ -148,16 +145,15 @@ func RefereeList(
 
 		// get result according to args
 		result := []models.User{}
-		var syserr *errors.Error
 		if isSince {
-			result, syserr = getRefereesSinceID(authToken.UserID, separator, limit)
+			result, err = getRefereesSinceID(authToken.UserID, separator, limit)
 		} else {
-			result, syserr = getRefereesUntilID(authToken.UserID, separator, limit)
+			result, err = getRefereesUntilID(authToken.UserID, separator, limit)
 		}
 
 		// response with result or error
-		if syserr != nil {
-			c.AbortWithError(http.StatusInternalServerError, syserr)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 

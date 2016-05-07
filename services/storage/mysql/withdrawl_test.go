@@ -18,8 +18,8 @@ func TestDeductUserBalanceBy(t *testing.T) {
 			tx := s.db.MustBegin()
 			tx.Commit()
 			err := deductUserBalanceBy(tx, 0, 0)
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })
@@ -29,7 +29,7 @@ func TestDeductUserBalanceBy(t *testing.T) {
 			tx := s.db.MustBegin()
 			err := deductUserBalanceBy(tx, 0, 0)
 			Convey("Error should be insufficient balance", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeInsufficientBalance)
+				So(err, ShouldEqual, errors.ErrInsufficientBalance)
 			})
 
 			Reset(func() { tx.Rollback() })
@@ -45,8 +45,8 @@ func TestInsertWithdrawal(t *testing.T) {
 			tx := s.db.MustBegin()
 			tx.Commit()
 			err := insertWithdrawal(tx, 0, "", 0)
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })

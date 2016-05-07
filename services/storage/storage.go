@@ -3,47 +3,46 @@ package storage
 import (
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
 
 // Storage defines interface that one should implement
 type Storage interface {
 	// User
-	GetUserByID(int64) (models.User, *errors.Error)
-	GetUserByEmail(string) (models.User, *errors.Error)
-	CreateUser(models.User) *errors.Error
-	UpdateUserStatus(int64, string) *errors.Error
-	GetRefereesSince(userID, id, limit int64) ([]models.User, *errors.Error)
-	GetRefereesUntil(userID, id, limit int64) ([]models.User, *errors.Error)
-	GetWithdrawableUsers() ([]models.User, *errors.Error)
+	GetUserByID(int64) (models.User, error)
+	GetUserByEmail(string) (models.User, error)
+	CreateUser(models.User) error
+	UpdateUserStatus(int64, string) error
+	GetRefereesSince(userID, id, limit int64) ([]models.User, error)
+	GetRefereesUntil(userID, id, limit int64) ([]models.User, error)
+	GetWithdrawableUsers() ([]models.User, error)
 
 	// AuthToken
-	GetAuthToken(string) (models.AuthToken, *errors.Error)
-	CreateAuthToken(models.AuthToken) *errors.Error
-	DeleteAuthToken(string) *errors.Error
+	GetAuthToken(string) (models.AuthToken, error)
+	CreateAuthToken(models.AuthToken) error
+	DeleteAuthToken(string) error
 
 	// Session
-	GetSessionByToken(string) (models.Session, *errors.Error)
-	UpsertSession(models.Session) *errors.Error
+	GetSessionByToken(string) (models.Session, error)
+	UpsertSession(models.Session) error
 
 	// TotalReward
-	IncrementTotalReward(time.Time, float64) *errors.Error
-	GetLatestTotalReward() (models.TotalReward, *errors.Error)
+	IncrementTotalReward(time.Time, float64) error
+	GetLatestTotalReward() (models.TotalReward, error)
 
 	// RewardRate
-	GetRewardRatesByType(string) ([]models.RewardRate, *errors.Error)
+	GetRewardRatesByType(string) ([]models.RewardRate, error)
 
 	// Config
-	GetLatestConfig() (models.Config, *errors.Error)
+	GetLatestConfig() (models.Config, error)
 
 	// Income
-	CreateRewardIncome(models.Income, time.Time) *errors.Error
-	GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
-	GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
+	CreateRewardIncome(models.Income, time.Time) error
+	GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, error)
+	GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, error)
 
 	// Withdrawal
-	CreateWithdrawal(models.Withdrawal) *errors.Error
-	GetWithdrawalsSince(userID int64, since time.Time, limit int64) ([]models.Withdrawal, *errors.Error)
-	GetWithdrawalsUntil(userID int64, until time.Time, limit int64) ([]models.Withdrawal, *errors.Error)
+	CreateWithdrawal(models.Withdrawal) error
+	GetWithdrawalsSince(userID int64, since time.Time, limit int64) ([]models.Withdrawal, error)
+	GetWithdrawalsUntil(userID int64, until time.Time, limit int64) ([]models.Withdrawal, error)
 }

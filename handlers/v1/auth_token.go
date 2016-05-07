@@ -26,9 +26,9 @@ func Login(
 
 		user, err := getUserByEmail(payload.Email)
 		if err != nil {
-			switch err.ErrCode {
-			case errors.ErrCodeNotFound:
-				c.AbortWithError(http.StatusNotFound, err)
+			switch err {
+			case errors.ErrNotFound:
+				c.AbortWithStatus(http.StatusNotFound)
 			default:
 				c.AbortWithError(http.StatusInternalServerError, err)
 			}

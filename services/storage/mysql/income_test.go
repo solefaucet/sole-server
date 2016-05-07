@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -19,8 +18,8 @@ func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
 			tx := s.db.MustBegin()
 			tx.Commit()
 			err := incrementUserBalanceByRewardIncome(tx, 0, 0, now)
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })
@@ -29,8 +28,8 @@ func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
 		Convey("When increment user balance affecting 0 row", func() {
 			tx := s.db.MustBegin()
 			err := incrementUserBalanceByRewardIncome(tx, 0, 0, now)
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })
@@ -46,8 +45,8 @@ func TestIncrementRefererBalanceByRewardIncome(t *testing.T) {
 			tx := s.db.MustBegin()
 			tx.Commit()
 			_, err := incrementRefererBalanceByRewardIncome(tx, 0, 0)
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })
@@ -63,8 +62,8 @@ func TestInsertIntoIncomesTableByRewardIncome(t *testing.T) {
 			tx := s.db.MustBegin()
 			tx.Commit()
 			err := insertIntoIncomesTableByRewardIncome(tx, models.Income{RefererID: 1})
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })
@@ -80,8 +79,8 @@ func TestIncrementTotalRewardByRewardIncome(t *testing.T) {
 			tx := s.db.MustBegin()
 			tx.Commit()
 			err := incrementTotalRewardByRewardIncome(tx, 10, time.Now())
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 
 			Reset(func() { tx.Rollback() })

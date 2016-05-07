@@ -1,9 +1,6 @@
 package mandrill
 
 import (
-	"fmt"
-
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/services/mail"
 	"github.com/keighl/mandrill"
 )
@@ -27,7 +24,7 @@ func New(key, fromEmail, fromName string) Mailer {
 }
 
 // SendEmail sends email using mandrill api
-func (m Mailer) SendEmail(recipients []string, subject, html string) *errors.Error {
+func (m Mailer) SendEmail(recipients []string, subject, html string) error {
 	message := &mandrill.Message{}
 	message.Async = true
 	message.InlineCSS = true
@@ -41,12 +38,5 @@ func (m Mailer) SendEmail(recipients []string, subject, html string) *errors.Err
 	message.HTML = html
 
 	_, err := m.client.MessagesSend(message)
-	if err != nil {
-		return &errors.Error{
-			ErrCode:             errors.ErrCodeMandrill,
-			ErrStringForLogging: fmt.Sprintf("Send email via mandrill error: %v", err),
-		}
-	}
-
-	return nil
+	return err
 }

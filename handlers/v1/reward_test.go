@@ -1,11 +1,11 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
@@ -13,7 +13,7 @@ import (
 
 func TestGetReward(t *testing.T) {
 	Convey("Given get reward controller with errored getUserByID dependency", t, func() {
-		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
+		getUserByID := mockGetUserByID(models.User{}, fmt.Errorf(""))
 		handler := GetReward(getUserByID, nil, nil, nil, nil, nil, nil)
 
 		Convey("When get reward", func() {
@@ -61,7 +61,7 @@ func TestGetReward(t *testing.T) {
 			{Weight: 2, Min: 11, Max: 20},
 			{Weight: 3, Min: 21, Max: 30},
 		})
-		createRewardIncome := mockCreateRewardIncome(errors.New(errors.ErrCodeUnknown))
+		createRewardIncome := mockCreateRewardIncome(fmt.Errorf(""))
 		handler := GetReward(getUserByID, getLatestTotalReward, getSystemConfig, getRewardRatesByType, createRewardIncome, nil, nil)
 
 		Convey("When get reward", func() {
@@ -169,7 +169,7 @@ func TestRewardList(t *testing.T) {
 	})
 
 	Convey("Given reward list controller with errored getRewardIncomesSince dependency", t, func() {
-		getRewardIncomesSince := mockGetRewardIncomesSince(nil, errors.New(errors.ErrCodeUnknown))
+		getRewardIncomesSince := mockGetRewardIncomesSince(nil, fmt.Errorf(""))
 		handler := RewardList(getRewardIncomesSince, nil)
 
 		Convey("When get reward list", func() {

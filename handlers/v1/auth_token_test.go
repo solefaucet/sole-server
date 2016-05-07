@@ -53,14 +53,14 @@ func TestLogin(t *testing.T) {
 			"non existing email",
 			requestDataJSON(validEmail),
 			404,
-			mockGetUserByEmail(models.User{}, errors.New(errors.ErrCodeNotFound)),
+			mockGetUserByEmail(models.User{}, errors.ErrNotFound),
 			nil,
 		},
 		{
 			"valid email, unknown error",
 			requestDataJSON(validEmail),
 			500,
-			mockGetUserByEmail(models.User{}, errors.New(errors.ErrCodeUnknown)),
+			mockGetUserByEmail(models.User{}, fmt.Errorf("")),
 			nil,
 		},
 		{
@@ -68,7 +68,7 @@ func TestLogin(t *testing.T) {
 			requestDataJSON(validEmail),
 			500,
 			mockGetUserByEmail(models.User{}, nil),
-			mockCreateAuthToken(errors.New(errors.ErrCodeUnknown)),
+			mockCreateAuthToken(fmt.Errorf("")),
 		},
 		{
 			"valid existing email",
@@ -100,7 +100,7 @@ func TestLogin(t *testing.T) {
 
 func TestLogout(t *testing.T) {
 	Convey("Given Logout controller with errored logout dependency", t, func() {
-		handler := Logout(mockDeleteAuthToken(errors.New(errors.ErrCodeUnknown)))
+		handler := Logout(mockDeleteAuthToken(fmt.Errorf("")))
 
 		Convey("When logout", func() {
 			route := "/auth_tokens"

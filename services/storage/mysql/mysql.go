@@ -3,7 +3,6 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/services/storage"
 	_ "github.com/go-sql-driver/mysql" // is needed for mysql driver registeration
 	"github.com/jmoiron/sqlx"
@@ -38,12 +37,9 @@ const (
 	errcodeDuplicate = 1062
 )
 
-func (s Storage) selects(dest interface{}, rawSQL string, args ...interface{}) *errors.Error {
+func (s Storage) selects(dest interface{}, rawSQL string, args ...interface{}) error {
 	if err := s.db.Select(dest, rawSQL, args...); err != nil {
-		return &errors.Error{
-			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Query %v error: %v", rawSQL, err),
-		}
+		return fmt.Errorf("query %v error: %v", rawSQL, err)
 	}
 
 	return nil

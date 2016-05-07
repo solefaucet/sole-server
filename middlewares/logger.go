@@ -4,7 +4,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -63,10 +62,10 @@ func LoggerWithLogger(out *log.Logger, notlogged ...string) gin.HandlerFunc {
 
 			lastError := c.Errors.ByType(gin.ErrorTypePrivate).Last()
 			if lastError != nil {
-				v := lastError.Err.(*errors.Error).ErrStringForLogging
-				if v != "" {
-					out.Printf("%s\n", v)
-				}
+				// v := lastError.Err.(*errors.Error).ErrStringForLogging
+				// if v != "" {
+				// 	out.Printf("%s\n", v)
+				// }
 			}
 		}
 	}

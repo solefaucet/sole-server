@@ -74,7 +74,7 @@ func TestSignup(t *testing.T) {
 			requestDataJSON(validEmail),
 			409,
 			mockGetUserByID(models.User{}, nil),
-			mockCreateUser(errors.New(errors.ErrCodeDuplicateEmail)),
+			mockCreateUser(errors.ErrDuplicatedEmail),
 			func(string) (bool, error) { return true, nil },
 		},
 		{
@@ -82,7 +82,7 @@ func TestSignup(t *testing.T) {
 			requestDataJSON(validEmail),
 			500,
 			mockGetUserByID(models.User{}, nil),
-			mockCreateUser(errors.New(errors.ErrCodeUnknown)),
+			mockCreateUser(fmt.Errorf("")),
 			func(string) (bool, error) { return true, nil },
 		},
 		{
@@ -117,7 +117,7 @@ func TestSignup(t *testing.T) {
 
 func TestVerifyEmail(t *testing.T) {
 	Convey("Given verify email controller with expired session and errored getSessionByToken dependency", t, func() {
-		getSessionByToken := mockGetSessionByToken(models.Session{}, errors.New(errors.ErrCodeUnknown))
+		getSessionByToken := mockGetSessionByToken(models.Session{}, fmt.Errorf(""))
 		handler := VerifyEmail(getSessionByToken, nil, nil)
 
 		Convey("When verify email", func() {
@@ -152,7 +152,7 @@ func TestVerifyEmail(t *testing.T) {
 
 	Convey("Given verify email controller with errored getUserByID dependency", t, func() {
 		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
-		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
+		getUserByID := mockGetUserByID(models.User{}, fmt.Errorf(""))
 		handler := VerifyEmail(getSessionByToken, getUserByID, nil)
 
 		Convey("When verify email", func() {
@@ -189,7 +189,7 @@ func TestVerifyEmail(t *testing.T) {
 	Convey("Given verify email controller with errored updateUser dependency", t, func() {
 		getSessionByToken := mockGetSessionByToken(models.Session{UpdatedAt: time.Now()}, nil)
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		updateUserStatus := mockUpdateUserStatus(errors.New(errors.ErrCodeUnknown))
+		updateUserStatus := mockUpdateUserStatus(fmt.Errorf(""))
 		handler := VerifyEmail(getSessionByToken, getUserByID, updateUserStatus)
 
 		Convey("When verify email", func() {
@@ -227,7 +227,7 @@ func TestVerifyEmail(t *testing.T) {
 
 func TestGetUserInfo(t *testing.T) {
 	Convey("Given get user info controller with errored getUserByID dependency", t, func() {
-		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeNotFound))
+		getUserByID := mockGetUserByID(models.User{}, errors.ErrNotFound)
 		handler := UserInfo(getUserByID)
 
 		Convey("When get user info", func() {
@@ -288,7 +288,7 @@ func TestGetReferees(t *testing.T) {
 	})
 
 	Convey("Given referee list controller with errored getRefereesSinceID dependency", t, func() {
-		since := mockGetRefereesSince(nil, errors.New(errors.ErrCodeUnknown))
+		since := mockGetRefereesSince(nil, fmt.Errorf(""))
 		handler := RefereeList(since, nil)
 
 		Convey("When get referee list", func() {

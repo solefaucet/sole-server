@@ -10,54 +10,45 @@ import (
 )
 
 // GetAuthToken gets models.AuthToken with auth_token given
-func (s Storage) GetAuthToken(authTokenString string) (models.AuthToken, *errors.Error) {
+func (s Storage) GetAuthToken(authTokenString string) (models.AuthToken, error) {
 	authToken := models.AuthToken{}
 	err := s.db.Get(&authToken, "SELECT * FROM auth_tokens WHERE auth_token = ?", authTokenString)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return authToken, errors.New(errors.ErrCodeNotFound)
+			return authToken, errors.ErrNotFound
 		}
 
-		return authToken, &errors.Error{
-			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Get auth token unknown error: %v", err),
-		}
+		return authToken, fmt.Errorf("query auth token error: %v", err)
 	}
 
 	return authToken, nil
 }
 
 // CreateAuthToken creates a new auth token
-func (s Storage) CreateAuthToken(authToken models.AuthToken) *errors.Error {
+func (s Storage) CreateAuthToken(authToken models.AuthToken) error {
 	_, err := s.db.NamedExec("INSERT INTO auth_tokens (`user_id`, `auth_token`) VALUES (:user_id, :auth_token)", authToken)
 
 	if err != nil {
 		switch e := err.(type) {
 		case *mysql.MySQLError:
 			if e.Number == errcodeDuplicate {
-				return errors.New(errors.ErrCodeDuplicateAuthToken)
+				return errors.ErrDuplicatedAuthToken
 			}
 		}
 
-		return &errors.Error{
-			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Create auth token unknown error: %v", err),
-		}
+		return fmt.Errorf("create auth token error: %v", err)
 	}
 
 	return nil
 }
 
 // DeleteAuthToken deletes auth_token from storage
-func (s Storage) DeleteAuthToken(authToken string) *errors.Error {
+func (s Storage) DeleteAuthToken(authToken string) error {
 	_, err := s.db.Exec("DELETE FROM auth_tokens WHERE auth_token = ?", authToken)
 
 	if err != nil {
-		return &errors.Error{
-			ErrCode:             errors.ErrCodeUnknown,
-			ErrStringForLogging: fmt.Sprintf("Delete auth token unknown error: %v", err),
-		}
+		return fmt.Errorf("delete auth token error: %v", err)
 	}
 
 	return nil

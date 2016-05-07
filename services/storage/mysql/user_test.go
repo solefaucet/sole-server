@@ -16,8 +16,8 @@ func TestGetUserByID(t *testing.T) {
 		Convey("When get user by id", func() {
 			_, err := s.GetUserByID(1)
 
-			Convey("Error should be ErrCodeNotFound", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+			Convey("Error should be ErrNotFound", func() {
+				So(err, ShouldEqual, errors.ErrNotFound)
 			})
 		})
 	})
@@ -43,7 +43,7 @@ func TestGetUserByID(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get user by id", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get user by id", func(s Storage) error {
 		_, err := s.GetUserByID(1)
 		return err
 	})
@@ -56,8 +56,8 @@ func TestGetUserByEmail(t *testing.T) {
 		Convey("When get user by email", func() {
 			_, err := s.GetUserByEmail("e")
 
-			Convey("Error should be ErrCodeNotFound", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeNotFound)
+			Convey("Error should be ErrNotFound", func() {
+				So(err, ShouldEqual, errors.ErrNotFound)
 			})
 		})
 	})
@@ -81,7 +81,7 @@ func TestGetUserByEmail(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get user by email", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get user by email", func(s Storage) error {
 		_, err := s.GetUserByEmail("e")
 		return err
 	})
@@ -108,7 +108,7 @@ func TestCreateUser(t *testing.T) {
 			err := s.CreateUser(models.User{Email: "e", Address: ""})
 
 			Convey("Error should be duplicate email", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeDuplicateEmail)
+				So(err, ShouldEqual, errors.ErrDuplicatedEmail)
 			})
 		})
 
@@ -116,12 +116,12 @@ func TestCreateUser(t *testing.T) {
 			err := s.CreateUser(models.User{Email: "", Address: "b"})
 
 			Convey("Error should be duplicate address", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeDuplicateAddress)
+				So(err, ShouldEqual, errors.ErrDuplicatedAddress)
 			})
 		})
 	})
 
-	withClosedConn(t, "When create user", func(s Storage) *errors.Error {
+	withClosedConn(t, "When create user", func(s Storage) error {
 		return s.CreateUser(models.User{Email: "e", Address: "b"})
 	})
 }
@@ -145,7 +145,7 @@ func TestUpdateUserStatus(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When update user", func(s Storage) *errors.Error {
+	withClosedConn(t, "When update user", func(s Storage) error {
 		return s.UpdateUserStatus(0, "")
 	})
 }

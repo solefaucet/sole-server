@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type authRequiredDependencyGetAuthToken func(authTokenString string) (models.AuthToken, *errors.Error)
+type authRequiredDependencyGetAuthToken func(authTokenString string) (models.AuthToken, error)
 
 // AuthRequired checks if user is authorized
 func AuthRequired(
@@ -24,7 +24,7 @@ func AuthRequired(
 		}
 
 		authToken, err := getAuthToken(authTokenHeader)
-		if err != nil && err.ErrCode != errors.ErrCodeNotFound {
+		if err != nil && err != errors.ErrNotFound {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

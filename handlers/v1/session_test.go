@@ -1,11 +1,11 @@
 package v1
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
@@ -13,7 +13,7 @@ import (
 
 func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored getUserByID dependency", t, func() {
-		getUserByID := mockGetUserByID(models.User{}, errors.New(errors.ErrCodeUnknown))
+		getUserByID := mockGetUserByID(models.User{}, fmt.Errorf(""))
 		handler := RequestVerifyEmail(getUserByID, nil, nil, nil)
 
 		Convey("When request verify email", func() {
@@ -34,7 +34,7 @@ func TestRequestVerifyEmail(t *testing.T) {
 
 	Convey("Given request verify email controller with errored upsertSession dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		upsertSession := mockUpsertSession(errors.New(errors.ErrCodeUnknown))
+		upsertSession := mockUpsertSession(fmt.Errorf(""))
 		handler := RequestVerifyEmail(getUserByID, upsertSession, nil, nil)
 
 		Convey("When request verify email", func() {
@@ -56,7 +56,7 @@ func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored sendEmail dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{Email: "help@solebtc.com"}, nil)
 		upsertSession := mockUpsertSession(nil)
-		sendEmail := mockSendEmail(errors.New(errors.ErrCodeUnknown))
+		sendEmail := mockSendEmail(fmt.Errorf(""))
 		tmpl := template.Must(template.New("template").Parse(`email: {{.email}} token: {{.token}}`))
 		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl)
 

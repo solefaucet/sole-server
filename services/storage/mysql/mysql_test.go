@@ -8,7 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -40,7 +39,7 @@ func resetDatabase() {
 	execCommand(`mysql -uroot -e 'drop database if exists solebtc_test;'`)
 }
 
-func withClosedConn(t *testing.T, description string, f func(Storage) *errors.Error) {
+func withClosedConn(t *testing.T, description string, f func(Storage) error) {
 	Convey("Given mysql storage with closed connection", t, func() {
 		s := prepareDatabaseForTesting()
 		s.db.Close()
@@ -48,15 +47,15 @@ func withClosedConn(t *testing.T, description string, f func(Storage) *errors.Er
 		Convey(description, func() {
 			err := f(s)
 
-			Convey("Error should be unknown", func() {
-				So(err.ErrCode, ShouldEqual, errors.ErrCodeUnknown)
+			Convey("Error should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 		})
 	})
 }
 
 func TestSelects(t *testing.T) {
-	withClosedConn(t, "When selects", func(s Storage) *errors.Error {
+	withClosedConn(t, "When selects", func(s Storage) error {
 		return s.selects(&[]models.User{}, "SELECT * FROM users")
 	})
 }

@@ -5,34 +5,33 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 )
 
 // dependencies
 type (
 	// user
-	dependencyGetUserByID      func(int64) (models.User, *errors.Error)
-	dependencyGetUserByEmail   func(string) (models.User, *errors.Error)
-	dependencyCreateUser       func(models.User) *errors.Error
-	dependencyUpdateUserStatus func(int64, string) *errors.Error
-	dependencyGetRefereesSince func(userID int64, sinceID int64, limit int64) ([]models.User, *errors.Error)
-	dependencyGetRefereesUntil func(userID int64, untilID int64, limit int64) ([]models.User, *errors.Error)
+	dependencyGetUserByID      func(int64) (models.User, error)
+	dependencyGetUserByEmail   func(string) (models.User, error)
+	dependencyCreateUser       func(models.User) error
+	dependencyUpdateUserStatus func(int64, string) error
+	dependencyGetRefereesSince func(userID int64, sinceID int64, limit int64) ([]models.User, error)
+	dependencyGetRefereesUntil func(userID int64, untilID int64, limit int64) ([]models.User, error)
 
 	// auth token
-	dependencyCreateAuthToken func(models.AuthToken) *errors.Error
-	dependencyDeleteAuthToken func(string) *errors.Error
+	dependencyCreateAuthToken func(models.AuthToken) error
+	dependencyDeleteAuthToken func(string) error
 
 	// session
-	dependencyUpsertSession     func(models.Session) *errors.Error
-	dependencyGetSessionByToken func(string) (models.Session, *errors.Error)
+	dependencyUpsertSession     func(models.Session) error
+	dependencyGetSessionByToken func(string) (models.Session, error)
 
 	// email
-	dependencySendEmail func(recipients []string, subject string, html string) *errors.Error
+	dependencySendEmail func(recipients []string, subject string, html string) error
 
 	// total reward
 	dependencyGetLatestTotalReward func() models.TotalReward
-	dependencyIncrementTotalReward func(time.Time, int64) *errors.Error
+	dependencyIncrementTotalReward func(time.Time, int64) error
 
 	// reward rate
 	dependencyGetRewardRatesByType func(string) []models.RewardRate
@@ -41,9 +40,9 @@ type (
 	dependencyGetSystemConfig func() models.Config
 
 	// income
-	dependencyCreateRewardIncome    func(models.Income, time.Time) *errors.Error
-	dependencyGetRewardIncomesSince func(userID int64, since time.Time, limit int64) ([]models.Income, *errors.Error)
-	dependencyGetRewardIncomesUntil func(userID int64, until time.Time, limit int64) ([]models.Income, *errors.Error)
+	dependencyCreateRewardIncome    func(models.Income, time.Time) error
+	dependencyGetRewardIncomesSince func(userID int64, since time.Time, limit int64) ([]models.Income, error)
+	dependencyGetRewardIncomesUntil func(userID int64, until time.Time, limit int64) ([]models.Income, error)
 	dependencyInsertIncome          func(interface{}) // cache for broadcasting
 
 	// websocket
@@ -53,6 +52,6 @@ type (
 	dependencyGetLatestIncomes func() []interface{}
 
 	// withdrawals
-	dependencyGetWithdrawalsSince func(userID int64, since time.Time, limit int64) ([]models.Withdrawal, *errors.Error)
-	dependencyGetWithdrawalsUntil func(userID int64, until time.Time, limit int64) ([]models.Withdrawal, *errors.Error)
+	dependencyGetWithdrawalsSince func(userID int64, since time.Time, limit int64) ([]models.Withdrawal, error)
+	dependencyGetWithdrawalsUntil func(userID int64, until time.Time, limit int64) ([]models.Withdrawal, error)
 )

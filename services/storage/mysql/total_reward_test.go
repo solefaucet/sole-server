@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -70,7 +69,7 @@ func TestGetLatestTotalReward(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When get latest total rewards", func(s Storage) *errors.Error {
+	withClosedConn(t, "When get latest total rewards", func(s Storage) error {
 		_, err := s.GetLatestTotalReward()
 		return err
 	})
@@ -88,7 +87,7 @@ func TestIncrementTotalReward(t *testing.T) {
 		})
 	})
 
-	withClosedConn(t, "When increment total reward", func(s Storage) *errors.Error {
+	withClosedConn(t, "When increment total reward", func(s Storage) error {
 		return s.IncrementTotalReward(time.Now(), 1)
 	})
 }
