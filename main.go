@@ -2,7 +2,6 @@ package main
 
 import (
 	"html/template"
-	"io"
 	"log"
 	"os"
 	"runtime"
@@ -26,8 +25,7 @@ import (
 )
 
 var (
-	errWriter   io.Writer = os.Stderr
-	errLogger             = log.New(errWriter, "[SoleBTC] ", log.LstdFlags)
+	logger      = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Llongfile)
 	mailer      mail.Mailer
 	store       storage.Storage
 	memoryCache cache.Cache
@@ -172,9 +170,12 @@ func initCronjob() {
 
 // automatically create withdrawal
 func createWithdrawal() {
+	logrus.Info("start creating withdrawals")
+
 	users, err := store.GetWithdrawableUsers()
 	if err != nil {
-		errLogger.Printf("Get withdrawable users error: %v\n", err)
+		logger.Printf("get withdrawable users error: %v\n", err)
+		logrus.WithError(err).Error("failed to get withdrawable users")
 		return
 	}
 
@@ -197,17 +198,18 @@ func createWithdrawal() {
 	})
 
 	// retry with error output
-	errored := false
 	f(retryUsers, func(err error, u models.User) {
 		if err != nil {
-			errLogger.Printf("Create withdrawal for user %v error: %v\n", u, err)
-			errored = true
+			logger.Printf("create withdrawal for user %v error: %v\n", u, err)
+			logrus.WithFields(logrus.Fields{
+				"email":   u.Email,
+				"address": u.Address,
+				"balance": u.Balance,
+				"status":  u.Status,
+				"error":   err,
+			}).Error("failed to create withdrawl")
 		}
 	})
-
-	if !errored {
-		logrus.Info("succeed to create withdrawals")
-	}
 }
 
 // fail fast on initialization
@@ -225,8 +227,12 @@ func safeFuncWrapper(f func()) func() {
 		defer func() {
 			if err := recover(); err != nil {
 				buf := make([]byte, 4096)
-				runtime.Stack(buf, false)
-				errLogger.Printf("%v\n%s\n", err, buf)
+				n := runtime.Stack(buf, false)
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+					"stack": string(buf[:n]),
+				}).Error("panic")
+				logger.Printf("%v\n%s\n", err, buf)
 			}
 		}()
 		f()
