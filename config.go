@@ -10,6 +10,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+type graylog struct {
+	Address  string `mapstructure:"address" validate:"required"`
+	Level    string `mapstructure:"level" validate:"required,eq=debug|eq=info|eq=warn|eq=error|eq=fatal|eq=panic"`
+	Facility string `mapstructure:"facility" validate:"required"`
+}
+
 type configuration struct {
 	HTTP struct {
 		Address string `validate:"required"`
@@ -21,7 +27,8 @@ type configuration struct {
 		MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
 	} `validate:"required"`
 	Log struct {
-		Level string `mapstructure:"level" validate:"required,eq=debug|eq=info|eq=warn|eq=error|eq=fatal|eq=panic"`
+		Level   string  `mapstructure:"level" validate:"required,eq=debug|eq=info|eq=warn|eq=error|eq=fatal|eq=panic"`
+		Graylog graylog `mapstructure:"graylog" validate:"required,dive"`
 	} `mapstructure:"log" validate:"required"`
 	AuthToken struct {
 		Lifetime time.Duration `validate:"required"`
@@ -59,6 +66,8 @@ func initConfig() {
 	viper.SetDefault("num_cached_incomes", 20)
 	viper.SetDefault("email_verification_template", "./templates/email_verification_staging.html")
 	viper.SetDefault("log_level", "debug")
+	viper.SetDefault("graylog_address", "127.0.0.1:12201")
+	viper.SetDefault("graylog_level", "debug")
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default

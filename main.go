@@ -22,6 +22,7 @@ import (
 	"github.com/freeusd/solebtc/services/storage/mysql"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron"
+	grayloghook "github.com/yumimobi/logrus-graylog2-hook"
 )
 
 var (
@@ -44,6 +45,11 @@ func init() {
 	l := must(logrus.ParseLevel(config.Log.Level)).(logrus.Level)
 	logrus.SetLevel(l)
 	logrus.SetOutput(os.Stdout)
+
+	// logging hooks
+	graylogHookLevelThreshold := must(logrus.ParseLevel(config.Log.Graylog.Level)).(logrus.Level)
+	graylogHook := must(grayloghook.New(config.Log.Graylog.Address, config.Log.Graylog.Facility, graylogHookLevelThreshold)).(logrus.Hook)
+	logrus.AddHook(graylogHook)
 
 	// connection hub
 	connsHub = list.New()
