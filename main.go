@@ -207,7 +207,7 @@ func createWithdrawal() {
 				"balance": u.Balance,
 				"status":  u.Status,
 				"error":   err,
-			}).Error("failed to create withdrawl")
+			}).Error("failed to create withdrawal")
 		}
 	})
 }
