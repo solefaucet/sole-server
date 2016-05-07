@@ -13,14 +13,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestMysql(t *testing.T) {
-	incorrectDSN := "invalid"
-	_, err := New(incorrectDSN)
-	if err == nil {
-		t.Error("Create mysql storage with incorrect data source name should return err but get nil")
-	}
-}
-
 // test helpers
 func execCommand(cmd string) {
 	c := exec.Command("sh", "-c", "-i", cmd)
@@ -37,8 +29,8 @@ func prepareDatabaseForTesting() Storage {
 	projBasePath := strings.Join(paths[:len(paths)-3], string(os.PathSeparator)) // cannot come up with any better way
 	execCommand(fmt.Sprintf(`cd %s && goose -env test up`, projBasePath))
 
-	dsn := "root:@/solebtc_test"
-	s, _ := New(dsn)
+	dsn := "root:@/solebtc_test?parseTime=true"
+	s := New(dsn)
 	s.SetMaxOpenConns(4)
 	s.SetMaxIdleConns(4)
 	return s

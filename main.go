@@ -128,7 +128,7 @@ func initMailer() {
 
 func initStorage() {
 	// storage service
-	s := must(mysql.New(config.DB.DataSourceName)).(mysql.Storage)
+	s := mysql.New(config.DB.DataSourceName)
 	s.SetMaxOpenConns(config.DB.MaxOpenConns)
 	s.SetMaxIdleConns(config.DB.MaxIdleConns)
 	store = s

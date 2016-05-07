@@ -5,8 +5,8 @@ import (
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/services/storage"
-	"github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx" // is needed for mysql driver registeration
+	_ "github.com/go-sql-driver/mysql" // is needed for mysql driver registeration
+	"github.com/jmoiron/sqlx"
 )
 
 // Storage implements Storage interface for data storage
@@ -17,15 +17,10 @@ type Storage struct {
 var _ storage.Storage = Storage{}
 
 // New returns a Storage with data source name
-func New(dsn string) (s Storage, err error) {
-	config, err := mysql.ParseDSN(dsn)
-	if err != nil {
-		return
+func New(dsn string) Storage {
+	return Storage{
+		db: sqlx.MustConnect("mysql", dsn),
 	}
-	config.ParseTime = true
-
-	s.db, err = sqlx.Connect("mysql", config.FormatDSN())
-	return
 }
 
 // SetMaxOpenConns alias sql.DB.SetMaxOpenConns

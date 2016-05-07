@@ -46,7 +46,7 @@ func initConfig() {
 	// set default
 	viper.SetDefault("env", "development")
 	viper.SetDefault("address", "0.0.0.0:3000")
-	viper.SetDefault("dsn", "/solebtc_dev")
+	viper.SetDefault("dsn", "/solebtc_dev?parseTime=true")
 	viper.SetDefault("auth_token_lifetime", "720h")
 	viper.SetDefault("mandrill_key", "SANDBOX_SUCCESS")
 	viper.SetDefault("mandrill_from_email", "no_reply@solebtc.com")
