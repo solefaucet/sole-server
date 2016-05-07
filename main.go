@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/freeusd/solebtc/handlers/v1"
 	"github.com/freeusd/solebtc/middlewares"
 	"github.com/freeusd/solebtc/models"
@@ -38,6 +39,11 @@ func init() {
 
 	// configuration
 	initConfig()
+
+	// logging
+	l := must(logrus.ParseLevel(config.Log.Level)).(logrus.Level)
+	logrus.SetLevel(l)
+	logrus.SetOutput(os.Stdout)
 
 	// connection hub
 	connsHub = list.New()

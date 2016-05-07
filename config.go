@@ -20,6 +20,9 @@ type configuration struct {
 		MaxOpenConns   int    `validate:"required,min=1"`
 		MaxIdleConns   int    `validate:"required,min=1,ltefield=MaxOpenConns"`
 	} `validate:"required"`
+	Log struct {
+		Level string `mapstructure:"level" validate:"required,eq=debug|eq=info|eq=warn|eq=error|eq=fatal|eq=panic"`
+	} `mapstructure:"log" validate:"required"`
 	AuthToken struct {
 		Lifetime time.Duration `validate:"required"`
 	} `validate:"required"`
@@ -55,6 +58,7 @@ func initConfig() {
 	viper.SetDefault("max_idle_conns", 2)
 	viper.SetDefault("num_cached_incomes", 20)
 	viper.SetDefault("email_verification_template", "./templates/email_verification_staging.html")
+	viper.SetDefault("log_level", "debug")
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
@@ -65,6 +69,8 @@ func initConfig() {
 	config.DB.DataSourceName = viper.GetString("dsn")
 	config.DB.MaxOpenConns = viper.GetInt("max_open_conns")
 	config.DB.MaxIdleConns = viper.GetInt("max_idle_conns")
+
+	config.Log.Level = viper.GetString("log_level")
 
 	config.AuthToken.Lifetime = must(time.ParseDuration(viper.GetString("auth_token_lifetime"))).(time.Duration)
 
