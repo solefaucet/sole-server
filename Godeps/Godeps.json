@@ -11,6 +11,10 @@
 			"Rev": "5c4df71dfe9ac89ef6287afc05e4c1b16ae65a1e"
 		},
 		{
+			"ImportPath": "github.com/Graylog2/go-gelf/gelf",
+			"Rev": "76d60fc890684cff2fb65c631ed711d4af080592"
+		},
+		{
 			"ImportPath": "github.com/Sirupsen/logrus",
 			"Comment": "v0.10.0-16-gcd7d1bb",
 			"Rev": "cd7d1bbe41066b6c1f19780f895901052150a575"
