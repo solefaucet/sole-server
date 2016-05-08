@@ -24,6 +24,61 @@
 			"Rev": "dcfedd50ed5334f96adee43fc88518a4f095e15c"
 		},
 		{
+			"ImportPath": "github.com/btcsuite/btcd/btcec",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcd/btcjson",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcd/chaincfg",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcd/wire",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btclog",
+			"Comment": "BTCLOG_0_0_3-6-gf96df23",
+			"Rev": "f96df2375f37300305f329b8e5258764b4f19a7f"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcrpcclient",
+			"Rev": "64922553b5c21f333438edaed6e0ba2b5a7760ee"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcutil",
+			"Comment": "BTCUTIL_0_5_0-7-g2c26dd8",
+			"Rev": "2c26dd81a59fd671a2218d63ad138a6dd4d693bd"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/fastsha256",
+			"Rev": "302ad4db268b46f9ebda3078f6f7397f96047735"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/go-socks/socks",
+			"Rev": "cfe8b59e565c1a5bd4e2005d77cd9aa8b2e14524"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/golangcrypto/ripemd160",
+			"Rev": "53f62d9b43e87a6c56975cf862af7edf33a8d0df"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/seelog",
+			"Comment": "v2.1-84-g313961b",
+			"Rev": "313961b101eb55f65ae0f03ddd4e322731763b6c"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/websocket",
+			"Rev": "31079b6807923eb23992c421b114992b95131b55"
+		},
+		{
 			"ImportPath": "github.com/coreos/go-etcd/etcd",
 			"Comment": "v2.0.0-38-g003851b",
 			"Rev": "003851be7bb0694fe3cc457a49529a19388ee7cf"
