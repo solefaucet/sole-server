@@ -141,7 +141,9 @@ func main() {
 		"http_address": config.HTTP.Address,
 		"coin_address": addressToReceiveCoin.String(),
 	}).Info("service up")
-	must(nil, router.Run(config.HTTP.Address))
+	if err := router.Run(config.HTTP.Address); err != nil {
+		logrus.WithError(err).Fatal("failed to start service")
+	}
 }
 
 func createRewardIncome(income models.Income, now time.Time) error {
