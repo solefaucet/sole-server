@@ -45,4 +45,5 @@ type Storage interface {
 	CreateWithdrawal(models.Withdrawal) error
 	GetWithdrawalsSince(userID int64, since time.Time, limit int64) ([]models.Withdrawal, error)
 	GetWithdrawalsUntil(userID int64, until time.Time, limit int64) ([]models.Withdrawal, error)
+	GetUnprocessedWithdrawals() ([]models.Withdrawal, error)
 }

@@ -125,3 +125,29 @@ func TestGetWithdrawalsUntil(t *testing.T) {
 		})
 	})
 }
+
+func TestGetUnprocessedWithdrawals(t *testing.T) {
+	Convey("Given mysql storage", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.MustExec("INSERT INTO `users` (email, address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 1})
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 2})
+		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 3})
+
+		Convey("When get withdrawals until now", func() {
+			result, _ := s.GetUnprocessedWithdrawals()
+
+			Convey("Withdrawals should equal", func() {
+				So(result, func(actual interface{}, expected ...interface{}) string {
+					withdrawals := actual.([]models.Withdrawal)
+					if withdrawals[0].Amount == 1 &&
+						withdrawals[1].Amount == 2 &&
+						withdrawals[2].Amount == 3 {
+						return ""
+					}
+					return fmt.Sprintf("Withdrawals %v is not expected", withdrawals)
+				})
+			})
+		})
+	})
+}
