@@ -54,4 +54,7 @@ type (
 	// withdrawals
 	dependencyGetWithdrawalsSince func(userID int64, since time.Time, limit int64) ([]models.Withdrawal, error)
 	dependencyGetWithdrawalsUntil func(userID int64, until time.Time, limit int64) ([]models.Withdrawal, error)
+
+	// validation
+	dependencyValidateAddress func(string) (bool, error)
 )

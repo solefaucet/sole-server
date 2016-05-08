@@ -97,8 +97,7 @@ func TestSignup(t *testing.T) {
 
 	for _, v := range testdata {
 		Convey("Given Signup controller", t, func() {
-			handler := Signup(v.createUser, v.getUserByID)
-			validateAddress = v.validateAddress
+			handler := Signup(v.validateAddress, v.createUser, v.getUserByID)
 
 			Convey(fmt.Sprintf("When request with %s", v.when), func() {
 				route := "/users"

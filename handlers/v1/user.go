@@ -6,12 +6,8 @@ import (
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
-	"github.com/freeusd/solebtc/utils"
 	"github.com/gin-gonic/gin"
 )
-
-// can be mocked out to test
-var validateAddress = utils.ValidateAddress
 
 type signupPayload struct {
 	Email     string `json:"email" binding:"required,email"`
@@ -21,13 +17,18 @@ type signupPayload struct {
 
 func userWithSignupPayload(p signupPayload) models.User {
 	return models.User{
-		Email:   p.Email,
-		Address: p.Address,
+		Email:     p.Email,
+		Address:   p.Address,
+		RefererID: p.RefererID,
 	}
 }
 
 // Signup creates a new user with unique email, address
-func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) gin.HandlerFunc {
+func Signup(
+	validateAddress dependencyValidateAddress,
+	createUser dependencyCreateUser,
+	getUserByID dependencyGetUserByID,
+) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := signupPayload{}
 		if err := c.BindJSON(&payload); err != nil {
@@ -35,7 +36,7 @@ func Signup(createUser dependencyCreateUser, getUserByID dependencyGetUserByID) 
 		}
 		valid, err := validateAddress(payload.Address)
 		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		if !valid {
