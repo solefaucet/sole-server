@@ -243,8 +243,12 @@ func initCoinClient() {
 }
 
 func validateAddress(address string) (bool, error) {
-	addr, err := parseAddress(address)
+	addr, err := btcutil.DecodeAddress(address, &chaincfg.MainNetParams)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"address": address,
+			"error":   err,
+		}).Error("failed to parse address")
 		return false, err
 	}
 
@@ -260,14 +264,8 @@ func validateAddress(address string) (bool, error) {
 	return result.IsValid, nil
 }
 
-func parseAddress(address string) (btcutil.Address, error) {
-	addr, err := btcutil.DecodeAddress(address, &chaincfg.MainNetParams)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"address": address,
-			"error":   err,
-		}).Debug("failed to parse address")
-		return nil, err
 	}
 
 	return addr, nil
