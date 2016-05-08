@@ -183,14 +183,19 @@ func initCronjob() {
 
 // automatically create withdrawal
 func createWithdrawal() {
-	logrus.Info("start creating withdrawals")
-
 	users, err := store.GetWithdrawableUsers()
 	if err != nil {
 		logger.Printf("get withdrawable users error: %v\n", err)
-		logrus.WithError(err).Error("failed to get withdrawable users")
+		logrus.WithError(err).Error("创建提现")
 		return
 	}
+
+	total := 0.0
+	transactionFee := 0.0001
+	for i := range users {
+		total += users[i].Balance + transactionFee
+	}
+	logrus.WithField("提现总额", total).Info("创建提现")
 
 	f := func(users []models.User, handler func(err error, u models.User)) {
 		for i := range users {
@@ -220,7 +225,7 @@ func createWithdrawal() {
 				"balance": u.Balance,
 				"status":  u.Status,
 				"error":   err,
-			}).Error("failed to create withdrawal")
+			}).Error("创建提现")
 		}
 	})
 }
