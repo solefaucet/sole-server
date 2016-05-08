@@ -28,12 +28,13 @@ import (
 )
 
 var (
-	logger      = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Llongfile)
-	mailer      mail.Mailer
-	store       storage.Storage
-	memoryCache cache.Cache
-	connsHub    hub.Hub
-	coinClient  *btcrpcclient.Client
+	logger               = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Llongfile)
+	mailer               mail.Mailer
+	store                storage.Storage
+	memoryCache          cache.Cache
+	connsHub             hub.Hub
+	coinClient           *btcrpcclient.Client
+	addressToReceiveCoin btcutil.Address
 )
 
 func init() {
@@ -136,7 +137,10 @@ func main() {
 			hub.WrapPutWebsocketConn(connsHub.PutConn)),
 	)
 
-	logrus.WithField("address", config.HTTP.Address).Info("listen and serve http")
+	logrus.WithFields(logrus.Fields{
+		"http_address": config.HTTP.Address,
+		"coin_address": addressToReceiveCoin.String(),
+	}).Info("service up")
 	must(nil, router.Run(config.HTTP.Address))
 }
 
@@ -228,7 +232,7 @@ func initCoinClient() {
 		DisableTLS:   true, // Bitcoin core does not provide TLS by default
 	}
 	coinClient = must(btcrpcclient.New(config, nil)).(*btcrpcclient.Client)
-	must(nil, coinClient.Ping())
+	addressToReceiveCoin = must(coinClient.GetAccountAddress("")).(btcutil.Address)
 }
 
 func validateAddress(address string) (bool, error) {
