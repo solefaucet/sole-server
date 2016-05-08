@@ -174,6 +174,7 @@ func initCronjob() {
 	c := cron.New()
 	must(nil, c.AddFunc("@every 1m", safeFuncWrapper(updateCache)))         // update cache every 1 minute
 	must(nil, c.AddFunc("@daily", safeFuncWrapper(createWithdrawal)))       // create withdrawal every day
+	must(nil, c.AddFunc("@every 30m", safeFuncWrapper(processWithdrawals))) // process withdraw request every half hour
 	c.Start()
 }
 
@@ -185,13 +186,6 @@ func createWithdrawal() {
 		logrus.WithError(err).Error("创建提现")
 		return
 	}
-
-	total := 0.0
-	transactionFee := 0.0001
-	for i := range users {
-		total += users[i].Balance + transactionFee
-	}
-	logrus.WithField("提现总额", total).Info("创建提现")
 
 	f := func(users []models.User, handler func(err error, u models.User)) {
 		for i := range users {
@@ -260,11 +254,81 @@ func validateAddress(address string) (bool, error) {
 	return result.IsValid, nil
 }
 
+func processWithdrawals() {
+	start := time.Now()
+
+	withdrawals, err := store.GetUnprocessedWithdrawals()
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
+			"event": "处理提现",
+			"error": err,
+		}).Error("failed to get unprocessed withdrawals")
+		return
 	}
 
-	return addr, nil
+	// calculate total withdraw amount
+	total := 0.0
+	transactionFee := 0.0001
+	for i := range withdrawals {
+		total += withdrawals[i].Amount + transactionFee
+	}
+
+	// get current remaining balance
+	balance, err := coinClient.GetBalance("")
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"event": "处理提现",
+			"error": err,
+		}).Error("failed to get balance from coin daemon")
+		return
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"event": "处理提现",
+		"提现总额":  total,
+		"账户余额":  balance.ToBTC(),
+	}).Info("calculate coins needed to process withdraw request")
+
+	for _, v := range withdrawals {
+		// update withdrawal status to pending
+		if err := store.UpdateWithdrawalStatusToProcessing(v.ID); err != nil {
+			logrus.WithFields(logrus.Fields{
+				"event": "处理提现",
+				"error": err,
+			}).Error("failed to update withdrawal status to processing")
+			return
+		}
+
+		// send coin to address
+		addr, _ := btcutil.DecodeAddress(v.Address, &chaincfg.MainNetParams)
+		amount, _ := btcutil.NewAmount(v.Amount)
+		hash, err := coinClient.SendToAddress(addr, amount)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"event":   "处理提现",
+				"address": v.Address,
+				"error":   err,
+			}).Error("failed to send coin")
+			return
+		}
+
+		// update withdrawal status to processed in db
+		if err := store.UpdateWithdrawalStatusToProcessed(v.ID, hash.String()); err != nil {
+			logrus.WithFields(logrus.Fields{
+				"event":          "处理提现",
+				"id":             v.ID,
+				"transaction_id": hash.String(),
+				"error":          err,
+			}).Error("failed to update withdrawal status to processed")
+			return
+		}
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"event": "处理提现",
+		"时长":    time.Since(start),
+		"提现总额":  total,
+	}).Info("succeed to process withdraw requests")
 }
 
 // fail fast on initialization
