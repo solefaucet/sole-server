@@ -64,7 +64,7 @@ func init() {
 
 	// cache
 	memoryCache = memory.New(config.Cache.NumCachedIncomes)
-	setCacheFromStore(memoryCache, store)
+	updateCache()
 
 	// coin client
 	initCoinClient()
@@ -160,24 +160,20 @@ func createRewardIncome(income models.Income, now time.Time) error {
 	return nil
 }
 
-func setCacheFromStore(c cache.Cache, s storage.Storage) {
-	c.SetLatestConfig(must(s.GetLatestConfig()).(models.Config))
+func updateCache() {
+	memoryCache.SetLatestConfig(must(store.GetLatestConfig()).(models.Config))
 
-	lessRates := must(s.GetRewardRatesByType(models.RewardRateTypeLess)).([]models.RewardRate)
-	c.SetRewardRates(models.RewardRateTypeLess, lessRates)
+	lessRates := must(store.GetRewardRatesByType(models.RewardRateTypeLess)).([]models.RewardRate)
+	memoryCache.SetRewardRates(models.RewardRateTypeLess, lessRates)
 
-	moreRates := must(s.GetRewardRatesByType(models.RewardRateTypeMore)).([]models.RewardRate)
-	c.SetRewardRates(models.RewardRateTypeMore, moreRates)
+	moreRates := must(store.GetRewardRatesByType(models.RewardRateTypeMore)).([]models.RewardRate)
+	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 }
 
 func initCronjob() {
 	c := cron.New()
-	must(nil, c.AddFunc("@every 1m",
-		safeFuncWrapper(func() {
-			setCacheFromStore(memoryCache, store)
-		}),
-	))
-	must(nil, c.AddFunc("@daily", createWithdrawal))
+	must(nil, c.AddFunc("@every 1m", safeFuncWrapper(updateCache)))         // update cache every 1 minute
+	must(nil, c.AddFunc("@daily", safeFuncWrapper(createWithdrawal)))       // create withdrawal every day
 	c.Start()
 }
 
