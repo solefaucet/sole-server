@@ -83,3 +83,35 @@ func (s Storage) GetUnprocessedWithdrawals() ([]models.Withdrawal, error) {
 	err := s.selects(&dest, rawSQL, args...)
 	return dest, err
 }
+
+// UpdateWithdrawalStatusToProcessing update withdrawal status to processing if status = pending
+func (s Storage) UpdateWithdrawalStatusToProcessing(id int64) error {
+	rawSQL := "UPDATE `withdrawals` SET `status` = ? WHERE `id` = ? AND `status` = ?"
+	args := []interface{}{models.WithdrawalStatusProcessing, id, models.WithdrawalStatusPending}
+	result, err := s.db.Exec(rawSQL, args...)
+	if err != nil {
+		return err
+	}
+
+	if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
+		return fmt.Errorf("expected 1 but %v rows affected", rowAffected)
+	}
+
+	return nil
+}
+
+// UpdateWithdrawalStatusToProcessed update withdrawal status to processed if status = processing
+func (s Storage) UpdateWithdrawalStatusToProcessed(id int64, transactionID string) error {
+	rawSQL := "UPDATE `withdrawals` SET `status` = ?, `transaction_id` = ? WHERE `id` = ? AND `status` = ?"
+	args := []interface{}{models.WithdrawalStatusProcessed, transactionID, id, models.WithdrawalStatusProcessing}
+	result, err := s.db.Exec(rawSQL, args...)
+	if err != nil {
+		return err
+	}
+
+	if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
+		return fmt.Errorf("expected 1 but %v rows affected", rowAffected)
+	}
+
+	return nil
+}
