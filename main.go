@@ -8,6 +8,9 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcrpcclient"
+	"github.com/btcsuite/btcutil"
 	"github.com/freeusd/solebtc/handlers/v1"
 	"github.com/freeusd/solebtc/middlewares"
 	"github.com/freeusd/solebtc/models"
@@ -30,6 +33,7 @@ var (
 	store       storage.Storage
 	memoryCache cache.Cache
 	connsHub    hub.Hub
+	coinClient  *btcrpcclient.Client
 )
 
 func init() {
@@ -61,6 +65,9 @@ func init() {
 	memoryCache = memory.New(config.Cache.NumCachedIncomes)
 	setCacheFromStore(memoryCache, store)
 
+	// coin client
+	initCoinClient()
+
 	// cronjob
 	initCronjob()
 
@@ -89,7 +96,7 @@ func main() {
 	// user endpoints
 	v1UserEndpoints := v1Endpoints.Group("/users")
 	v1UserEndpoints.GET("", authRequired, v1.UserInfo(store.GetUserByID))
-	v1UserEndpoints.POST("", v1.Signup(store.CreateUser, store.GetUserByID))
+	v1UserEndpoints.POST("", v1.Signup(validateAddress, store.CreateUser, store.GetUserByID))
 	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(store.GetSessionByToken, store.GetUserByID, store.UpdateUserStatus))
 	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetRefereesSince, store.GetRefereesUntil))
 
@@ -210,6 +217,49 @@ func createWithdrawal() {
 			}).Error("failed to create withdrawal")
 		}
 	})
+}
+
+func initCoinClient() {
+	config := &btcrpcclient.ConnConfig{
+		Host:         "localhost:8332",
+		User:         "rpcuser",
+		Pass:         "rpcpass",
+		HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
+		DisableTLS:   true, // Bitcoin core does not provide TLS by default
+	}
+	coinClient = must(btcrpcclient.New(config, nil)).(*btcrpcclient.Client)
+	must(nil, coinClient.Ping())
+}
+
+func validateAddress(address string) (bool, error) {
+	addr, err := parseAddress(address)
+	if err != nil {
+		return false, err
+	}
+
+	result, err := coinClient.ValidateAddress(addr)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"address": address,
+			"error":   err,
+		}).Debug("failed to validate address")
+		return false, err
+	}
+
+	return result.IsValid, nil
+}
+
+func parseAddress(address string) (btcutil.Address, error) {
+	addr, err := btcutil.DecodeAddress(address, &chaincfg.MainNetParams)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"address": address,
+			"error":   err,
+		}).Debug("failed to parse address")
+		return nil, err
+	}
+
+	return addr, nil
 }
 
 // fail fast on initialization
