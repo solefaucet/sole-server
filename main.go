@@ -183,7 +183,10 @@ func createWithdrawal() {
 	users, err := store.GetWithdrawableUsers()
 	if err != nil {
 		logger.Printf("get withdrawable users error: %v\n", err)
-		logrus.WithError(err).Error("创建提现")
+		logrus.WithFields(logrus.Fields{
+			"event": "创建提现",
+			"error": err,
+		}).Error("failed to get withdrawable users")
 		return
 	}
 
@@ -210,12 +213,13 @@ func createWithdrawal() {
 		if err != nil {
 			logger.Printf("create withdrawal for user %v error: %v\n", u, err)
 			logrus.WithFields(logrus.Fields{
+				"event":   "创建提现",
 				"email":   u.Email,
 				"address": u.Address,
 				"balance": u.Balance,
 				"status":  u.Status,
 				"error":   err,
-			}).Error("创建提现")
+			}).Error("failed to create withdrawal")
 		}
 	})
 }
@@ -238,7 +242,7 @@ func validateAddress(address string) (bool, error) {
 		logrus.WithFields(logrus.Fields{
 			"address": address,
 			"error":   err,
-		}).Error("failed to parse address")
+		}).Debug("failed to parse address")
 		return false, err
 	}
 
@@ -259,6 +263,7 @@ func processWithdrawals() {
 
 	withdrawals, err := store.GetUnprocessedWithdrawals()
 	if err != nil {
+		logger.Printf("get unprocessed withdrawals error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"event": "处理提现",
 			"error": err,
@@ -276,6 +281,7 @@ func processWithdrawals() {
 	// get current remaining balance
 	balance, err := coinClient.GetBalance("")
 	if err != nil {
+		logger.Printf("get coin balance error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"event": "处理提现",
 			"error": err,
@@ -292,6 +298,7 @@ func processWithdrawals() {
 	for _, v := range withdrawals {
 		// update withdrawal status to pending
 		if err := store.UpdateWithdrawalStatusToProcessing(v.ID); err != nil {
+			logger.Printf("update withdrawal status to processing error: %v\n", err)
 			logrus.WithFields(logrus.Fields{
 				"event": "处理提现",
 				"error": err,
@@ -304,6 +311,7 @@ func processWithdrawals() {
 		amount, _ := btcutil.NewAmount(v.Amount)
 		hash, err := coinClient.SendToAddress(addr, amount)
 		if err != nil {
+			logger.Printf("send coin to address %s error: %v\n", addr.String(), err)
 			logrus.WithFields(logrus.Fields{
 				"event":   "处理提现",
 				"address": v.Address,
@@ -314,6 +322,7 @@ func processWithdrawals() {
 
 		// update withdrawal status to processed in db
 		if err := store.UpdateWithdrawalStatusToProcessed(v.ID, hash.String()); err != nil {
+			logger.Printf("update withdrawal status to processed and transaction id to %v error: %v\n", hash.String(), err)
 			logrus.WithFields(logrus.Fields{
 				"event":          "处理提现",
 				"id":             v.ID,
