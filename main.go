@@ -291,6 +291,7 @@ func processWithdrawals() {
 
 	logrus.WithFields(logrus.Fields{
 		"event": "处理提现",
+		"转币地址":  addressToReceiveCoin.String(),
 		"提现总额":  total,
 		"账户余额":  balance.ToBTC(),
 	}).Info("calculate coins needed to process withdraw request")
