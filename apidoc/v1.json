@@ -516,6 +516,16 @@
                     "type": "number",
                     "format": "float"
                 },
+                "total_income": {
+                    "description": "用户自注册以来收入总额",
+                    "type": "number",
+                    "format": "float"
+                },
+                "referer_total_income": {
+                    "description": "用户的推荐者从该用户获得的收入",
+                    "type": "number",
+                    "format": "float"
+                },
                 "min_withdrawal_amount": {
                     "description": "用户最低提现额",
                     "type": "number",
