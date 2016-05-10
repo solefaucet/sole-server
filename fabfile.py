@@ -30,6 +30,9 @@ def deployStaging(branch_name):
         run('tar xf archive.tar')
         run('go build -o solebtc')
 
+        # mv doc to nginx root
+        run('mv apidoc/v1.json /usr/share/nginx/html/doc')
+
         # database version control
         run("mysql -e 'create database if not exists solebtc_prod';")
         run('go get bitbucket.org/liamstask/goose/cmd/goose')

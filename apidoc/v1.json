@@ -1,0 +1,587 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "SoleBTC",
+        "description": "[SoleBTC](https://github.com/freeusd/solebtc) 服务端接口文档.\n\n",
+        "termsOfService": "http://helloreverb.com/terms/",
+        "contact": {
+            "name": "api support",
+            "email": "nanohugh@gmail.com",
+            "url": "http://solebtc.com"
+        }
+    },
+    "host": "staging.solebtc.com",
+    "basePath": "/api/v1",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取用户信息",
+                "operationId": "retrieveUser",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取用户信息",
+                        "schema": {
+                            "$ref": "#/definitions/userModel"
+                        }
+                    },
+                    "403": {
+                        "description": "无权限访问"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "创建用户",
+                "operationId": "createUser",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "email", "address"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "description": "用户邮件",
+                                    "type": "string"
+                                },
+                                "address": {
+                                    "description": "用户提现地址",
+                                    "type": "string"
+                                },
+                                "referer_id": {
+                                    "description": "推荐人 id",
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功创建用户",
+                        "schema": {
+                            "$ref": "#/definitions/userModel"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    },
+                    "409": {
+                        "description": "邮箱或地址已存在"
+                    }
+                }
+            }
+        },
+        "/users/{id}/status": {
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "更新用户状态",
+                "operationId": "updateUserStatus",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "用户 id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功验证用户邮箱"
+                    },
+                    "401": {
+                        "description": "token 错误或已失效(3个小时)"
+                    },
+                    "403": {
+                        "description": "当前用户状态是banned, 不能更新"
+                    }
+                }
+            }
+        },
+        "/users/referees": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取用户的下线列表",
+                "operationId": "retrieveUserReferees",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "until",
+                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limit",
+                        "description": "返回结果里面最多包含的条数",
+                        "default": 10,
+                        "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取下线列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/userModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "since 和 until 都不存在, since 或者 until 不能转换成整形",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "无权限, 没登陆"
+                    }
+                }
+            }
+        },
+        "/auth_tokens": {
+            "post": {
+                "tags": [
+                    "Auth-Token"
+                ],
+                "summary": "登陆",
+                "operationId": "createAuthToken",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "email"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "description": "用户邮件",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功登陆",
+                        "schema": {
+                            "$ref": "#/definitions/authTokenModel"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    },
+                    "403": {
+                        "description": "该账户已被封, 状态是 banned"
+                    },
+                    "404": {
+                        "description": "无此用户"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Auth-Token"
+                ],
+                "summary": "退出",
+                "operationId": "deleteAuthToken",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功退出"
+                    },
+                    "401": {
+                        "description": "无权限退出"
+                    }
+                }
+            }
+        },
+        "/sessions": {
+            "post": {
+                "tags": [
+                    "Sessions"
+                ],
+                "summary": "发送验证邮件到用户邮箱",
+                "operationId": "createSession",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功发送邮件"
+                    },
+                    "401": {
+                        "description": "无权限"
+                    }
+                }
+            }
+        },
+        "/incomes/rewards": {
+            "post": {
+                "tags": [
+                    "Incomes"
+                ],
+                "summary": "抽奖",
+                "operationId": "createReward",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "抽奖成功",
+                        "schema": {
+                            "$ref": "#/definitions/incomeModel"
+                        }
+                    },
+                    "401": {
+                        "description": "无权限"
+                    },
+                    "429": {
+                        "description": "距离上次抽奖时间太短"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Incomes"
+                ],
+                "summary": "获取抽奖历史",
+                "operationId": "retrieveRewards",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "until",
+                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limit",
+                        "description": "返回结果里面最多包含的条数",
+                        "default": 10,
+                        "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取用户抽奖历史",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/incomeModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "无权限"
+                    }
+                }
+            }
+        },
+        "/incomes/rewards/referees/{referee_id}": {
+            "get": {
+                "tags": [
+                    "Incomes"
+                ],
+                "summary": "获取下线抽奖历史",
+                "operationId": "retrieveRefereeRewards",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "referee_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "until",
+                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limit",
+                        "description": "返回结果里面最多包含的条数",
+                        "default": 10,
+                        "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取下线的抽奖历史",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/incomeModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "无权限"
+                    },
+                    "403": {
+                        "description": "不是这个用户的下线"
+                    }
+                }
+            }
+        },
+        "/websocket": {
+            "get": {
+                "tags": [
+                    "Websocket"
+                ],
+                "schemes": [
+                    "wss"
+                ],
+                "summary": "Websocket 建立连接",
+                "operationId": "createWsConnection",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "成功建立连接"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "errorModel": {
+            "type": "object",
+            "required": [
+                "error"
+            ],
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "userModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "用户 id",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "email": {
+                    "description": "用户邮件",
+                    "type": "string"
+                },
+                "address": {
+                    "description": "用户提现地址",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "用户状态",
+                    "type": "string",
+                    "enum": [
+                        "banned", 
+                        "unverified", 
+                        "verified"
+                    ]
+                },
+                "balance": {
+                    "description": "用户账户余额",
+                    "type": "number",
+                    "format": "float"
+                },
+                "min_withdrawal_amount": {
+                    "description": "用户最低提现额",
+                    "type": "number",
+                    "format": "float"
+                },
+                "reward_interval": {
+                    "description": "用户抽奖最小间隔, 以秒为单位",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "rewarded_at": {
+                    "description": "用户上次抽奖时间, 格式符合 rfc3339",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "created_at": {
+                    "description": "用户账户创建时间, 格式符合 rfc3999",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "authTokenModel": {
+            "type": "object",
+            "required": [
+                "auth_token"
+            ],
+            "properties": {
+                "auth_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "incomeModel": {
+            "type": "object",
+            "required": [
+                "type",
+                "income",
+                "referer_income",
+                "created_at"
+            ],
+            "properties": {
+                "type": {
+                    "description": "收入类型, reward(抽奖) offerwall(任务墙)",
+                    "type": "string",
+                    "enum": [
+                        "reward",
+                        "offerwall"
+                    ]
+                },
+                "income": {
+                    "description": "收入数额",
+                    "type": "number",
+                    "format": "float"
+                },
+                "referer_income": {
+                    "description": "上线的奖励",
+                    "type": "number",
+                    "format": "float"
+                },
+                "created_at": {
+                    "description": "获得收入的时间, 格式符合 rfc3339",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        }
+    }
+}
