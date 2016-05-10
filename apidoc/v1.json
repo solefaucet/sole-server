@@ -392,6 +392,7 @@
                 ],
                 "summary": "获取下线抽奖历史",
                 "operationId": "retrieveRefereeRewards",
+                "deprecated": true,
                 "parameters": [
                     {
                         "name": "Auth-Token",
