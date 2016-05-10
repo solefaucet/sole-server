@@ -17,7 +17,7 @@ func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
 		Convey("When increment user balance with commited transaction", func() {
 			tx := s.db.MustBegin()
 			tx.Commit()
-			err := incrementUserBalanceByRewardIncome(tx, 0, 0, now)
+			err := incrementUserBalanceByRewardIncome(tx, 0, 0, 0, now)
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})
@@ -27,7 +27,7 @@ func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
 
 		Convey("When increment user balance affecting 0 row", func() {
 			tx := s.db.MustBegin()
-			err := incrementUserBalanceByRewardIncome(tx, 0, 0, now)
+			err := incrementUserBalanceByRewardIncome(tx, 0, 0, 0, now)
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})

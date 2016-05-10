@@ -54,8 +54,8 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 		return err
 	}
 
-	// update user balance
-	if err := incrementUserBalanceByRewardIncome(tx, income.UserID, income.Income, now); err != nil {
+	// update user balance, total_income, referer_total_income
+	if err := incrementUserBalanceByRewardIncome(tx, income.UserID, income.Income, income.RefererIncome, now); err != nil {
 		return err
 	}
 
@@ -74,9 +74,11 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	return nil
 }
 
-// update user balance
-func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta float64, now time.Time) error {
-	if result, err := tx.Exec("UPDATE users SET `balance` = `balance` + ?, `rewarded_at` = ? WHERE id = ?", delta, now, userID); err != nil {
+// update user balance, total_income, referer_total_income
+func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta, refererDelta float64, now time.Time) error {
+	rawSQL := "UPDATE users SET `balance` = `balance` + ?, `total_income` = `total_income` + ?, `referer_total_income` = `referer_total_income` + ?, `rewarded_at` = ? WHERE id = ?"
+	args := []interface{}{delta, delta, refererDelta, now, userID}
+	if result, err := tx.Exec(rawSQL, args...); err != nil {
 		return fmt.Errorf("create reward income update user balance error: %v", err)
 	} else if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
 		return fmt.Errorf("create reward income update user balance affected %v rows", rowAffected)
