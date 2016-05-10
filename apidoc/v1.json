@@ -455,6 +455,66 @@
                 }
             }
         },
+        "/withdrawals": {
+            "get": {
+                "tags": [
+                    "Withdrawals"
+                ],
+                "summary": "获取提现历史",
+                "operationId": "retrieveWithdrawals",
+                "parameters": [
+                    {
+                        "name": "Auth-Token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "until",
+                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limit",
+                        "description": "返回结果里面最多包含的条数",
+                        "default": 10,
+                        "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取用户提现历史",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/withdrawalModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "无权限"
+                    }
+                }
+            }
+        },
         "/websocket": {
             "get": {
                 "tags": [
@@ -588,6 +648,63 @@
                 },
                 "created_at": {
                     "description": "获得收入的时间, 格式符合 rfc3339",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "withdrawalModel": {
+            "type": "object",
+            "required": [
+                "id",
+                "user_id",
+                "address",
+                "amount",
+                "status",
+                "updated_at",
+                "created_at"
+            ],
+            "properties": {
+                "id": {
+                    "description": "提现 id",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "user_id": {
+                    "description": "用户 id",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "address": {
+                    "description": "提现地址",
+                    "type": "string"
+                },
+                "amount": {
+                    "description": "提现数额",
+                    "type": "number",
+                    "format": "float"
+                },
+                "status": {
+                    "description": "提现状态 0: 等待处理 1: 处理中 2: 已处理",
+                    "type": "number",
+                    "format": "int64",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "transaction_id": {
+                    "description": "提现交易 id",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "提现状态更新时间, 格式符合 rfc3339",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "created_at": {
+                    "description": "提现创建时间, 格式符合 rfc3339",
                     "type": "string",
                     "format": "date-time"
                 }
