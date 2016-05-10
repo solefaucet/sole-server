@@ -127,6 +127,9 @@ func main() {
 	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
+	// withdrawal endpoint
+	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawalsSince, store.GetWithdrawalsUntil))
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(
