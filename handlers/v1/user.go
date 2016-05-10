@@ -34,11 +34,7 @@ func Signup(
 		if err := c.BindJSON(&payload); err != nil {
 			return
 		}
-		valid, err := validateAddress(payload.Address)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
+		valid, _ := validateAddress(payload.Address)
 		if !valid {
 			c.AbortWithError(http.StatusBadRequest, errors.ErrInvalidAddress)
 			return

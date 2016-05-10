@@ -54,14 +54,6 @@ func TestSignup(t *testing.T) {
 			nil,
 		},
 		{
-			"validate address error",
-			requestDataJSON(validEmail),
-			500,
-			nil,
-			nil,
-			func(string) (bool, error) { return false, fmt.Errorf("err") },
-		},
-		{
 			"invalid address",
 			requestDataJSON(validEmail),
 			400,
