@@ -18,7 +18,7 @@ func GetReward(
 	getSystemConfig dependencyGetSystemConfig,
 	getRewardRatesByType dependencyGetRewardRatesByType,
 	createRewardIncome dependencyCreateRewardIncome,
-	insertIncome dependencyInsertIncome,
+	cacheIncome dependencyInsertIncome,
 	broadcast dependencyBroadcast,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -68,7 +68,7 @@ func GetReward(
 			Type    string    `json:"type"`
 			Time    time.Time `json:"time"`
 		}{user.Address, reward, "reward", now}
-		insertIncome(deltaIncome)
+		cacheIncome(deltaIncome)
 
 		// broadcast delta income to all clients
 		msg, _ := json.Marshal(models.WebsocketMessage{DeltaIncome: deltaIncome})
