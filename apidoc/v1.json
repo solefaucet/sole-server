@@ -695,7 +695,7 @@
                         2
                     ]
                 },
-                "transaction_id": {
+                "tx_id": {
                     "description": "提现交易 id",
                     "type": "string"
                 },
