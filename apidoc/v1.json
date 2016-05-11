@@ -657,29 +657,11 @@
         "withdrawalModel": {
             "type": "object",
             "required": [
-                "id",
-                "user_id",
-                "address",
                 "amount",
                 "status",
-                "updated_at",
-                "created_at"
+                "updated_at"
             ],
             "properties": {
-                "id": {
-                    "description": "提现 id",
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "user_id": {
-                    "description": "用户 id",
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "address": {
-                    "description": "提现地址",
-                    "type": "string"
-                },
                 "amount": {
                     "description": "提现数额",
                     "type": "number",
@@ -695,17 +677,12 @@
                         2
                     ]
                 },
-                "tx_id": {
-                    "description": "提现交易 id",
+                "tx_url": {
+                    "description": "提现交易 url, 点击进去可以查看具体信息",
                     "type": "string"
                 },
                 "updated_at": {
                     "description": "提现状态更新时间, 格式符合 rfc3339",
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "created_at": {
-                    "description": "提现创建时间, 格式符合 rfc3339",
                     "type": "string",
                     "format": "date-time"
                 }

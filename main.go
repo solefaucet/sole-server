@@ -128,7 +128,7 @@ func main() {
 	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
 
 	// withdrawal endpoint
-	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawalsSince, store.GetWithdrawalsUntil))
+	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawalsSince, store.GetWithdrawalsUntil, constructTxURL))
 
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
@@ -342,6 +342,10 @@ func processWithdrawals() {
 		"时长":    time.Since(start),
 		"提现总额":  total,
 	}).Info("succeed to process withdraw requests")
+}
+
+func constructTxURL(tx string) string {
+	return config.Coin.TxExplorer + tx
 }
 
 // fail fast on initialization

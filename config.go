@@ -44,6 +44,9 @@ type configuration struct {
 	Template struct {
 		EmailVerificationTemplate string `validate:"required"`
 	} `validate:"required"`
+	Coin struct {
+		TxExplorer string `validate:"required"`
+	} `validate:"coin"`
 }
 
 var config configuration
@@ -93,6 +96,8 @@ func initConfig() {
 	config.Cache.NumCachedIncomes = viper.GetInt("num_cached_incomes")
 
 	config.Template.EmailVerificationTemplate = viper.GetString("email_verification_template")
+
+	config.Coin.TxExplorer = viper.GetString("tx_explorer")
 
 	// validate config
 	must(nil, validateConfiguration(config))

@@ -12,7 +12,7 @@ import (
 
 func TestWithdrawalList(t *testing.T) {
 	Convey("Given withdrawal list controller", t, func() {
-		handler := WithdrawalList(nil, nil)
+		handler := WithdrawalList(nil, nil, nil)
 
 		Convey("When get withdrawal list with invalid limit", func() {
 			route := "/withdrawals"
@@ -62,7 +62,7 @@ func TestWithdrawalList(t *testing.T) {
 
 	Convey("Given withdrawal list controller with errored getWithdrawalSince dependency", t, func() {
 		getWithdrawalsSince := mockGetWithdrawalsSince(nil, fmt.Errorf(""))
-		handler := WithdrawalList(getWithdrawalsSince, nil)
+		handler := WithdrawalList(getWithdrawalsSince, nil, nil)
 
 		Convey("When get withdrawal list", func() {
 			route := "/withdrawals"
@@ -81,8 +81,8 @@ func TestWithdrawalList(t *testing.T) {
 	})
 
 	Convey("Given withdrawal list controller with correct dependencies injected", t, func() {
-		getWithdrawalsUntil := mockGetWithdrawalsUntil(nil, nil)
-		handler := WithdrawalList(nil, getWithdrawalsUntil)
+		getWithdrawalsUntil := mockGetWithdrawalsUntil([]models.Withdrawal{{}}, nil)
+		handler := WithdrawalList(nil, getWithdrawalsUntil, func(tx string) string { return tx })
 
 		Convey("When get withdrawal list", func() {
 			route := "/withdrawals"
