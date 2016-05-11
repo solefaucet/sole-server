@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func max(v1, v2 int64) int64 {
-	if v1 > v2 {
+func min(v1, v2 int64) int64 {
+	if v1 < v2 {
 		return v1
 	}
 	return v2
@@ -21,7 +21,7 @@ func parsePagination(c *gin.Context) (isSince bool, separator, limit int64, err 
 	if err != nil {
 		return
 	}
-	limit = max(limit, 100)
+	limit = min(limit, 100)
 
 	// parse since
 	querySince := c.Query("since")
