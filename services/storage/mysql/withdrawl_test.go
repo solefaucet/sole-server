@@ -135,7 +135,7 @@ func TestGetUnprocessedWithdrawals(t *testing.T) {
 		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 3})
 
 		Convey("When get withdrawals until now", func() {
-			result, _ := s.GetUnprocessedWithdrawals()
+			result, _ := s.GetPendingWithdrawals()
 
 			Convey("Withdrawals should equal", func() {
 				So(result, func(actual interface{}, expected ...interface{}) string {
