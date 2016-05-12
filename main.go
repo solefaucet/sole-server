@@ -99,7 +99,7 @@ func main() {
 	v1UserEndpoints.GET("", authRequired, v1.UserInfo(store.GetUserByID))
 	v1UserEndpoints.POST("", v1.Signup(validateAddress, store.CreateUser, store.GetUserByID))
 	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(store.GetSessionByToken, store.GetUserByID, store.UpdateUserStatus))
-	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetRefereesSince, store.GetRefereesUntil))
+	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetReferees))
 
 	// auth token endpoints
 	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")
@@ -124,11 +124,10 @@ func main() {
 			memoryCache.InsertIncome,
 			connsHub.Broadcast),
 	)
-	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
-	v1IncomeEndpoints.GET("/rewards/referees/:referee_id", v1.RefereeRewardList(store.GetUserByID, store.GetRewardIncomesSince, store.GetRewardIncomesUntil))
+	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomes))
 
 	// withdrawal endpoint
-	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawalsSince, store.GetWithdrawalsUntil, constructTxURL))
+	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawals, constructTxURL))
 
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
