@@ -260,7 +260,7 @@ func TestGetUserInfo(t *testing.T) {
 
 func TestGetReferees(t *testing.T) {
 	Convey("Given referee list handler with errored dependency", t, func() {
-		handler := RefereeList(mockGetReferees(nil, fmt.Errorf("")))
+		handler := RefereeList(mockGetReferees(nil, fmt.Errorf("")), nil)
 
 		Convey("When get reward list with invalid offset", func() {
 			route := "/users/referees"
@@ -294,7 +294,7 @@ func TestGetReferees(t *testing.T) {
 	})
 
 	Convey("Given referee list controller with correct dependencies injected", t, func() {
-		handler := RefereeList(mockGetReferees(nil, nil))
+		handler := RefereeList(mockGetReferees(nil, nil), func(int64) (int64, error) { return 0, nil })
 
 		Convey("When get referee list", func() {
 			route := "/users/referees"

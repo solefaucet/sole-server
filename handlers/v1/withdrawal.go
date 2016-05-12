@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 // WithdrawalList returns user's withdrawal list as response
 func WithdrawalList(
 	getWithdrawals dependencyGetWithdrawals,
+	getNumberOfWithdrawals dependencyGetNumberOfWithdrawals,
 	constructTxURL dependencyConstructTxURL,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -30,6 +32,12 @@ func WithdrawalList(
 			return
 		}
 
+		count, err := getNumberOfWithdrawals(authToken.UserID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
 		result := make([]struct {
 			UpdatedAt time.Time `json:"updated_at"`
 			Amount    float64   `json:"amount"`
@@ -43,6 +51,7 @@ func WithdrawalList(
 			result[i].Status = withdrawals[i].Status
 		}
 
+		c.Header("X-Total-Count", fmt.Sprint(count))
 		c.JSON(http.StatusOK, result)
 	}
 }

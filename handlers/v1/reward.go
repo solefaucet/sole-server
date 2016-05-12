@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -80,34 +81,32 @@ func GetReward(
 // RewardList returns user's reward list as response
 func RewardList(
 	getRewardIncomes dependencyGetRewardIncomes,
+	getNumberOfRewardIncomes dependencyGetNumberOfRewardIncomes,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 
-		// response
-		getRewards(c, authToken.UserID, getRewardIncomes)
-	}
-}
+		// parse pagination args
+		limit, offset, err := parsePagination(c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
 
-// common get rewards logic
-func getRewards(
-	c *gin.Context,
-	userID int64,
-	getRewardIncomes dependencyGetRewardIncomes,
-) {
-	// parse pagination args
-	limit, offset, err := parsePagination(c)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+		// response with result or error
+		result, err := getRewardIncomes(authToken.UserID, limit, offset)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 
-	// response with result or error
-	result, err := getRewardIncomes(userID, limit, offset)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
+		count, err := getNumberOfRewardIncomes(authToken.UserID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		c.Header("X-Total-Count", fmt.Sprint(count))
+		c.JSON(http.StatusOK, result)
+	}
 }

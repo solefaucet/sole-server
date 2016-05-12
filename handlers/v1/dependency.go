@@ -11,11 +11,12 @@ import (
 // dependencies
 type (
 	// user
-	dependencyGetUserByID      func(int64) (models.User, error)
-	dependencyGetUserByEmail   func(string) (models.User, error)
-	dependencyCreateUser       func(models.User) error
-	dependencyUpdateUserStatus func(int64, string) error
-	dependencyGetReferees      func(userID int64, limit, offset int64) ([]models.User, error)
+	dependencyGetUserByID         func(int64) (models.User, error)
+	dependencyGetUserByEmail      func(string) (models.User, error)
+	dependencyCreateUser          func(models.User) error
+	dependencyUpdateUserStatus    func(int64, string) error
+	dependencyGetReferees         func(userID int64, limit, offset int64) ([]models.User, error)
+	dependencyGetNumberOfReferees func(userID int64) (int64, error)
 
 	// auth token
 	dependencyCreateAuthToken func(models.AuthToken) error
@@ -39,9 +40,10 @@ type (
 	dependencyGetSystemConfig func() models.Config
 
 	// income
-	dependencyCreateRewardIncome func(models.Income, time.Time) error
-	dependencyGetRewardIncomes   func(userID int64, limit, offset int64) ([]models.Income, error)
-	dependencyInsertIncome       func(interface{}) // cache for broadcasting
+	dependencyCreateRewardIncome       func(models.Income, time.Time) error
+	dependencyGetRewardIncomes         func(userID int64, limit, offset int64) ([]models.Income, error)
+	dependencyGetNumberOfRewardIncomes func(userID int64) (int64, error)
+	dependencyInsertIncome             func(interface{}) // cache for broadcasting
 
 	// websocket
 	dependencyPutConn          func(*websocket.Conn)
@@ -50,8 +52,9 @@ type (
 	dependencyGetLatestIncomes func() []interface{}
 
 	// withdrawals
-	dependencyGetWithdrawals func(userID int64, limit, offset int64) ([]models.Withdrawal, error)
-	dependencyConstructTxURL func(tx string) string
+	dependencyGetWithdrawals         func(userID int64, limit, offset int64) ([]models.Withdrawal, error)
+	dependencyGetNumberOfWithdrawals func(userID int64) (int64, error)
+	dependencyConstructTxURL         func(tx string) string
 
 	// validation
 	dependencyValidateAddress func(string) (bool, error)

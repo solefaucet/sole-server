@@ -12,7 +12,7 @@ import (
 
 func TestWithdrawalList(t *testing.T) {
 	Convey("Given withdrawal list controller", t, func() {
-		handler := WithdrawalList(mockGetWithdrawals(nil, fmt.Errorf("")), nil)
+		handler := WithdrawalList(mockGetWithdrawals(nil, fmt.Errorf("")), nil, nil)
 
 		Convey("When get withdrawal list with invalid limit", func() {
 			route := "/withdrawals"
@@ -47,7 +47,7 @@ func TestWithdrawalList(t *testing.T) {
 
 	Convey("Given withdrawal list controller with correct dependencies injected", t, func() {
 		getWithdrawals := mockGetWithdrawals([]models.Withdrawal{{}}, nil)
-		handler := WithdrawalList(getWithdrawals, func(tx string) string { return tx })
+		handler := WithdrawalList(getWithdrawals, func(int64) (int64, error) { return 0, nil }, func(tx string) string { return tx })
 
 		Convey("When get withdrawal list", func() {
 			route := "/withdrawals"

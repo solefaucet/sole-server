@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -127,6 +128,7 @@ func UserInfo(getUserByID dependencyGetUserByID) gin.HandlerFunc {
 // RefereeList returns user's referee list as response
 func RefereeList(
 	getReferees dependencyGetReferees,
+	getNumberOfReferees dependencyGetNumberOfReferees,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
@@ -145,6 +147,14 @@ func RefereeList(
 			return
 		}
 
+		// total number of referees
+		count, err := getNumberOfReferees(authToken.UserID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.Header("X-Total-Count", fmt.Sprint(count))
 		c.JSON(http.StatusOK, result)
 	}
 }

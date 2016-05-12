@@ -120,7 +120,7 @@ func TestGetReward(t *testing.T) {
 
 func TestRewardList(t *testing.T) {
 	Convey("Given reward list handler", t, func() {
-		handler := RewardList(mockGetRewardIncomes(nil, fmt.Errorf("")))
+		handler := RewardList(mockGetRewardIncomes(nil, fmt.Errorf("")), nil)
 
 		Convey("When get reward list with invalid limit", func() {
 			route := "/incomes/rewards"
@@ -154,7 +154,7 @@ func TestRewardList(t *testing.T) {
 	})
 
 	Convey("Given reward list handler", t, func() {
-		handler := RewardList(mockGetRewardIncomes(nil, nil))
+		handler := RewardList(mockGetRewardIncomes(nil, nil), func(int64) (int64, error) { return 0, nil })
 
 		Convey("When get reward list", func() {
 			route := "/incomes/rewards"
