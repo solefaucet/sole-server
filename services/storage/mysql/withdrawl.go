@@ -75,10 +75,10 @@ func (s Storage) GetWithdrawalsUntil(userID int64, until time.Time, limit int64)
 	return dest, err
 }
 
-// GetUnprocessedWithdrawals get all unprocessed withdrawals
-func (s Storage) GetUnprocessedWithdrawals() ([]models.Withdrawal, error) {
-	rawSQL := "SELECT * FROM withdrawals WHERE `status` != ? ORDER BY `id` asc"
-	args := []interface{}{models.WithdrawalStatusProcessed}
+// GetPendingWithdrawals get all unprocessed withdrawals
+func (s Storage) GetPendingWithdrawals() ([]models.Withdrawal, error) {
+	rawSQL := "SELECT * FROM withdrawals WHERE `status` = ? ORDER BY `id` asc"
+	args := []interface{}{models.WithdrawalStatusPending}
 	dest := []models.Withdrawal{}
 	err := s.selects(&dest, rawSQL, args...)
 	return dest, err

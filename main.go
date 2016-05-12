@@ -264,13 +264,13 @@ func validateAddress(address string) (bool, error) {
 func processWithdrawals() {
 	start := time.Now()
 
-	withdrawals, err := store.GetUnprocessedWithdrawals()
+	withdrawals, err := store.GetPendingWithdrawals()
 	if err != nil {
-		logger.Printf("get unprocessed withdrawals error: %v\n", err)
+		logger.Printf("get pending withdrawals error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"event": "处理提现",
 			"error": err,
-		}).Error("failed to get unprocessed withdrawals")
+		}).Error("failed to get pending withdrawals")
 		return
 	}
 
