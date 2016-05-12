@@ -174,12 +174,12 @@
                 "responses": {
                     "200": {
                         "description": "成功获取下线列表",
-                        "headers": [
+                        "headers": {
                             "X-Total-Count": {
                                 "description": "总条数",
                                 "type": "integer"
                             }
-                        ],
+                        },
                         "schema": {
                             "type": "array",
                             "items": {
@@ -358,12 +358,12 @@
                 "responses": {
                     "200": {
                         "description": "成功获取用户抽奖历史",
-                        "headers": [
+                        "headers": {
                             "X-Total-Count": {
                                 "description": "总条数",
                                 "type": "integer"
                             }
-                        ],
+                        },
                         "schema": {
                             "type": "array",
                             "items": {
@@ -417,12 +417,12 @@
                 "responses": {
                     "200": {
                         "description": "成功获取用户提现历史",
-                        "headers": [
+                        "headers": {
                             "X-Total-Count": {
                                 "description": "总条数",
                                 "type": "integer"
                             }
-                        ],
+                        },
                         "schema": {
                             "type": "array",
                             "items": {
