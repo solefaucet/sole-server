@@ -14,6 +14,7 @@ type Storage interface {
 	CreateUser(models.User) error
 	UpdateUserStatus(int64, string) error
 	GetReferees(userID int64, limit, offset int64) ([]models.User, error)
+	GetNumberOfReferees(userID int64) (int64, error)
 	GetWithdrawableUsers() ([]models.User, error)
 
 	// AuthToken
@@ -38,10 +39,12 @@ type Storage interface {
 	// Income
 	CreateRewardIncome(models.Income, time.Time) error
 	GetRewardIncomes(userID int64, limit, offset int64) ([]models.Income, error)
+	GetNumberOfRewardIncomes(userID int64) (int64, error)
 
 	// Withdrawal
 	CreateWithdrawal(models.Withdrawal) error
 	GetWithdrawals(userID int64, limit, offset int64) ([]models.Withdrawal, error)
+	GetNumberOfWithdrawals(userID int64) (int64, error)
 	GetPendingWithdrawals() ([]models.Withdrawal, error)
 	UpdateWithdrawalStatusToProcessing(id int64) error
 	UpdateWithdrawalStatusToProcessed(id int64, transactionID string) error

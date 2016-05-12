@@ -58,11 +58,18 @@ func insertWithdrawal(tx *sqlx.Tx, userID int64, address string, amount float64)
 
 // GetWithdrawals get user's withdrawal
 func (s Storage) GetWithdrawals(userID int64, limit, offset int64) ([]models.Withdrawal, error) {
-	rawSQL := "SELECT * FROM withdrawals WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
+	rawSQL := "SELECT * FROM `withdrawals` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
 	args := []interface{}{userID, limit, offset}
 	dest := []models.Withdrawal{}
 	err := s.selects(&dest, rawSQL, args...)
 	return dest, err
+}
+
+// GetNumberOfWithdrawals gets number of user's withdrawals
+func (s Storage) GetNumberOfWithdrawals(userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `withdrawals` WHERE `user_id` = ?", userID).Scan(&count)
+	return count, err
 }
 
 // GetPendingWithdrawals get all unprocessed withdrawals

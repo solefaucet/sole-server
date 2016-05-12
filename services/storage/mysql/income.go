@@ -17,6 +17,13 @@ func (s Storage) GetRewardIncomes(userID int64, limit, offset int64) ([]models.I
 	return incomes, err
 }
 
+// GetNumberOfRewardIncomes gets number of user's reward incomes
+func (s Storage) GetNumberOfRewardIncomes(userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM incomes WHERE `user_id` = ? AND `type` = ?", userID, models.IncomeTypeReward).Scan(&count)
+	return count, err
+}
+
 // CreateRewardIncome creates a new reward type income
 func (s Storage) CreateRewardIncome(income models.Income, now time.Time) error {
 	tx := s.db.MustBegin()

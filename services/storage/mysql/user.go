@@ -88,6 +88,13 @@ func (s Storage) GetReferees(userID int64, limit, offset int64) ([]models.User, 
 	return dest, err
 }
 
+// GetNumberOfReferees gets number of user's referees
+func (s Storage) GetNumberOfReferees(userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM users WHERE `referer_id` = ?", userID).Scan(&count)
+	return count, err
+}
+
 // GetWithdrawableUsers gets users who are able to withdraw
 func (s Storage) GetWithdrawableUsers() ([]models.User, error) {
 	rawSQL := "SELECT * FROM users WHERE `status` = ? AND `balance` > `min_withdrawal_amount`"
