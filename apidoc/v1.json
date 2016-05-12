@@ -155,24 +155,17 @@
                         "type": "string"
                     },
                     {
-                        "name": "since",
-                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "until",
-                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
                         "name": "limit",
                         "description": "返回结果里面最多包含的条数",
                         "default": 10,
                         "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "offset",
+                        "default": 0,
                         "in": "query",
                         "type": "integer",
                         "format": "int64"
@@ -181,6 +174,12 @@
                 "responses": {
                     "200": {
                         "description": "成功获取下线列表",
+                        "headers": [
+                            "X-Total-Count": {
+                                "description": "总条数",
+                                "type": "integer"
+                            }
+                        ],
                         "schema": {
                             "type": "array",
                             "items": {
@@ -340,24 +339,17 @@
                         "type": "string"
                     },
                     {
-                        "name": "since",
-                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "until",
-                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
                         "name": "limit",
                         "description": "返回结果里面最多包含的条数",
                         "default": 10,
                         "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "offset",
+                        "default": 0,
                         "in": "query",
                         "type": "integer",
                         "format": "int64"
@@ -366,6 +358,12 @@
                 "responses": {
                     "200": {
                         "description": "成功获取用户抽奖历史",
+                        "headers": [
+                            "X-Total-Count": {
+                                "description": "总条数",
+                                "type": "integer"
+                            }
+                        ],
                         "schema": {
                             "type": "array",
                             "items": {
@@ -381,77 +379,6 @@
                     },
                     "401": {
                         "description": "无权限"
-                    }
-                }
-            }
-        },
-        "/incomes/rewards/referees/{referee_id}": {
-            "get": {
-                "tags": [
-                    "Incomes"
-                ],
-                "summary": "获取下线抽奖历史",
-                "operationId": "retrieveRefereeRewards",
-                "deprecated": true,
-                "parameters": [
-                    {
-                        "name": "Auth-Token",
-                        "in": "header",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "referee_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "since",
-                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "until",
-                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "limit",
-                        "description": "返回结果里面最多包含的条数",
-                        "default": 10,
-                        "maximum": 100,
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功获取下线的抽奖历史",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/incomeModel"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/errorModel"
-                        }
-                    },
-                    "401": {
-                        "description": "无权限"
-                    },
-                    "403": {
-                        "description": "不是这个用户的下线"
                     }
                 }
             }
@@ -471,24 +398,17 @@
                         "type": "string"
                     },
                     {
-                        "name": "since",
-                        "description": "Unix timestamp, 分页用, 从这个时间戳开始",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "until",
-                        "description": "Unix timestamp, 分页用, 截止于这个时间戳",
-                        "in": "query",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
                         "name": "limit",
                         "description": "返回结果里面最多包含的条数",
                         "default": 10,
                         "maximum": 100,
+                        "in": "query",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "offset",
+                        "default": 0,
                         "in": "query",
                         "type": "integer",
                         "format": "int64"
@@ -497,6 +417,12 @@
                 "responses": {
                     "200": {
                         "description": "成功获取用户提现历史",
+                        "headers": [
+                            "X-Total-Count": {
+                                "description": "总条数",
+                                "type": "integer"
+                            }
+                        ],
                         "schema": {
                             "type": "array",
                             "items": {
