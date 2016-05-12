@@ -119,8 +119,8 @@ func TestGetReward(t *testing.T) {
 }
 
 func TestRewardList(t *testing.T) {
-	Convey("Given reward list controller", t, func() {
-		handler := RewardList(nil, nil)
+	Convey("Given reward list handler", t, func() {
+		handler := RewardList(mockGetRewardIncomes(nil, fmt.Errorf("")))
 
 		Convey("When get reward list with invalid limit", func() {
 			route := "/incomes/rewards"
@@ -137,22 +137,7 @@ func TestRewardList(t *testing.T) {
 			})
 		})
 
-		Convey("When get reward list with invalid timestamp", func() {
-			route := "/incomes/rewards"
-			_, resp, r := gin.CreateTestContext()
-			r.Use(func(c *gin.Context) {
-				c.Set("auth_token", models.AuthToken{})
-			})
-			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?since=3i", nil)
-			r.ServeHTTP(resp, req)
-
-			Convey("Response code should be 400", func() {
-				So(resp.Code, ShouldEqual, 400)
-			})
-		})
-
-		Convey("When get reward list without since or until", func() {
+		Convey("When get reward list with errored handler", func() {
 			route := "/incomes/rewards"
 			_, resp, r := gin.CreateTestContext()
 			r.Use(func(c *gin.Context) {
@@ -162,35 +147,14 @@ func TestRewardList(t *testing.T) {
 			req, _ := http.NewRequest("GET", route, nil)
 			r.ServeHTTP(resp, req)
 
-			Convey("Response code should be 400", func() {
-				So(resp.Code, ShouldEqual, 400)
-			})
-		})
-	})
-
-	Convey("Given reward list controller with errored getRewardIncomesSince dependency", t, func() {
-		getRewardIncomesSince := mockGetRewardIncomesSince(nil, fmt.Errorf(""))
-		handler := RewardList(getRewardIncomesSince, nil)
-
-		Convey("When get reward list", func() {
-			route := "/incomes/rewards"
-			_, resp, r := gin.CreateTestContext()
-			r.Use(func(c *gin.Context) {
-				c.Set("auth_token", models.AuthToken{})
-			})
-			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?since=1234567890", nil)
-			r.ServeHTTP(resp, req)
-
 			Convey("Response code should be 500", func() {
 				So(resp.Code, ShouldEqual, 500)
 			})
 		})
 	})
 
-	Convey("Given reward list controller with correct dependencies injected", t, func() {
-		getRewardIncomesUntil := mockGetRewardIncomesUntil(nil, nil)
-		handler := RewardList(nil, getRewardIncomesUntil)
+	Convey("Given reward list handler", t, func() {
+		handler := RewardList(mockGetRewardIncomes(nil, nil))
 
 		Convey("When get reward list", func() {
 			route := "/incomes/rewards"
@@ -199,55 +163,11 @@ func TestRewardList(t *testing.T) {
 				c.Set("auth_token", models.AuthToken{})
 			})
 			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?until=1234567890", nil)
+			req, _ := http.NewRequest("GET", route, nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 200", func() {
-				So(resp.Code, ShouldEqual, 200)
-			})
-		})
-	})
-}
-
-func TestRefereeRewardList(t *testing.T) {
-	Convey("Given reward list controller with unauthorized user", t, func() {
-		getUserByID := mockGetUserByID(models.User{RefererID: 1}, nil)
-		until := mockGetRewardIncomesUntil(nil, nil)
-		handler := RefereeRewardList(getUserByID, nil, until)
-
-		Convey("When get referee reward list", func() {
-			route := "/incomes/rewards/12"
-			_, resp, r := gin.CreateTestContext()
-			r.Use(func(c *gin.Context) {
-				c.Set("auth_token", models.AuthToken{UserID: 2})
-			})
-			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?until=1234567890", nil)
-			r.ServeHTTP(resp, req)
-
-			Convey("Response code should be 403", func() {
-				So(resp.Code, ShouldEqual, 403)
-			})
-		})
-	})
-
-	Convey("Given reward list controller with correct dependencies injected", t, func() {
-		getUserByID := mockGetUserByID(models.User{RefererID: 1}, nil)
-		until := mockGetRewardIncomesUntil(nil, nil)
-		handler := RefereeRewardList(getUserByID, nil, until)
-
-		Convey("When get referee reward list", func() {
-			route := "/incomes/rewards/12"
-			_, resp, r := gin.CreateTestContext()
-			r.Use(func(c *gin.Context) {
-				c.Set("auth_token", models.AuthToken{UserID: 1})
-			})
-			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?until=1234567890", nil)
-			r.ServeHTTP(resp, req)
-
-			Convey("Response code should be 200", func() {
-				So(resp.Code, ShouldEqual, 200)
+				So(resp.Code, ShouldEqual, http.StatusOK)
 			})
 		})
 	})

@@ -91,25 +91,13 @@ func mockCreateRewardIncome(err error) dependencyCreateRewardIncome {
 	}
 }
 
-func mockGetRewardIncomesSince(incomes []models.Income, err error) dependencyGetRewardIncomesSince {
-	return func(int64, time.Time, int64) ([]models.Income, error) {
+func mockGetRewardIncomes(incomes []models.Income, err error) dependencyGetRewardIncomes {
+	return func(int64, int64, int64) ([]models.Income, error) {
 		return incomes, err
 	}
 }
 
-func mockGetRewardIncomesUntil(incomes []models.Income, err error) dependencyGetRewardIncomesUntil {
-	return func(int64, time.Time, int64) ([]models.Income, error) {
-		return incomes, err
-	}
-}
-
-func mockGetRefereesSince(users []models.User, err error) dependencyGetRefereesSince {
-	return func(int64, int64, int64) ([]models.User, error) {
-		return users, err
-	}
-}
-
-func mockGetRefereesUntil(users []models.User, err error) dependencyGetRefereesUntil {
+func mockGetReferees(users []models.User, err error) dependencyGetReferees {
 	return func(int64, int64, int64) ([]models.User, error) {
 		return users, err
 	}
@@ -139,14 +127,8 @@ func mockInsertIncome() dependencyInsertIncome {
 	return func(interface{}) {}
 }
 
-func mockGetWithdrawalsSince(withdrawals []models.Withdrawal, err error) dependencyGetWithdrawalsSince {
-	return func(int64, time.Time, int64) ([]models.Withdrawal, error) {
-		return withdrawals, err
-	}
-}
-
-func mockGetWithdrawalsUntil(withdrawals []models.Withdrawal, err error) dependencyGetWithdrawalsUntil {
-	return func(int64, time.Time, int64) ([]models.Withdrawal, error) {
+func mockGetWithdrawals(withdrawals []models.Withdrawal, err error) dependencyGetWithdrawals {
+	return func(int64, int64, int64) ([]models.Withdrawal, error) {
 		return withdrawals, err
 	}
 }

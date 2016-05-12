@@ -10,30 +10,21 @@ import (
 
 // WithdrawalList returns user's withdrawal list as response
 func WithdrawalList(
-	getWithdrawalsSince dependencyGetWithdrawalsSince,
-	getWithdrawalsUntil dependencyGetWithdrawalsUntil,
+	getWithdrawals dependencyGetWithdrawals,
 	constructTxURL dependencyConstructTxURL,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 
 		// parse pagination args
-		isSince, separator, limit, err := parsePagination(c)
+		limit, offset, err := parsePagination(c)
 		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
-		// get result according to args
-		t := time.Unix(separator, 0)
-		withdrawals := []models.Withdrawal{}
-		if isSince {
-			withdrawals, err = getWithdrawalsSince(authToken.UserID, t, limit)
-		} else {
-			withdrawals, err = getWithdrawalsUntil(authToken.UserID, t, limit)
-		}
-
 		// response with result or error
+		withdrawals, err := getWithdrawals(authToken.UserID, limit, offset)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

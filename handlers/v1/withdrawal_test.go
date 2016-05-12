@@ -12,7 +12,7 @@ import (
 
 func TestWithdrawalList(t *testing.T) {
 	Convey("Given withdrawal list controller", t, func() {
-		handler := WithdrawalList(nil, nil, nil)
+		handler := WithdrawalList(mockGetWithdrawals(nil, fmt.Errorf("")), nil)
 
 		Convey("When get withdrawal list with invalid limit", func() {
 			route := "/withdrawals"
@@ -29,22 +29,7 @@ func TestWithdrawalList(t *testing.T) {
 			})
 		})
 
-		Convey("When get withdrawal list with invalid timestamp", func() {
-			route := "/withdrawals"
-			_, resp, r := gin.CreateTestContext()
-			r.Use(func(c *gin.Context) {
-				c.Set("auth_token", models.AuthToken{})
-			})
-			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?since=3i", nil)
-			r.ServeHTTP(resp, req)
-
-			Convey("Response code should be 400", func() {
-				So(resp.Code, ShouldEqual, 400)
-			})
-		})
-
-		Convey("When get withdrawal list without since or until", func() {
+		Convey("When get withdrawal list", func() {
 			route := "/withdrawals"
 			_, resp, r := gin.CreateTestContext()
 			r.Use(func(c *gin.Context) {
@@ -54,26 +39,6 @@ func TestWithdrawalList(t *testing.T) {
 			req, _ := http.NewRequest("GET", route, nil)
 			r.ServeHTTP(resp, req)
 
-			Convey("Response code should be 400", func() {
-				So(resp.Code, ShouldEqual, 400)
-			})
-		})
-	})
-
-	Convey("Given withdrawal list controller with errored getWithdrawalSince dependency", t, func() {
-		getWithdrawalsSince := mockGetWithdrawalsSince(nil, fmt.Errorf(""))
-		handler := WithdrawalList(getWithdrawalsSince, nil, nil)
-
-		Convey("When get withdrawal list", func() {
-			route := "/withdrawals"
-			_, resp, r := gin.CreateTestContext()
-			r.Use(func(c *gin.Context) {
-				c.Set("auth_token", models.AuthToken{})
-			})
-			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?since=1234567890", nil)
-			r.ServeHTTP(resp, req)
-
 			Convey("Response code should be 500", func() {
 				So(resp.Code, ShouldEqual, 500)
 			})
@@ -81,8 +46,8 @@ func TestWithdrawalList(t *testing.T) {
 	})
 
 	Convey("Given withdrawal list controller with correct dependencies injected", t, func() {
-		getWithdrawalsUntil := mockGetWithdrawalsUntil([]models.Withdrawal{{}}, nil)
-		handler := WithdrawalList(nil, getWithdrawalsUntil, func(tx string) string { return tx })
+		getWithdrawals := mockGetWithdrawals([]models.Withdrawal{{}}, nil)
+		handler := WithdrawalList(getWithdrawals, func(tx string) string { return tx })
 
 		Convey("When get withdrawal list", func() {
 			route := "/withdrawals"

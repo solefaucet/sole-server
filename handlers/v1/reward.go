@@ -3,7 +3,6 @@ package v1
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/freeusd/solebtc/models"
@@ -80,36 +79,13 @@ func GetReward(
 
 // RewardList returns user's reward list as response
 func RewardList(
-	getRewardIncomesSince dependencyGetRewardIncomesSince,
-	getRewardIncomesUntil dependencyGetRewardIncomesUntil,
+	getRewardIncomes dependencyGetRewardIncomes,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 
 		// response
-		getRewards(c, authToken.UserID, getRewardIncomesSince, getRewardIncomesUntil)
-	}
-}
-
-// RefereeRewardList returns user's referee's reward list as response
-func RefereeRewardList(
-	getUserByID dependencyGetUserByID,
-	getRewardIncomesSince dependencyGetRewardIncomesSince,
-	getRewardIncomesUntil dependencyGetRewardIncomesUntil,
-) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authToken := c.MustGet("auth_token").(models.AuthToken)
-
-		// check if user is referer of :referee_id
-		refereeID, _ := strconv.ParseInt(c.Param("referee_id"), 10, 64)
-		referee, _ := getUserByID(refereeID)
-		if referee.HasReferer() && referee.RefererID != authToken.UserID {
-			c.AbortWithStatus(http.StatusForbidden)
-			return
-		}
-
-		// response
-		getRewards(c, refereeID, getRewardIncomesSince, getRewardIncomesUntil)
+		getRewards(c, authToken.UserID, getRewardIncomes)
 	}
 }
 
@@ -117,26 +93,17 @@ func RefereeRewardList(
 func getRewards(
 	c *gin.Context,
 	userID int64,
-	getRewardIncomesSince dependencyGetRewardIncomesSince,
-	getRewardIncomesUntil dependencyGetRewardIncomesUntil,
+	getRewardIncomes dependencyGetRewardIncomes,
 ) {
 	// parse pagination args
-	isSince, separator, limit, err := parsePagination(c)
+	limit, offset, err := parsePagination(c)
 	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	// get result according to args
-	t := time.Unix(separator, 0)
-	result := []models.Income{}
-	if isSince {
-		result, err = getRewardIncomesSince(userID, t, limit)
-	} else {
-		result, err = getRewardIncomesUntil(userID, t, limit)
-	}
-
 	// response with result or error
+	result, err := getRewardIncomes(userID, limit, offset)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

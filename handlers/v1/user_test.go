@@ -259,28 +259,23 @@ func TestGetUserInfo(t *testing.T) {
 }
 
 func TestGetReferees(t *testing.T) {
-	Convey("Given referee list controller", t, func() {
-		handler := RefereeList(nil, nil)
+	Convey("Given referee list handler with errored dependency", t, func() {
+		handler := RefereeList(mockGetReferees(nil, fmt.Errorf("")))
 
-		Convey("When get reward list with invalid limit", func() {
+		Convey("When get reward list with invalid offset", func() {
 			route := "/users/referees"
 			_, resp, r := gin.CreateTestContext()
 			r.Use(func(c *gin.Context) {
 				c.Set("auth_token", models.AuthToken{})
 			})
 			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?limit=3i", nil)
+			req, _ := http.NewRequest("GET", route+"?offset=3i", nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 400", func() {
 				So(resp.Code, ShouldEqual, 400)
 			})
 		})
-	})
-
-	Convey("Given referee list controller with errored getRefereesSinceID dependency", t, func() {
-		since := mockGetRefereesSince(nil, fmt.Errorf(""))
-		handler := RefereeList(since, nil)
 
 		Convey("When get referee list", func() {
 			route := "/users/referees"
@@ -289,7 +284,7 @@ func TestGetReferees(t *testing.T) {
 				c.Set("auth_token", models.AuthToken{})
 			})
 			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?since=1234567890", nil)
+			req, _ := http.NewRequest("GET", route, nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 500", func() {
@@ -299,8 +294,7 @@ func TestGetReferees(t *testing.T) {
 	})
 
 	Convey("Given referee list controller with correct dependencies injected", t, func() {
-		until := mockGetRefereesUntil(nil, nil)
-		handler := RefereeList(nil, until)
+		handler := RefereeList(mockGetReferees(nil, nil))
 
 		Convey("When get referee list", func() {
 			route := "/users/referees"
@@ -309,7 +303,7 @@ func TestGetReferees(t *testing.T) {
 				c.Set("auth_token", models.AuthToken{})
 			})
 			r.GET(route, handler)
-			req, _ := http.NewRequest("GET", route+"?until=1234567890", nil)
+			req, _ := http.NewRequest("GET", route, nil)
 			r.ServeHTTP(resp, req)
 
 			Convey("Response code should be 200", func() {

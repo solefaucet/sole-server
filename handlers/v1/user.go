@@ -116,7 +116,6 @@ func UserInfo(getUserByID dependencyGetUserByID) gin.HandlerFunc {
 			// if get user error
 			// it must be internal server error
 			// do not need to check existence of user
-			// although error code can be ErrCodeNotFound
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
@@ -127,28 +126,20 @@ func UserInfo(getUserByID dependencyGetUserByID) gin.HandlerFunc {
 
 // RefereeList returns user's referee list as response
 func RefereeList(
-	getRefereesSinceID dependencyGetRefereesSince,
-	getRefereesUntilID dependencyGetRefereesUntil,
+	getReferees dependencyGetReferees,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authToken := c.MustGet("auth_token").(models.AuthToken)
 
 		// parse pagination args
-		isSince, separator, limit, err := parsePagination(c)
+		limit, offset, err := parsePagination(c)
 		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
-		// get result according to args
-		result := []models.User{}
-		if isSince {
-			result, err = getRefereesSinceID(authToken.UserID, separator, limit)
-		} else {
-			result, err = getRefereesUntilID(authToken.UserID, separator, limit)
-		}
-
 		// response with result or error
+		result, err := getReferees(authToken.UserID, limit, offset)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
