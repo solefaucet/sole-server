@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/freeusd/solebtc/errors"
 	"github.com/freeusd/solebtc/models"
@@ -57,19 +56,10 @@ func insertWithdrawal(tx *sqlx.Tx, userID int64, address string, amount float64)
 	return nil
 }
 
-// GetWithdrawalsSince get user's withdrawal since, created_at >= since
-func (s Storage) GetWithdrawalsSince(userID int64, since time.Time, limit int64) ([]models.Withdrawal, error) {
-	rawSQL := "SELECT * FROM withdrawals WHERE `user_id` = ? AND `created_at` >= ? ORDER BY `id` ASC LIMIT ?"
-	args := []interface{}{userID, since, limit}
-	dest := []models.Withdrawal{}
-	err := s.selects(&dest, rawSQL, args...)
-	return dest, err
-}
-
-// GetWithdrawalsUntil get user's withdrawal until, created_at < until
-func (s Storage) GetWithdrawalsUntil(userID int64, until time.Time, limit int64) ([]models.Withdrawal, error) {
-	rawSQL := "SELECT * FROM withdrawals WHERE `user_id` = ? AND `created_at` < ? ORDER BY `id` DESC LIMIT ?"
-	args := []interface{}{userID, until, limit}
+// GetWithdrawals get user's withdrawal
+func (s Storage) GetWithdrawals(userID int64, limit, offset int64) ([]models.Withdrawal, error) {
+	rawSQL := "SELECT * FROM withdrawals WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
+	args := []interface{}{userID, limit, offset}
 	dest := []models.Withdrawal{}
 	err := s.selects(&dest, rawSQL, args...)
 	return dest, err

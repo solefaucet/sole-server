@@ -8,22 +8,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// GetRewardIncomesSince get user's reward income records since, created_at >= since
-// pagination design, previous
-// https://developers.facebook.com/blog/post/478/
-func (s Storage) GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, error) {
-	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `created_at` >= ? AND `type` = ? ORDER BY `id` ASC LIMIT ?"
-	args := []interface{}{userID, since, models.IncomeTypeReward, limit}
-	incomes := []models.Income{}
-	err := s.selects(&incomes, rawSQL, args...)
-	return incomes, err
-}
-
-// GetRewardIncomesUntil get user's reward income records until, created_at < until
-// pagination design, next
-func (s Storage) GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, error) {
-	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `created_at` < ? AND `type` = ? ORDER BY `id` DESC LIMIT ?"
-	args := []interface{}{userID, until, models.IncomeTypeReward, limit}
+// GetRewardIncomes get user's reward incomes
+func (s Storage) GetRewardIncomes(userID int64, limit, offset int64) ([]models.Income, error) {
+	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `type` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
+	args := []interface{}{userID, models.IncomeTypeReward, limit, offset}
 	incomes := []models.Income{}
 	err := s.selects(&incomes, rawSQL, args...)
 	return incomes, err

@@ -104,34 +104,7 @@ func TestCreateRewardIncome(t *testing.T) {
 	})
 }
 
-func TestGetRewardIncomesSince(t *testing.T) {
-	Convey("Given mysql storage", t, func() {
-		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", Address: "b1"})
-		rewardedAt := time.Now()
-		s.CreateRewardIncome(income(1, 2, 91, 1), rewardedAt)
-		s.CreateRewardIncome(income(1, 2, 92, 1), rewardedAt)
-		s.CreateRewardIncome(income(1, 2, 93, 1), rewardedAt)
-
-		Convey("When get reward incomes since now", func() {
-			result, _ := s.GetRewardIncomesSince(1, time.Now().AddDate(0, 0, -1), 2)
-
-			Convey("Incomes should equal", func() {
-				So(result, func(actual interface{}, expected ...interface{}) string {
-					incomes := actual.([]models.Income)
-					if len(incomes) == 2 &&
-						incomes[0].Income == 91 &&
-						incomes[1].Income == 92 {
-						return ""
-					}
-					return fmt.Sprintf("Incomes %v is not expected", incomes)
-				})
-			})
-		})
-	})
-}
-
-func TestGetRewardIncomesUntil(t *testing.T) {
+func TestGetRewardIncomes(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 		s.CreateUser(models.User{Email: "e1", Address: "b1"})
@@ -141,14 +114,14 @@ func TestGetRewardIncomesUntil(t *testing.T) {
 		s.CreateRewardIncome(income(1, 2, 93, 1), rewardedAt)
 
 		Convey("When get reward incomes until now", func() {
-			result, _ := s.GetRewardIncomesUntil(1, time.Now().AddDate(0, 0, 1), 2)
+			result, _ := s.GetRewardIncomes(1, 2, 1)
 
 			Convey("Incomes should equal", func() {
 				So(result, func(actual interface{}, expected ...interface{}) string {
 					incomes := actual.([]models.Income)
 					if len(incomes) == 2 &&
-						incomes[0].Income == 93 &&
-						incomes[1].Income == 92 {
+						incomes[0].Income == 92 &&
+						incomes[1].Income == 91 {
 						return ""
 					}
 					return fmt.Sprintf("Incomes %v is not expected", incomes)

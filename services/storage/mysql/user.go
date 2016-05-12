@@ -79,19 +79,10 @@ func (s Storage) UpdateUserStatus(id int64, status string) error {
 	return nil
 }
 
-// GetRefereesSince gets user's referees since, id >= since
-func (s Storage) GetRefereesSince(userID, id, limit int64) ([]models.User, error) {
-	rawSQL := "SELECT * FROM users WHERE `referer_id` = ? AND `id` >= ? ORDER BY `id` ASC LIMIT ?"
-	args := []interface{}{userID, id, limit}
-	dest := []models.User{}
-	err := s.selects(&dest, rawSQL, args...)
-	return dest, err
-}
-
-// GetRefereesUntil gets user's referees since, id < until
-func (s Storage) GetRefereesUntil(userID, id, limit int64) ([]models.User, error) {
-	rawSQL := "SELECT * FROM users WHERE `referer_id` = ? AND `id` < ? ORDER BY `id` DESC LIMIT ?"
-	args := []interface{}{userID, id, limit}
+// GetReferees gets user's referees
+func (s Storage) GetReferees(userID int64, limit, offset int64) ([]models.User, error) {
+	rawSQL := "SELECT * FROM users WHERE `referer_id` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
+	args := []interface{}{userID, limit, offset}
 	dest := []models.User{}
 	err := s.selects(&dest, rawSQL, args...)
 	return dest, err

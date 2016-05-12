@@ -74,33 +74,7 @@ func TestCreateWithdrawal(t *testing.T) {
 	})
 }
 
-func TestGetWithdrawalsSince(t *testing.T) {
-	Convey("Given mysql storage", t, func() {
-		s := prepareDatabaseForTesting()
-		s.db.MustExec("INSERT INTO `users` (email, address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 1})
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 2})
-		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 3})
-
-		Convey("When get withdrawals since now", func() {
-			result, _ := s.GetWithdrawalsSince(1, time.Now().AddDate(0, 0, -1), 2)
-
-			Convey("Withdrawals should equal", func() {
-				So(result, func(actual interface{}, expected ...interface{}) string {
-					withdrawals := actual.([]models.Withdrawal)
-					if len(withdrawals) == 2 &&
-						withdrawals[0].Amount == 1 &&
-						withdrawals[1].Amount == 2 {
-						return ""
-					}
-					return fmt.Sprintf("Withdrawals %v is not expected", withdrawals)
-				})
-			})
-		})
-	})
-}
-
-func TestGetWithdrawalsUntil(t *testing.T) {
+func TestGetWithdrawals(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 		s.db.MustExec("INSERT INTO `users` (email, address, balance) VALUES(?, ?, ?);", "e", "b", 8388607)
@@ -109,14 +83,14 @@ func TestGetWithdrawalsUntil(t *testing.T) {
 		s.CreateWithdrawal(models.Withdrawal{UserID: 1, Address: "b", Amount: 3})
 
 		Convey("When get withdrawals until now", func() {
-			result, _ := s.GetWithdrawalsUntil(1, time.Now().AddDate(0, 0, 1), 2)
+			result, _ := s.GetWithdrawals(1, 2, 1)
 
 			Convey("Withdrawals should equal", func() {
 				So(result, func(actual interface{}, expected ...interface{}) string {
 					withdrawals := actual.([]models.Withdrawal)
 					if len(withdrawals) == 2 &&
-						withdrawals[0].Amount == 3 &&
-						withdrawals[1].Amount == 2 {
+						withdrawals[0].Amount == 2 &&
+						withdrawals[1].Amount == 1 {
 						return ""
 					}
 					return fmt.Sprintf("Withdrawals %v is not expected", withdrawals)

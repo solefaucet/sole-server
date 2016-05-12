@@ -150,32 +150,7 @@ func TestUpdateUserStatus(t *testing.T) {
 	})
 }
 
-func TestGetRefereesSince(t *testing.T) {
-	Convey("Given mysql storage", t, func() {
-		s := prepareDatabaseForTesting()
-		s.CreateUser(models.User{Email: "e1", Address: "b1"})
-		s.CreateUser(models.User{RefererID: 1, Email: "e2", Address: "b2"})
-		s.CreateUser(models.User{RefererID: 1, Email: "e3", Address: "b3"})
-
-		Convey("When get referees since 1", func() {
-			result, _ := s.GetRefereesSince(1, 1, 2)
-
-			Convey("Users should equal", func() {
-				So(result, func(actual interface{}, expected ...interface{}) string {
-					users := actual.([]models.User)
-					if len(users) == 2 &&
-						users[0].Email == "e2" &&
-						users[1].Email == "e3" {
-						return ""
-					}
-					return fmt.Sprintf("Users %v is not expected", result)
-				})
-			})
-		})
-	})
-}
-
-func TestGetRefereesUntil(t *testing.T) {
+func TestGetReferees(t *testing.T) {
 	Convey("Given mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 		s.CreateUser(models.User{Email: "e1", Address: "b1"})
@@ -183,13 +158,13 @@ func TestGetRefereesUntil(t *testing.T) {
 		s.CreateUser(models.User{RefererID: 1, Email: "e3", Address: "b3"})
 
 		Convey("When get referees until 1", func() {
-			result, _ := s.GetRefereesUntil(1, 10, 1)
+			result, _ := s.GetReferees(1, 1, 1)
 
 			Convey("Users should equal", func() {
 				So(result, func(actual interface{}, expected ...interface{}) string {
 					users := actual.([]models.User)
 					if len(users) == 1 &&
-						users[0].Email == "e3" {
+						users[0].Email == "e2" {
 						return ""
 					}
 					return fmt.Sprintf("Users %v is not expected", result)

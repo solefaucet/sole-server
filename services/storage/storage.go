@@ -13,8 +13,7 @@ type Storage interface {
 	GetUserByEmail(string) (models.User, error)
 	CreateUser(models.User) error
 	UpdateUserStatus(int64, string) error
-	GetRefereesSince(userID, id, limit int64) ([]models.User, error)
-	GetRefereesUntil(userID, id, limit int64) ([]models.User, error)
+	GetReferees(userID int64, limit, offset int64) ([]models.User, error)
 	GetWithdrawableUsers() ([]models.User, error)
 
 	// AuthToken
@@ -38,13 +37,11 @@ type Storage interface {
 
 	// Income
 	CreateRewardIncome(models.Income, time.Time) error
-	GetRewardIncomesSince(userID int64, since time.Time, limit int64) ([]models.Income, error)
-	GetRewardIncomesUntil(userID int64, until time.Time, limit int64) ([]models.Income, error)
+	GetRewardIncomes(userID int64, limit, offset int64) ([]models.Income, error)
 
 	// Withdrawal
 	CreateWithdrawal(models.Withdrawal) error
-	GetWithdrawalsSince(userID int64, since time.Time, limit int64) ([]models.Withdrawal, error)
-	GetWithdrawalsUntil(userID int64, until time.Time, limit int64) ([]models.Withdrawal, error)
+	GetWithdrawals(userID int64, limit, offset int64) ([]models.Withdrawal, error)
 	GetPendingWithdrawals() ([]models.Withdrawal, error)
 	UpdateWithdrawalStatusToProcessing(id int64) error
 	UpdateWithdrawalStatusToProcessed(id int64, transactionID string) error
