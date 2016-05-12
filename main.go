@@ -99,7 +99,7 @@ func main() {
 	v1UserEndpoints.GET("", authRequired, v1.UserInfo(store.GetUserByID))
 	v1UserEndpoints.POST("", v1.Signup(validateAddress, store.CreateUser, store.GetUserByID))
 	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(store.GetSessionByToken, store.GetUserByID, store.UpdateUserStatus))
-	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetReferees))
+	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetReferees, store.GetNumberOfReferees))
 
 	// auth token endpoints
 	v1AuthTokenEndpoints := v1Endpoints.Group("/auth_tokens")
@@ -124,10 +124,10 @@ func main() {
 			memoryCache.InsertIncome,
 			connsHub.Broadcast),
 	)
-	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomes))
+	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomes, store.GetNumberOfRewardIncomes))
 
 	// withdrawal endpoint
-	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawals, constructTxURL))
+	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawals, store.GetNumberOfWithdrawals, constructTxURL))
 
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
