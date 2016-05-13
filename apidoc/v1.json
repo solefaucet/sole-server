@@ -174,16 +174,23 @@
                 "responses": {
                     "200": {
                         "description": "成功获取下线列表",
-                        "headers": {
-                            "X-Total-Count": {
-                                "description": "总条数",
-                                "type": "integer"
-                            }
-                        },
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/userModel"
+                            "type": "object",
+                            "required": [
+                                "total_count",
+                                "data"
+                            ],
+                            "properties": {
+                                "total_count": {
+                                    "type": "number",
+                                    "format": "int64"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/userModel"
+                                    }
+                                }
                             }
                         }
                     },
@@ -358,16 +365,23 @@
                 "responses": {
                     "200": {
                         "description": "成功获取用户抽奖历史",
-                        "headers": {
-                            "X-Total-Count": {
-                                "description": "总条数",
-                                "type": "integer"
-                            }
-                        },
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/incomeModel"
+                            "type": "object",
+                            "required": [
+                                "total_count",
+                                "data"
+                            ],
+                            "properties": {
+                                "total_count": {
+                                    "type": "number",
+                                    "format": "int64"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/incomeModel"
+                                    }
+                                }
                             }
                         }
                     },
@@ -417,16 +431,23 @@
                 "responses": {
                     "200": {
                         "description": "成功获取用户提现历史",
-                        "headers": {
-                            "X-Total-Count": {
-                                "description": "总条数",
-                                "type": "integer"
-                            }
-                        },
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/withdrawalModel"
+                            "type": "object",
+                            "required": [
+                                "total_count",
+                                "data"
+                            ],
+                            "properties": {
+                                "total_count": {
+                                    "type": "number",
+                                    "format": "int64"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/withdrawalModel"
+                                    }
+                                }
                             }
                         }
                     },
