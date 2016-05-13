@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -25,7 +24,6 @@ func WithdrawalList(
 			return
 		}
 
-		// response with result or error
 		withdrawals, err := getWithdrawals(authToken.UserID, limit, offset)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
@@ -51,7 +49,6 @@ func WithdrawalList(
 			result[i].Status = withdrawals[i].Status
 		}
 
-		c.Header("X-Total-Count", fmt.Sprint(count))
-		c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, paginationResult(result, count))
 	}
 }

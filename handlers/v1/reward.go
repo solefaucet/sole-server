@@ -2,7 +2,6 @@ package v1
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -93,8 +92,7 @@ func RewardList(
 			return
 		}
 
-		// response with result or error
-		result, err := getRewardIncomes(authToken.UserID, limit, offset)
+		rewards, err := getRewardIncomes(authToken.UserID, limit, offset)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -106,7 +104,6 @@ func RewardList(
 			return
 		}
 
-		c.Header("X-Total-Count", fmt.Sprint(count))
-		c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, paginationResult(rewards, count))
 	}
 }

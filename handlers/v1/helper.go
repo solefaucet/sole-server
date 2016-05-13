@@ -31,3 +31,10 @@ func parsePagination(c *gin.Context) (limit, offset int64, err error) {
 
 	return
 }
+
+func paginationResult(result interface{}, count int64) interface{} {
+	return map[string]interface{}{
+		"count": count,
+		"data":  result,
+	}
+}

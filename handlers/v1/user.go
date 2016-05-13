@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -140,21 +139,18 @@ func RefereeList(
 			return
 		}
 
-		// response with result or error
-		result, err := getReferees(authToken.UserID, limit, offset)
+		referees, err := getReferees(authToken.UserID, limit, offset)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		// total number of referees
 		count, err := getNumberOfReferees(authToken.UserID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.Header("X-Total-Count", fmt.Sprint(count))
-		c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, paginationResult(referees, count))
 	}
 }
