@@ -188,7 +188,7 @@
                         }
                     },
                     "400": {
-                        "description": "since 和 until 都不存在, since 或者 until 不能转换成整形",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/errorModel"
                         }
