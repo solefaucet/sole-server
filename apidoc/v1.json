@@ -524,6 +524,11 @@
                     "type": "number",
                     "format": "float"
                 },
+                "total_income_from_referees": {
+                    "description": "佣金总额",
+                    "type": "number",
+                    "format": "float"
+                },
                 "total_income": {
                     "description": "用户自注册以来收入总额",
                     "type": "number",
