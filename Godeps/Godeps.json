@@ -24,6 +24,11 @@
 			"Rev": "dcfedd50ed5334f96adee43fc88518a4f095e15c"
 		},
 		{
+			"ImportPath": "github.com/btcsuite/btcd/blockchain",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
 			"ImportPath": "github.com/btcsuite/btcd/btcec",
 			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
 			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
@@ -35,6 +40,16 @@
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcd/chaincfg",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcd/database",
+			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
+			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+		},
+		{
+			"ImportPath": "github.com/btcsuite/btcd/txscript",
 			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
 			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
 		},
@@ -84,8 +99,16 @@
 			"Rev": "003851be7bb0694fe3cc457a49529a19388ee7cf"
 		},
 		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
+		},
+		{
 			"ImportPath": "github.com/dustin/go-broadcast",
 			"Rev": "3bdf6d4a7164a50bc19d5f230e2981d87d2584f1"
+		},
+		{
+			"ImportPath": "github.com/freeusd/geetest",
+			"Rev": "f121873ea5948517154aa31c89a31b5f66999042"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/contrib/cors",
@@ -112,6 +135,14 @@
 		{
 			"ImportPath": "github.com/gorilla/websocket",
 			"Rev": "5c91b59efa232fa9a87b705d54101832c498a172"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/errwrap",
+			"Rev": "7554cd9344cec97297fa6649b055a8c98c2a1e55"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/go-multierror",
+			"Rev": "d30f09973e19c1dfcd120b2d9c4f168e68d6b5d5"
 		},
 		{
 			"ImportPath": "github.com/hashicorp/hcl",
@@ -161,6 +192,15 @@
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
 			"Rev": "d2dd0262208475919e1a362f675cfc0e7c10e905"
+		},
+		{
+			"ImportPath": "github.com/moul/http2curl",
+			"Rev": "1812aee76a1ce98d604a44200c6a23c689b17a89"
+		},
+		{
+			"ImportPath": "github.com/parnurzeal/gorequest",
+			"Comment": "v0.2.13-9-gc73179d",
+			"Rev": "c73179dd31355d86bd7692de9b47623d6d0fa696"
 		},
 		{
 			"ImportPath": "github.com/robfig/cron",
@@ -230,6 +270,10 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
+			"Rev": "cbbbe2bc0f2efdd2afb318d93f1eadb19350e4a3"
+		},
+		{
+			"ImportPath": "golang.org/x/net/publicsuffix",
 			"Rev": "cbbbe2bc0f2efdd2afb318d93f1eadb19350e4a3"
 		},
 		{
