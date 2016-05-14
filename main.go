@@ -87,7 +87,7 @@ func main() {
 
 	// middlewares
 	authRequired := middlewares.AuthRequired(store.GetAuthToken, config.AuthToken.Lifetime)
-	catpchaValidationRequired := middlewares.CaptchaValidationRequired(geetest.Validate)
+	middlewares.CaptchaValidationRequired(geetest.Validate)
 
 	// globally use middlewares
 	router.Use(
@@ -121,7 +121,7 @@ func main() {
 
 	// income endpoints
 	v1IncomeEndpoints := v1Endpoints.Group("/incomes", authRequired)
-	v1IncomeEndpoints.POST("/rewards", catpchaValidationRequired,
+	v1IncomeEndpoints.POST("/rewards",
 		v1.GetReward(store.GetUserByID,
 			memoryCache.GetLatestTotalReward,
 			memoryCache.GetLatestConfig,
