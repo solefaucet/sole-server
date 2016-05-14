@@ -315,6 +315,24 @@
                         "in": "header",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "X-Geetest-Challenge",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "X-Geetest-Validate",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "X-Geetest-Seccode",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -463,6 +481,22 @@
                 }
             }
         },
+        "/captchas": {
+            "get": {
+                "tags": [
+                    "Captcha"
+                ],
+                "summary": "获取geetest验证码信息",
+                "operationId": "retrieveCaptcha",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/captchaModel"
+                        }
+                    }
+                }
+            }
+        },
         "/websocket": {
             "get": {
                 "tags": [
@@ -568,6 +602,21 @@
             ],
             "properties": {
                 "auth_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "captchaModel": {
+            "type": "object",
+            "required": [
+                "captcha_id",
+                "challenge"
+            ],
+            "properties": {
+                "captcha_id": {
+                    "type": "string"
+                },
+                "challenge": {
                     "type": "string"
                 }
             }
