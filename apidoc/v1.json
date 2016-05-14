@@ -490,6 +490,7 @@
                 "operationId": "retrieveCaptcha",
                 "responses": {
                     "200": {
+                        "description": "成功获取用于初始化验证码的 captcha_id 和 challenge",
                         "schema": {
                             "$ref": "#/definitions/captchaModel"
                         }
