@@ -16,7 +16,6 @@ var defaultUpgrader = websocket.Upgrader{
 // Websocket entry
 func Websocket(
 	getUsersOnline dependencyGetUsersOnline,
-	getConfig dependencyGetSystemConfig,
 	getLatestIncomes dependencyGetLatestIncomes,
 	broadcast dependencyBroadcast,
 	putConn dependencyPutConn,

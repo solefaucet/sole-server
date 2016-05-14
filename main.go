@@ -133,7 +133,6 @@ func main() {
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(
 			connsHub.Len,
-			memoryCache.GetLatestConfig,
 			memoryCache.GetLatestIncomes,
 			connsHub.Broadcast,
 			hub.WrapPutWebsocketConn(connsHub.PutConn)),

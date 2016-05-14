@@ -16,7 +16,6 @@ func TestWebsocket(t *testing.T) {
 	Convey("Given a webserver with websocket controller", t, func() {
 		handler := Websocket(
 			mockGetUsersOnline(1),
-			mockGetSystemConfig(models.Config{}),
 			mockGetLatestIncomes([]interface{}{123.456, "hello"}),
 			mockBroadcast(),
 			mockPutConn(),
@@ -51,7 +50,7 @@ func TestWebsocket(t *testing.T) {
 	})
 
 	Convey("Given websocket controller", t, func() {
-		handler := Websocket(nil, nil, nil, nil, nil)
+		handler := Websocket(nil, nil, nil, nil)
 
 		Convey("HTTP connect", func() {
 			route := "/websocket"
