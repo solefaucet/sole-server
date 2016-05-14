@@ -84,7 +84,7 @@ func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta, refere
 
 // update referer balance
 func incrementRefererBalanceByRewardIncome(tx *sqlx.Tx, refererID int64, delta float64) (int64, error) {
-	result, err := tx.Exec("UPDATE users SET `balance` = `balance` + :delta, `total_income_from_referees` = `total_income_from_referees` + :delta WHERE id = :id", map[string]interface{}{
+	result, err := tx.NamedExec("UPDATE users SET `balance` = `balance` + :delta, `total_income_from_referees` = `total_income_from_referees` + :delta WHERE id = :id", map[string]interface{}{
 		"id":    refererID,
 		"delta": delta,
 	})
