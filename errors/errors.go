@@ -11,4 +11,5 @@ var (
 	ErrDuplicatedAddress   = errors.New("duplicated address")
 	ErrDuplicatedAuthToken = errors.New("duplicated auth token")
 	ErrInvalidAddress      = errors.New("invalid address")
+	ErrInvalidCaptcha      = errors.New("invalid captcha")
 )

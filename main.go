@@ -11,6 +11,7 @@ import (
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcrpcclient"
 	"github.com/btcsuite/btcutil"
+	gt "github.com/freeusd/geetest"
 	"github.com/freeusd/solebtc/handlers/v1"
 	"github.com/freeusd/solebtc/middlewares"
 	"github.com/freeusd/solebtc/models"
@@ -35,6 +36,7 @@ var (
 	connsHub             hub.Hub
 	coinClient           *btcrpcclient.Client
 	addressToReceiveCoin btcutil.Address
+	geetest              gt.Geetest
 )
 
 func init() {
@@ -74,6 +76,9 @@ func init() {
 
 	// mailer
 	mailer = mandrill.New(config.Mandrill.Key, config.Mandrill.FromEmail, config.Mandrill.FromName)
+
+	// geetest
+	geetest = gt.New(config.Geetest.CaptchaID, config.Geetest.PrivateKey, false)
 }
 
 func main() {
@@ -82,6 +87,7 @@ func main() {
 
 	// middlewares
 	authRequired := middlewares.AuthRequired(store.GetAuthToken, config.AuthToken.Lifetime)
+	catpchaValidationRequired := middlewares.CaptchaValidationRequired(geetest.Validate)
 
 	// globally use middlewares
 	router.Use(
@@ -115,7 +121,7 @@ func main() {
 
 	// income endpoints
 	v1IncomeEndpoints := v1Endpoints.Group("/incomes", authRequired)
-	v1IncomeEndpoints.POST("/rewards",
+	v1IncomeEndpoints.POST("/rewards", catpchaValidationRequired,
 		v1.GetReward(store.GetUserByID,
 			memoryCache.GetLatestTotalReward,
 			memoryCache.GetLatestConfig,
