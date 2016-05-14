@@ -129,6 +129,9 @@ func main() {
 	// withdrawal endpoint
 	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawals, store.GetNumberOfWithdrawals, constructTxURL))
 
+	// captcha endpoint
+	v1Endpoints.GET("/captchas", v1.RegisterCaptcha(geetest.Register, geetest.CaptchaID))
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(

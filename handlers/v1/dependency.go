@@ -58,4 +58,8 @@ type (
 
 	// validation
 	dependencyValidateAddress func(string) (bool, error)
+
+	// captcha
+	dependencyRegisterCaptcha func() (string, error)
+	dependencyGetCaptchaID    func() string
 )
