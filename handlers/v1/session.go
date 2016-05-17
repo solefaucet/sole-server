@@ -43,6 +43,7 @@ func RequestVerifyEmail(
 		w := bytes.NewBufferString("")
 		tmpl.Execute(w, map[string]interface{}{
 			"email": url.QueryEscape(user.Email),
+			"id":    user.ID,
 			"token": url.QueryEscape(token),
 		})
 		if err := sendEmail([]string{user.Email}, "SoleBTC --- Verify your email", w.String()); err != nil {
