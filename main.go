@@ -352,6 +352,9 @@ func processWithdrawals() {
 }
 
 func constructTxURL(tx string) string {
+	if tx == "" {
+		return ""
+	}
 	return config.Coin.TxExplorer + tx
 }
 
