@@ -32,25 +32,25 @@ func TestGetReward(t *testing.T) {
 		})
 	})
 
-	// Convey("Given get reward controller with not valid last_rewarded", t, func() {
-	// 	getUserByID := mockGetUserByID(models.User{RewardedAt: time.Now(), RewardInterval: 5}, nil)
-	// 	handler := GetReward(getUserByID, nil, nil, nil, nil, nil, nil)
+	Convey("Given get reward controller with not valid last_rewarded", t, func() {
+		getUserByID := mockGetUserByID(models.User{RewardedAt: time.Now(), RewardInterval: 5}, nil)
+		handler := GetReward(getUserByID, nil, nil, nil, nil, nil, nil)
 
-	// 	Convey("When get reward", func() {
-	// 		route := "/incomes/rewards"
-	// 		_, resp, r := gin.CreateTestContext()
-	// 		r.Use(func(c *gin.Context) {
-	// 			c.Set("auth_token", models.AuthToken{})
-	// 		})
-	// 		r.POST(route, handler)
-	// 		req, _ := http.NewRequest("POST", route, nil)
-	// 		r.ServeHTTP(resp, req)
+		Convey("When get reward", func() {
+			route := "/incomes/rewards"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.POST(route, handler)
+			req, _ := http.NewRequest("POST", route, nil)
+			r.ServeHTTP(resp, req)
 
-	// 		Convey("Response code should be 429", func() {
-	// 			So(resp.Code, ShouldEqual, statusCodeTooManyRequests)
-	// 		})
-	// 	})
-	// })
+			Convey("Response code should be 429", func() {
+				So(resp.Code, ShouldEqual, statusCodeTooManyRequests)
+			})
+		})
+	})
 
 	Convey("Given get reward controller with errored createRewardIncome dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)

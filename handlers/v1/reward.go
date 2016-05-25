@@ -31,11 +31,11 @@ func GetReward(
 			return
 		}
 
-		// // check last rewarded time
-		// if user.RewardedAt.Add(time.Second * time.Duration(user.RewardInterval)).After(now) {
-		// 	c.AbortWithStatus(statusCodeTooManyRequests)
-		// 	return
-		// }
+		// check last rewarded time
+		if user.RewardedAt.Add(time.Second * time.Duration(user.RewardInterval)).After(now) {
+			c.AbortWithStatus(statusCodeTooManyRequests)
+			return
+		}
 
 		// get random reward
 		latestTotalReward := getLatestTotalReward()
