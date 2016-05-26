@@ -61,7 +61,7 @@ var config configuration
 
 func initConfig() {
 	// env config
-	viper.SetEnvPrefix("solebtc") // will turn into uppercase, e.g. SOLEBTC_PORT
+	viper.SetEnvPrefix("sole") // will turn into uppercase, e.g. SOLE_PORT
 	viper.AutomaticEnv()
 
 	// set default
