@@ -17,6 +17,10 @@ type graylog struct {
 }
 
 type configuration struct {
+	App struct {
+		Name string `validate:"required"`
+		URL  string `validate:"required"`
+	}
 	HTTP struct {
 		Address string `validate:"required"`
 		Mode    string `validate:"required,eq=release|eq=test|eq=debug"`
@@ -78,6 +82,8 @@ func initConfig() {
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
+	config.App.Name = viper.GetString("app_name")
+	config.App.URL = viper.GetString("app_url")
 
 	config.HTTP.Mode = viper.GetString("mode")
 	config.HTTP.Address = viper.GetString("address")

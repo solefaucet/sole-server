@@ -116,7 +116,7 @@ func main() {
 	v1SessionEndpoints := v1Endpoints.Group("/sessions")
 	emailVerificationTemplate := template.Must(template.ParseFiles(config.Template.EmailVerificationTemplate))
 	v1SessionEndpoints.POST("", authRequired,
-		v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail, emailVerificationTemplate),
+		v1.RequestVerifyEmail(store.GetUserByID, store.UpsertSession, mailer.SendEmail, emailVerificationTemplate, config.App.Name, config.App.URL),
 	)
 
 	// income endpoints

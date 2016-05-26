@@ -14,7 +14,7 @@ import (
 func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored getUserByID dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, fmt.Errorf(""))
-		handler := RequestVerifyEmail(getUserByID, nil, nil, nil)
+		handler := RequestVerifyEmail(getUserByID, nil, nil, nil, "", "")
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
@@ -35,7 +35,7 @@ func TestRequestVerifyEmail(t *testing.T) {
 	Convey("Given request verify email controller with errored upsertSession dependency", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
 		upsertSession := mockUpsertSession(fmt.Errorf(""))
-		handler := RequestVerifyEmail(getUserByID, upsertSession, nil, nil)
+		handler := RequestVerifyEmail(getUserByID, upsertSession, nil, nil, "", "")
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
@@ -58,7 +58,7 @@ func TestRequestVerifyEmail(t *testing.T) {
 		upsertSession := mockUpsertSession(nil)
 		sendEmail := mockSendEmail(fmt.Errorf(""))
 		tmpl := template.Must(template.New("template").Parse(`email: {{.email}} token: {{.token}}`))
-		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl)
+		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl, "", "")
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
@@ -81,7 +81,7 @@ func TestRequestVerifyEmail(t *testing.T) {
 		upsertSession := mockUpsertSession(nil)
 		sendEmail := mockSendEmail(nil)
 		tmpl := template.Must(template.New("template").Parse(`email: {{.email}} token: {{.token}}`))
-		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl)
+		handler := RequestVerifyEmail(getUserByID, upsertSession, sendEmail, tmpl, "", "")
 
 		Convey("When request verify email", func() {
 			route := "/sessions"
