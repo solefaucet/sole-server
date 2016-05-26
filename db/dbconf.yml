@@ -10,4 +10,4 @@ development:
 
 production:
   driver: mysql
-  open: /solebtc_prod
+  open: d:d@tcp(localhost:3306)/sole_prod
