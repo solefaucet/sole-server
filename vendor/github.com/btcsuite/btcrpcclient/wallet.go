@@ -472,9 +472,8 @@ func (r FutureSendToAddressResult) Receive() (*wire.ShaHash, error) {
 // returned instance.
 //
 // See SendToAddress for the blocking version and more details.
-func (c *Client) SendToAddressAsync(address btcutil.Address, amount btcutil.Amount) FutureSendToAddressResult {
-	addr := address.EncodeAddress()
-	cmd := btcjson.NewSendToAddressCmd(addr, amount.ToBTC(), nil, nil)
+func (c *Client) SendToAddressAsync(addr string, amount float64) FutureSendToAddressResult {
+	cmd := btcjson.NewSendToAddressCmd(addr, amount, nil, nil)
 	return c.sendCmd(cmd)
 }
 
@@ -486,7 +485,7 @@ func (c *Client) SendToAddressAsync(address btcutil.Address, amount btcutil.Amou
 //
 // NOTE: This function requires to the wallet to be unlocked.  See the
 // WalletPassphrase function for more details.
-func (c *Client) SendToAddress(address btcutil.Address, amount btcutil.Amount) (*wire.ShaHash, error) {
+func (c *Client) SendToAddress(address string, amount float64) (*wire.ShaHash, error) {
 	return c.SendToAddressAsync(address, amount).Receive()
 }
 
@@ -956,20 +955,16 @@ type FutureGetAccountAddressResult chan *response
 
 // Receive waits for the response promised by the future and returns the current
 // Bitcoin address for receiving payments to the specified account.
-func (r FutureGetAccountAddressResult) Receive() (btcutil.Address, error) {
+func (r FutureGetAccountAddressResult) Receive() (string, error) {
 	res, err := receiveFuture(r)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Unmarshal result as a string.
 	var addr string
 	err = json.Unmarshal(res, &addr)
-	if err != nil {
-		return nil, err
-	}
-
-	return btcutil.DecodeAddress(addr, &chaincfg.MainNetParams)
+	return addr, err
 }
 
 // GetAccountAddressAsync returns an instance of a type that can be used to get
@@ -984,7 +979,7 @@ func (c *Client) GetAccountAddressAsync(account string) FutureGetAccountAddressR
 
 // GetAccountAddress returns the current Bitcoin address for receiving payments
 // to the specified account.
-func (c *Client) GetAccountAddress(account string) (btcutil.Address, error) {
+func (c *Client) GetAccountAddress(account string) (string, error) {
 	return c.GetAccountAddressAsync(account).Receive()
 }
 
@@ -1253,14 +1248,13 @@ func (r FutureValidateAddressResult) Receive() (*btcjson.ValidateAddressWalletRe
 // the returned instance.
 //
 // See ValidateAddress for the blocking version and more details.
-func (c *Client) ValidateAddressAsync(address btcutil.Address) FutureValidateAddressResult {
-	addr := address.EncodeAddress()
+func (c *Client) ValidateAddressAsync(addr string) FutureValidateAddressResult {
 	cmd := btcjson.NewValidateAddressCmd(addr)
 	return c.sendCmd(cmd)
 }
 
 // ValidateAddress returns information about the given bitcoin address.
-func (c *Client) ValidateAddress(address btcutil.Address) (*btcjson.ValidateAddressWalletResult, error) {
+func (c *Client) ValidateAddress(address string) (*btcjson.ValidateAddressWalletResult, error) {
 	return c.ValidateAddressAsync(address).Receive()
 }
 

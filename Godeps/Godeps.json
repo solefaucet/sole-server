@@ -20,43 +20,24 @@
 			"Rev": "cd7d1bbe41066b6c1f19780f895901052150a575"
 		},
 		{
-			"ImportPath": "github.com/armon/consul-api",
-			"Rev": "dcfedd50ed5334f96adee43fc88518a4f095e15c"
-		},
-		{
-			"ImportPath": "github.com/btcsuite/btcd/blockchain",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
-		},
-		{
 			"ImportPath": "github.com/btcsuite/btcd/btcec",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+			"Comment": "BTCD_0_12_0_BETA-95-g7f07fb1",
+			"Rev": "7f07fb1093dd80105d36d61c8fb8a16f6e9d9b29"
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcd/btcjson",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+			"Comment": "BTCD_0_12_0_BETA-95-g7f07fb1",
+			"Rev": "7f07fb1093dd80105d36d61c8fb8a16f6e9d9b29"
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcd/chaincfg",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
-		},
-		{
-			"ImportPath": "github.com/btcsuite/btcd/database",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
-		},
-		{
-			"ImportPath": "github.com/btcsuite/btcd/txscript",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+			"Comment": "BTCD_0_12_0_BETA-95-g7f07fb1",
+			"Rev": "7f07fb1093dd80105d36d61c8fb8a16f6e9d9b29"
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcd/wire",
-			"Comment": "BTCD_0_12_0_BETA-91-g2554cae",
-			"Rev": "2554caee5919958c0d4b41db8035f0e12ce6f624"
+			"Comment": "BTCD_0_12_0_BETA-95-g7f07fb1",
+			"Rev": "7f07fb1093dd80105d36d61c8fb8a16f6e9d9b29"
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btclog",
@@ -65,7 +46,7 @@
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcrpcclient",
-			"Rev": "64922553b5c21f333438edaed6e0ba2b5a7760ee"
+			"Rev": "4aac46ac6c4f6c0eeb43f66877112f4d0bab19a2"
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcutil",
@@ -92,19 +73,6 @@
 		{
 			"ImportPath": "github.com/btcsuite/websocket",
 			"Rev": "31079b6807923eb23992c421b114992b95131b55"
-		},
-		{
-			"ImportPath": "github.com/coreos/go-etcd/etcd",
-			"Comment": "v2.0.0-38-g003851b",
-			"Rev": "003851be7bb0694fe3cc457a49529a19388ee7cf"
-		},
-		{
-			"ImportPath": "github.com/davecgh/go-spew/spew",
-			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
-		},
-		{
-			"ImportPath": "github.com/dustin/go-broadcast",
-			"Rev": "3bdf6d4a7164a50bc19d5f230e2981d87d2584f1"
 		},
 		{
 			"ImportPath": "github.com/freeusd/geetest",
@@ -155,6 +123,7 @@
 		},
 		{
 			"ImportPath": "github.com/jtolds/gls",
+			"Comment": "v4.2.0",
 			"Rev": "8ddce2a84170772b95dd5d576c48d517b22cac63"
 		},
 		{
@@ -168,11 +137,6 @@
 			"Rev": "e6ac2fc51e89a3249e82157fa0bb7a18ef9dd5bb"
 		},
 		{
-			"ImportPath": "github.com/kr/pty",
-			"Comment": "release.r56-29-gf7ee69f",
-			"Rev": "f7ee69f31298ecbe5d2b349c711e2547a617d398"
-		},
-		{
 			"ImportPath": "github.com/kr/text",
 			"Rev": "bb797dc4fb8320488f47bf11de07a733d7233e1f"
 		},
@@ -184,10 +148,6 @@
 		{
 			"ImportPath": "github.com/manucorporat/sse",
 			"Rev": "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d"
-		},
-		{
-			"ImportPath": "github.com/manucorporat/stats",
-			"Rev": "8f2d6ace262eba462e9beb552382c98be51d807b"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
@@ -238,35 +198,8 @@
 			"Rev": "c975dc1b4eacf4ec7fdbf0873638de5d090ba323"
 		},
 		{
-			"ImportPath": "github.com/ugorji/go/codec",
-			"Rev": "a396ed22fc049df733440d90efe17475e3929ccb"
-		},
-		{
-			"ImportPath": "github.com/xordataexchange/crypt/backend",
-			"Comment": "v0.0.2-17-g749e360",
-			"Rev": "749e360c8f236773f28fc6d3ddfce4a470795227"
-		},
-		{
-			"ImportPath": "github.com/xordataexchange/crypt/config",
-			"Comment": "v0.0.2-17-g749e360",
-			"Rev": "749e360c8f236773f28fc6d3ddfce4a470795227"
-		},
-		{
-			"ImportPath": "github.com/xordataexchange/crypt/encoding/secconf",
-			"Comment": "v0.0.2-17-g749e360",
-			"Rev": "749e360c8f236773f28fc6d3ddfce4a470795227"
-		},
-		{
 			"ImportPath": "github.com/yumimobi/logrus-graylog2-hook",
 			"Rev": "47d633d524626aea7f41e889fb9e485b1bb7f966"
-		},
-		{
-			"ImportPath": "golang.org/x/crypto/cast5",
-			"Rev": "7b428712abe956d0e9e1e9a01e163fb6c7171438"
-		},
-		{
-			"ImportPath": "golang.org/x/crypto/openpgp",
-			"Rev": "7b428712abe956d0e9e1e9a01e163fb6c7171438"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
@@ -281,19 +214,9 @@
 			"Rev": "9d4e42a20653790449273b3c85e67d6d8bae6e2e"
 		},
 		{
-			"ImportPath": "gopkg.in/airbrake/gobrake.v2",
-			"Comment": "v2.0.6",
-			"Rev": "31c8ff1fb8b79a6947e6565e9a6df535f98a6b94"
-		},
-		{
 			"ImportPath": "gopkg.in/fsnotify.v1",
 			"Comment": "v1.2.9",
 			"Rev": "8611c35ab31c1c28aa903d33cf8b6e44a399b09e"
-		},
-		{
-			"ImportPath": "gopkg.in/gemnasium/logrus-airbrake-hook.v2",
-			"Comment": "v2.0.0",
-			"Rev": "31e6fd4bd5a98d8ee7673d24bc54ec73c31810dd"
 		},
 		{
 			"ImportPath": "gopkg.in/go-playground/validator.v8",
