@@ -249,12 +249,25 @@ func validateAddress(address string) (bool, error) {
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"address": address,
-			"error":   err,
+			"error":   err.Error(),
 		}).Debug("failed to validate address")
 		return false, err
 	}
 
 	return result.IsValid, nil
+}
+
+func getBalance() (float64, error) {
+	balance, err := coinClient.GetBalance("")
+	if err != nil {
+		logger.Printf("get coin balance error: %v\n", err)
+		logrus.WithFields(logrus.Fields{
+			"error": err.Error(),
+		}).Error("failed to get balance")
+		return 0, err
+	}
+
+	return balance.ToBTC(), nil
 }
 
 func processWithdrawals() {
@@ -272,31 +285,25 @@ func processWithdrawals() {
 
 	// calculate total withdraw amount
 	total := 0.0
-	transactionFee := 0.0001
 	for i := range withdrawals {
-		total += withdrawals[i].Amount + transactionFee
+		total += withdrawals[i].Amount * 1.1 // NOTE: assume tx_fee = amount * 0.1
 	}
 
 	// get current remaining balance
-	balance, err := coinClient.GetBalance("")
-	if err != nil {
-		logger.Printf("get coin balance error: %v\n", err)
+	balance := must(getBalance()).(float64)
+	if balance < total {
 		logrus.WithFields(logrus.Fields{
-			"event": models.EventProcessWithdrawals,
-			"error": err,
-		}).Error("failed to get balance from coin daemon")
+			"event":                   models.EventProcessWithdrawals,
+			"address_to_receive_coin": addressToReceiveCoin,
+			"total":                   total,
+			"current_balance":         balance,
+			"amount_of_coins_needed":  total - balance,
+		}).Warn("need more coins to process withdrawal request")
 		return
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"event":                   models.EventProcessWithdrawals,
-		"address_to_receive_coin": addressToReceiveCoin,
-		"total":                   total,
-		"current_balance":         balance.ToBTC(),
-	}).Info("calculate coins needed to process withdraw request")
-
 	for _, v := range withdrawals {
-		// update withdrawal status to pending
+		// update withdrawal status to processing
 		if err := store.UpdateWithdrawalStatusToProcessing(v.ID); err != nil {
 			logger.Printf("update withdrawal status to processing error: %v\n", err)
 			logrus.WithFields(logrus.Fields{
@@ -313,7 +320,7 @@ func processWithdrawals() {
 			logrus.WithFields(logrus.Fields{
 				"event":   models.EventProcessWithdrawals,
 				"address": v.Address,
-				"error":   err,
+				"error":   err.Error(),
 			}).Error("failed to send coin")
 			return
 		}
@@ -332,9 +339,10 @@ func processWithdrawals() {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"event":    models.EventProcessWithdrawals,
-		"duration": time.Since(start),
-		"total":    total,
+		"event":             models.EventProcessWithdrawals,
+		"duration":          time.Since(start),
+		"total":             total,
+		"remaining_balance": must(getBalance()).(float64),
 	}).Info("succeed to process withdraw requests")
 }
 
