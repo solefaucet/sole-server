@@ -8,9 +8,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcrpcclient"
-	"github.com/btcsuite/btcutil"
 	gt "github.com/freeusd/geetest"
 	"github.com/freeusd/solebtc/handlers/v1"
 	"github.com/freeusd/solebtc/middlewares"
@@ -35,7 +33,7 @@ var (
 	memoryCache          cache.Cache
 	connsHub             hub.Hub
 	coinClient           *btcrpcclient.Client
-	addressToReceiveCoin btcutil.Address
+	addressToReceiveCoin string
 	geetest              gt.Geetest
 )
 
@@ -149,7 +147,7 @@ func main() {
 
 	logrus.WithFields(logrus.Fields{
 		"http_address": config.HTTP.Address,
-		"coin_address": addressToReceiveCoin.String(),
+		"coin_address": addressToReceiveCoin,
 	}).Info("service up")
 	if err := router.Run(config.HTTP.Address); err != nil {
 		logrus.WithError(err).Fatal("failed to start service")
@@ -194,7 +192,7 @@ func createWithdrawal() {
 	if err != nil {
 		logger.Printf("get withdrawable users error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
-			"event": "创建提现",
+			"event": models.EventCreateWithdrawals,
 			"error": err,
 		}).Error("failed to get withdrawable users")
 		return
@@ -223,7 +221,7 @@ func createWithdrawal() {
 		if err != nil {
 			logger.Printf("create withdrawal for user %v error: %v\n", u, err)
 			logrus.WithFields(logrus.Fields{
-				"event":   "创建提现",
+				"event":   models.EventCreateWithdrawals,
 				"email":   u.Email,
 				"address": u.Address,
 				"balance": u.Balance,
@@ -243,20 +241,11 @@ func initCoinClient() {
 		DisableTLS:   true, // Bitcoin core does not provide TLS by default
 	}
 	coinClient = must(btcrpcclient.New(config, nil)).(*btcrpcclient.Client)
-	addressToReceiveCoin = must(coinClient.GetAccountAddress("")).(btcutil.Address)
+	addressToReceiveCoin = must(coinClient.GetAccountAddress("")).(string)
 }
 
 func validateAddress(address string) (bool, error) {
-	addr, err := btcutil.DecodeAddress(address, &chaincfg.MainNetParams)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"address": address,
-			"error":   err,
-		}).Debug("failed to parse address")
-		return false, err
-	}
-
-	result, err := coinClient.ValidateAddress(addr)
+	result, err := coinClient.ValidateAddress(address)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"address": address,
@@ -275,7 +264,7 @@ func processWithdrawals() {
 	if err != nil {
 		logger.Printf("get pending withdrawals error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
-			"event": "处理提现",
+			"event": models.EventProcessWithdrawals,
 			"error": err,
 		}).Error("failed to get pending withdrawals")
 		return
@@ -293,17 +282,17 @@ func processWithdrawals() {
 	if err != nil {
 		logger.Printf("get coin balance error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
-			"event": "处理提现",
+			"event": models.EventProcessWithdrawals,
 			"error": err,
 		}).Error("failed to get balance from coin daemon")
 		return
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"event": "处理提现",
-		"转币地址":  addressToReceiveCoin.String(),
-		"提现总额":  total,
-		"账户余额":  balance.ToBTC(),
+		"event":                   models.EventProcessWithdrawals,
+		"address_to_receive_coin": addressToReceiveCoin,
+		"total":                   total,
+		"current_balance":         balance.ToBTC(),
 	}).Info("calculate coins needed to process withdraw request")
 
 	for _, v := range withdrawals {
@@ -311,20 +300,18 @@ func processWithdrawals() {
 		if err := store.UpdateWithdrawalStatusToProcessing(v.ID); err != nil {
 			logger.Printf("update withdrawal status to processing error: %v\n", err)
 			logrus.WithFields(logrus.Fields{
-				"event": "处理提现",
+				"event": models.EventProcessWithdrawals,
 				"error": err,
 			}).Error("failed to update withdrawal status to processing")
 			return
 		}
 
 		// send coin to address
-		addr, _ := btcutil.DecodeAddress(v.Address, &chaincfg.MainNetParams)
-		amount, _ := btcutil.NewAmount(v.Amount)
-		hash, err := coinClient.SendToAddress(addr, amount)
+		hash, err := coinClient.SendToAddress(v.Address, v.Amount)
 		if err != nil {
-			logger.Printf("send coin to address %s error: %v\n", addr.String(), err)
+			logger.Printf("send coin to address %s error: %v\n", v.Address, err)
 			logrus.WithFields(logrus.Fields{
-				"event":   "处理提现",
+				"event":   models.EventProcessWithdrawals,
 				"address": v.Address,
 				"error":   err,
 			}).Error("failed to send coin")
@@ -335,7 +322,7 @@ func processWithdrawals() {
 		if err := store.UpdateWithdrawalStatusToProcessed(v.ID, hash.String()); err != nil {
 			logger.Printf("update withdrawal status to processed and transaction id to %v error: %v\n", hash.String(), err)
 			logrus.WithFields(logrus.Fields{
-				"event":          "处理提现",
+				"event":          models.EventProcessWithdrawals,
 				"id":             v.ID,
 				"transaction_id": hash.String(),
 				"error":          err,
@@ -345,9 +332,9 @@ func processWithdrawals() {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"event": "处理提现",
-		"时长":    time.Since(start),
-		"提现总额":  total,
+		"event":    models.EventProcessWithdrawals,
+		"duration": time.Since(start),
+		"total":    total,
 	}).Info("succeed to process withdraw requests")
 }
 
