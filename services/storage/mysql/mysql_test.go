@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/solefaucet/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // test helpers
@@ -21,14 +21,14 @@ func execCommand(cmd string) {
 }
 
 func prepareDatabaseForTesting() Storage {
-	execCommand(`mysql -uroot -e 'drop database if exists solebtc_test;'`)
-	execCommand(`mysql -uroot -e 'create database solebtc_test character set utf8;'`)
+	execCommand(`mysql -uroot -e 'drop database if exists sole_test;'`)
+	execCommand(`mysql -uroot -e 'create database sole_test character set utf8;'`)
 	dir, _ := os.Getwd()
 	paths := strings.Split(dir, string(os.PathSeparator))
 	projBasePath := strings.Join(paths[:len(paths)-3], string(os.PathSeparator)) // cannot come up with any better way
 	execCommand(fmt.Sprintf(`cd %s && goose -env test up`, projBasePath))
 
-	dsn := "root:@/solebtc_test?parseTime=true"
+	dsn := "root:@/sole_test?parseTime=true"
 	s := New(dsn)
 	s.SetMaxOpenConns(4)
 	s.SetMaxIdleConns(4)
@@ -36,7 +36,7 @@ func prepareDatabaseForTesting() Storage {
 }
 
 func resetDatabase() {
-	execCommand(`mysql -uroot -e 'drop database if exists solebtc_test;'`)
+	execCommand(`mysql -uroot -e 'drop database if exists sole-server_test;'`)
 }
 
 func withClosedConn(t *testing.T, description string, f func(Storage) error) {

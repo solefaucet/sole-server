@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // Cache implements cache.Cache interface with memory

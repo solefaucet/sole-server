@@ -3,8 +3,8 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/solefaucet/solebtc/errors"
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/errors"
+	"github.com/solefaucet/sole-server/models"
 	"github.com/jmoiron/sqlx"
 )
 

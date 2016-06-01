@@ -24,7 +24,7 @@ script:
 
 after_script:
   # cleanup
-  - mysql -uroot -e 'drop database if exists solebtc_test;'
+  - mysql -uroot -e 'drop database if exists sole_test;'
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

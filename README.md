@@ -1,9 +1,9 @@
-solebtc
+sole-server
 ==========
 
-[![Build Status](https://travis-ci.org/solefaucet/solebtc.svg?branch=master)](https://travis-ci.org/solefaucet/solebtc)
-[![Go Report Card](http://goreportcard.com/badge/solefaucet/solebtc)](http://goreportcard.com/report/solefaucet/solebtc)
-[![codecov.io](https://codecov.io/github/solefaucet/solebtc/coverage.svg?branch=master)](https://codecov.io/github/solefaucet/solebtc?branch=master)
+[![Build Status](https://travis-ci.org/solefaucet/sole-server.svg?branch=master)](https://travis-ci.org/solefaucet/solebtc)
+[![Go Report Card](http://goreportcard.com/badge/solefaucet/sole-server)](http://goreportcard.com/report/solefaucet/solebtc)
+[![codecov.io](https://codecov.io/github/solefaucet/sole-server/coverage.svg?branch=master)](https://codecov.io/github/solefaucet/solebtc?branch=master)
 
 ======
 
@@ -16,7 +16,7 @@ solebtc
 
 ```bash
 # easy enough by go get
-$ go get -u github.com/solefaucet/solebtc
+$ go get -u github.com/solefaucet/sole-server
 ```
 
 ## DB Migration

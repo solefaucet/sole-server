@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // GetLatestConfig get latest system config

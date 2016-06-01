@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // dependencies

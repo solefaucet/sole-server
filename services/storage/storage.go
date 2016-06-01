@@ -3,7 +3,7 @@ package storage
 import (
 	"time"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // Storage defines interface that one should implement

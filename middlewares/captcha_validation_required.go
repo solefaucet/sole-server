@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/solefaucet/solebtc/errors"
+	"github.com/solefaucet/sole-server/errors"
 	"github.com/gin-gonic/gin"
 )
 

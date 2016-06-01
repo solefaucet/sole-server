@@ -1,7 +1,7 @@
 package mandrill
 
 import (
-	"github.com/solefaucet/solebtc/services/mail"
+	"github.com/solefaucet/sole-server/services/mail"
 	"github.com/keighl/mandrill"
 )
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
 )

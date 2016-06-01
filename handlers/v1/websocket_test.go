@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	. "github.com/smartystreets/goconvey/convey"

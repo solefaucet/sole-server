@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/solefaucet/solebtc",
+	"ImportPath": "github.com/solefaucet/sole-server",
 	"GoVersion": "go1.6",
 	"Packages": [
 		"./..."

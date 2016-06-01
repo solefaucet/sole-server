@@ -2,11 +2,11 @@
 #
 test:
   driver: mysql
-  open: root:@/solebtc_test
+  open: root:@/sole_test
 
 development:
   driver: mysql
-  open: /solebtc_dev
+  open: /sole_dev
 
 production:
   driver: mysql

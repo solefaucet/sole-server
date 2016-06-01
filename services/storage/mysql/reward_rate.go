@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // GetRewardRatesByType get all reward rates by type

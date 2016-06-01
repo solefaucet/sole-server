@@ -5,7 +5,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // RandomReward generates a random reward with rates given

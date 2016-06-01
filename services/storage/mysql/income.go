@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 	"github.com/jmoiron/sqlx"
 )
 

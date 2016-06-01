@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 func TestRandomReward(t *testing.T) {

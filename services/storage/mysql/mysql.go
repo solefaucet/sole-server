@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/solefaucet/solebtc/services/storage"
+	"github.com/solefaucet/sole-server/services/storage"
 	_ "github.com/go-sql-driver/mysql" // is needed for mysql driver registeration
 	"github.com/jmoiron/sqlx"
 )

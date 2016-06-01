@@ -2,13 +2,13 @@
     "swagger": "2.0",
     "info": {
         "version": "1.0.0",
-        "title": "SoleBTC",
-        "description": "[SoleBTC](https://github.com/solefaucet/solebtc) 服务端接口文档.\n\n",
+        "title": "sole-server",
+        "description": "[sole-server](https://github.com/solefaucet/sole-server) 服务端接口文档.\n\n",
         "termsOfService": "http://helloreverb.com/terms/",
         "contact": {
             "name": "api support",
             "email": "nanohugh@gmail.com",
-            "url": "http://solebtc.com"
+            "url": "http://sole-server.com"
         }
     },
     "host": "staging.solebtc.com",

@@ -3,7 +3,7 @@ package cache
 import (
 	"time"
 
-	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // Cache defines interface that one should implement

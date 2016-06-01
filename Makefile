@@ -1,6 +1,6 @@
 #! /usr/bin/make
 #
-# Makefile for solebtc
+# Makefile for sole-server
 #
 # Targets:
 # - "depend" retrieves the Go packages needed to run the linter and tests
@@ -34,7 +34,7 @@ test:
 	# run test
 	go test -cover ./...
 	# cleanup
-	mysql -uroot -e 'drop database if exists solebtc_test;'
+	mysql -uroot -e 'drop database if exists sole_test;'
 
 benchmark:
 	# benchmark

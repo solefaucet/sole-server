@@ -23,5 +23,6 @@ _testmain.go
 *.test
 *.prof
 
-solebtc
+sole-server
 fabfile.pyc
+coverage.txt
