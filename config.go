@@ -64,22 +64,6 @@ func initConfig() {
 	viper.SetEnvPrefix("sole") // will turn into uppercase, e.g. SOLE_PORT
 	viper.AutomaticEnv()
 
-	// set default
-	viper.SetDefault("mode", "debug")
-	viper.SetDefault("address", "0.0.0.0:3000")
-	viper.SetDefault("dsn", "/solebtc_dev?parseTime=true")
-	viper.SetDefault("auth_token_lifetime", "720h")
-	viper.SetDefault("mandrill_key", "SANDBOX_SUCCESS")
-	viper.SetDefault("mandrill_from_email", "no_reply@solebtc.com")
-	viper.SetDefault("mandrill_from_name", "SoleBTC")
-	viper.SetDefault("max_open_conns", 2)
-	viper.SetDefault("max_idle_conns", 2)
-	viper.SetDefault("num_cached_incomes", 20)
-	viper.SetDefault("email_verification_template", "./templates/email_verification_staging.html")
-	viper.SetDefault("log_level", "debug")
-	viper.SetDefault("graylog_address", "127.0.0.1:12201")
-	viper.SetDefault("graylog_level", "debug")
-
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
 	config.App.Name = viper.GetString("app_name")
