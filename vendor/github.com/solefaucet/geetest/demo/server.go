@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/freeusd/geetest"
+	"github.com/solefaucet/geetest"
 )
 
 const (

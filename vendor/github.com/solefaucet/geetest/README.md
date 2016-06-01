@@ -4,7 +4,7 @@ geetest server-side sdk
 ## Installation
 
 ```bash
-$ go get github.com/freeusd/geetest
+$ go get github.com/solefaucet/geetest
 ```
 
 ## Usage
@@ -12,7 +12,7 @@ $ go get github.com/freeusd/geetest
 ```go
 package main
 
-import "github.com/freeusd/geetest"
+import "github.com/solefaucet/geetest"
 
 func main() {
   enableHTTPS := false

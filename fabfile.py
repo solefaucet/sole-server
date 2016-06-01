@@ -16,7 +16,7 @@ def deploy(branch_name):
 def deployStaging(branch_name):
     printMessage("staging")
 
-    codedir = '$GOPATH/src/github.com/freeusd/solebtc'
+    codedir = '$GOPATH/src/github.com/solefaucet/solebtc'
     run('rm -rf %s' % codedir)
     run('mkdir -p %s' % codedir)
 

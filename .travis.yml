@@ -30,4 +30,4 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 notifications:
-  slack: freeusd:jaRsOvGWpjt9LPpJ0I4PqNwa
+  slack: solefaucet:jaRsOvGWpjt9LPpJ0I4PqNwa

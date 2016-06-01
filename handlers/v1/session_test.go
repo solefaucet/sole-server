@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
 )

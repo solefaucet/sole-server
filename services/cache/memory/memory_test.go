@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/models"
 )
 
 func TestMemory(t *testing.T) {

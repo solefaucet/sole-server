@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/freeusd/solebtc/models"
-	"github.com/freeusd/solebtc/utils"
+	"github.com/solefaucet/solebtc/models"
+	"github.com/solefaucet/solebtc/utils"
 	"github.com/gin-gonic/gin"
 )
 

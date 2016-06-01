@@ -3,8 +3,8 @@ package mysql
 import (
 	"testing"
 
-	"github.com/freeusd/solebtc/errors"
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/errors"
+	"github.com/solefaucet/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

@@ -3,7 +3,7 @@
     "info": {
         "version": "1.0.0",
         "title": "SoleBTC",
-        "description": "[SoleBTC](https://github.com/freeusd/solebtc) 服务端接口文档.\n\n",
+        "description": "[SoleBTC](https://github.com/solefaucet/solebtc) 服务端接口文档.\n\n",
         "termsOfService": "http://helloreverb.com/terms/",
         "contact": {
             "name": "api support",

@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/freeusd/solebtc",
+	"ImportPath": "github.com/solefaucet/solebtc",
 	"GoVersion": "go1.6",
 	"Packages": [
 		"./..."
@@ -75,8 +75,8 @@
 			"Rev": "31079b6807923eb23992c421b114992b95131b55"
 		},
 		{
-			"ImportPath": "github.com/freeusd/geetest",
-			"Rev": "f121873ea5948517154aa31c89a31b5f66999042"
+			"ImportPath": "github.com/solefaucet/geetest",
+			"Rev": "a413b0050ad02360eb1b98f012489b3e36ee6092"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/contrib/cors",

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/freeusd/solebtc/errors"
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/errors"
+	"github.com/solefaucet/solebtc/models"
 	"github.com/go-sql-driver/mysql"
 )
 

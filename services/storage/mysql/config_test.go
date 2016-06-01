@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

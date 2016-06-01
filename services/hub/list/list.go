@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"sync"
 
-	"github.com/freeusd/solebtc/services/hub"
+	"github.com/solefaucet/solebtc/services/hub"
 )
 
 // Hub stores connections in doubly linked list

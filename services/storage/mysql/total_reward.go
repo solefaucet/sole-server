@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/models"
 )
 
 // GetLatestTotalReward get all total rewards order by time desc

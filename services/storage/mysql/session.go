@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/freeusd/solebtc/errors"
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/errors"
+	"github.com/solefaucet/solebtc/models"
 )
 
 // GetSessionByToken gets models.Session with token given

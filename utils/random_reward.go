@@ -5,7 +5,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/freeusd/solebtc/models"
+	"github.com/solefaucet/solebtc/models"
 )
 
 // RandomReward generates a random reward with rates given
