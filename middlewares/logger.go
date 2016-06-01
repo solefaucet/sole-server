@@ -28,7 +28,7 @@ func Logger() gin.HandlerFunc {
 			"ip":               c.ClientIP(),
 		}
 		if err := c.Errors.ByType(gin.ErrorTypeAny).Last(); err != nil {
-			fields["error"] = err
+			fields["error"] = err.Error()
 		}
 
 		entry := logrus.WithFields(fields)
