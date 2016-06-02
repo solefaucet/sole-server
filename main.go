@@ -9,6 +9,8 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/btcsuite/btcrpcclient"
+	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron"
 	gt "github.com/solefaucet/geetest"
 	"github.com/solefaucet/sole-server/handlers/v1"
 	"github.com/solefaucet/sole-server/middlewares"
@@ -21,8 +23,6 @@ import (
 	"github.com/solefaucet/sole-server/services/mail/mandrill"
 	"github.com/solefaucet/sole-server/services/storage"
 	"github.com/solefaucet/sole-server/services/storage/mysql"
-	"github.com/gin-gonic/gin"
-	"github.com/robfig/cron"
 	grayloghook "github.com/yumimobi/logrus-graylog2-hook"
 )
 
@@ -76,7 +76,7 @@ func init() {
 	mailer = mandrill.New(config.Mandrill.Key, config.Mandrill.FromEmail, config.Mandrill.FromName)
 
 	// geetest
-	geetest = gt.New(config.Geetest.CaptchaID, config.Geetest.PrivateKey, false)
+	geetest = gt.New(config.Geetest.CaptchaID, config.Geetest.PrivateKey, false, time.Second*10, time.Second*10)
 }
 
 func main() {
