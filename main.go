@@ -50,7 +50,18 @@ func init() {
 
 	// logging hooks
 	graylogHookLevelThreshold := must(logrus.ParseLevel(config.Log.Graylog.Level)).(logrus.Level)
-	graylogHook := must(grayloghook.New(config.Log.Graylog.Address, config.Log.Graylog.Facility, graylogHookLevelThreshold)).(logrus.Hook)
+	graylogHook := must(
+		grayloghook.New(
+			config.Log.Graylog.Address,
+			config.Log.Graylog.Facility,
+			map[string]interface{}{
+				"go_version": goVersion,
+				"build_time": buildTime,
+				"git_commit": gitCommit,
+			},
+			graylogHookLevelThreshold,
+		),
+	).(logrus.Hook)
 	logrus.AddHook(graylogHook)
 
 	// connection hub

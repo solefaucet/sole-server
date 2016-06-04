@@ -199,7 +199,7 @@
 		},
 		{
 			"ImportPath": "github.com/yumimobi/logrus-graylog2-hook",
-			"Rev": "47d633d524626aea7f41e889fb9e485b1bb7f966"
+			"Rev": "8e8512c7a57048887bb3cf9045e73dae73fcd1cb"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",

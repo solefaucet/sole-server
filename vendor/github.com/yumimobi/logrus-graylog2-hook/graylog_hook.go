@@ -15,6 +15,7 @@ type Hook struct {
 	facility string
 	w        *gelf.Writer
 	levels   []logrus.Level
+	extra    map[string]interface{}
 }
 
 // can be mocked out for testing
@@ -24,7 +25,7 @@ var (
 )
 
 // New creates a graylog2 hook
-func New(address, facility string, level logrus.Level) (logrus.Hook, error) {
+func New(address, facility string, extra map[string]interface{}, level logrus.Level) (logrus.Hook, error) {
 	w, err := gelf.NewWriter(address)
 	if err != nil {
 		return nil, err
@@ -40,6 +41,7 @@ func New(address, facility string, level logrus.Level) (logrus.Hook, error) {
 		w:        w,
 		hostname: hostname,
 		facility: facility,
+		extra:    extra,
 	}, err
 }
 
@@ -67,7 +69,11 @@ func (h *Hook) Fire(entry *logrus.Entry) error {
 		short.Truncate(i)
 	}
 	extra := map[string]interface{}{}
+	// merge entry.Data & extra & facility
 	for k, v := range entry.Data {
+		extra["_"+k] = v // prefix with _ will be treated as an additional field
+	}
+	for k, v := range h.extra {
 		extra["_"+k] = v // prefix with _ will be treated as an additional field
 	}
 	extra["_facility"] = h.facility
