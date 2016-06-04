@@ -8,4 +8,5 @@ const (
 	EventValidateCaptcha    = "validate captcha"
 	EventRegisterCaptcha    = "register captcha"
 	EventReward             = "reward"
+	EventGetGeoFromIP       = "get geo from ip"
 )

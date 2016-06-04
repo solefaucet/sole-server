@@ -10,6 +10,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/btcsuite/btcrpcclient"
 	"github.com/gin-gonic/gin"
+	"github.com/oschwald/geoip2-golang"
 	"github.com/robfig/cron"
 	gt "github.com/solefaucet/geetest"
 	"github.com/solefaucet/sole-server/handlers/v1"
@@ -35,6 +36,7 @@ var (
 	coinClient           *btcrpcclient.Client
 	addressToReceiveCoin string
 	geetest              gt.Geetest
+	geo                  *geoip2.Reader
 )
 
 func init() {
@@ -88,6 +90,9 @@ func init() {
 
 	// geetest
 	geetest = gt.New(config.Geetest.CaptchaID, config.Geetest.PrivateKey, false, time.Second*10, time.Second*10)
+
+	// geo
+	geo = must(geoip2.Open(config.Geo.Database)).(*geoip2.Reader)
 }
 
 func main() {
@@ -101,7 +106,7 @@ func main() {
 	// globally use middlewares
 	router.Use(
 		middlewares.RecoveryWithWriter(os.Stderr),
-		middlewares.Logger(),
+		middlewares.Logger(geo),
 		middlewares.CORS(),
 		gin.ErrorLogger(),
 	)

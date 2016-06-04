@@ -55,6 +55,9 @@ type configuration struct {
 		CaptchaID  string `validate:"required"`
 		PrivateKey string `validate:"required"`
 	} `validate:"required"`
+	Geo struct {
+		Database string `validate:"required"`
+	} `validate:"required"`
 }
 
 var config configuration
@@ -95,6 +98,8 @@ func initConfig() {
 
 	config.Geetest.CaptchaID = viper.GetString("geetest_captcha_id")
 	config.Geetest.PrivateKey = viper.GetString("geetest_private_key")
+
+	config.Geo.Database = viper.GetString("geo_database")
 
 	// validate config
 	must(nil, validateConfiguration(config))
