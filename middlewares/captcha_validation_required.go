@@ -14,6 +14,7 @@ type dependencyValidateCaptcha func(challenge, validate, seccode string) (bool, 
 // CaptchaValidationRequired middleware validates captcha
 func CaptchaValidationRequired(validateCaptcha dependencyValidateCaptcha) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		logrus.WithField("event", models.EventValidateCaptcha).Info("validating geetest captcha")
 		challenge := c.Request.Header.Get("X-Geetest-Challenge")
 		validate := c.Request.Header.Get("X-Geetest-Validate")
 		seccode := c.Request.Header.Get("X-Geetest-Seccode")

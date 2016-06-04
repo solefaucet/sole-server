@@ -14,14 +14,17 @@ func RegisterCaptcha(
 	getCaptchaID dependencyGetCaptchaID,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		logrus.WithField("event", models.EventRegisterCaptcha).Info("registering geetest captcha")
+		captchaID := getCaptchaID()
 		challenge, err := registerCaptcha()
 		if err != nil {
-			logrus.WithField("event", models.EventRegisterCaptcha).Warn(err.Error())
+			logrus.WithFields(logrus.Fields{
+				"event":      models.EventRegisterCaptcha,
+				"captcha_id": captchaID,
+			}).Warn(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-
-		captchaID := getCaptchaID()
 
 		c.JSON(http.StatusOK, map[string]string{
 			"captcha_id": captchaID,
