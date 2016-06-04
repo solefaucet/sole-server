@@ -331,7 +331,7 @@ func processWithdrawals() {
 	}
 
 	// update withdrawal status to processing
-	if err := store.UpdateWithdrawalStatusToProcessing(withdrawalIDs); err != nil {
+	if err = store.UpdateWithdrawalStatusToProcessing(withdrawalIDs); err != nil {
 		logger.Printf("update withdrawal status to processing error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"event":          models.EventProcessWithdrawals,
