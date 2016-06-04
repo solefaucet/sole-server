@@ -46,6 +46,6 @@ type Storage interface {
 	GetWithdrawals(userID int64, limit, offset int64) ([]models.Withdrawal, error)
 	GetNumberOfWithdrawals(userID int64) (int64, error)
 	GetPendingWithdrawals() ([]models.Withdrawal, error)
-	UpdateWithdrawalStatusToProcessing(id int64) error
-	UpdateWithdrawalStatusToProcessed(id int64, transactionID string) error
+	UpdateWithdrawalStatusToProcessing(ids []int64) error
+	UpdateWithdrawalStatusToProcessed(ids []int64, transactionID string) error
 }

@@ -3,9 +3,9 @@ package mysql
 import (
 	"fmt"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	"github.com/jmoiron/sqlx"
 )
 
 // CreateWithdrawal creates a new withdrawal
@@ -82,9 +82,17 @@ func (s Storage) GetPendingWithdrawals() ([]models.Withdrawal, error) {
 }
 
 // UpdateWithdrawalStatusToProcessing update withdrawal status to processing if status = pending
-func (s Storage) UpdateWithdrawalStatusToProcessing(id int64) error {
-	rawSQL := "UPDATE `withdrawals` SET `status` = ? WHERE `id` = ? AND `status` = ?"
-	args := []interface{}{models.WithdrawalStatusProcessing, id, models.WithdrawalStatusPending}
+func (s Storage) UpdateWithdrawalStatusToProcessing(ids []int64) error {
+	rawSQL, args, err := sqlx.In(
+		"UPDATE `withdrawals` SET `status` = ? WHERE `id` IN (?) AND `status` = ?",
+		models.WithdrawalStatusProcessing,
+		ids,
+		models.WithdrawalStatusPending,
+	)
+	if err != nil {
+		return fmt.Errorf("update withdrawal status to processing build sql with in: %v", err)
+	}
+
 	result, err := s.db.Exec(rawSQL, args...)
 	if err != nil {
 		return err
@@ -98,9 +106,18 @@ func (s Storage) UpdateWithdrawalStatusToProcessing(id int64) error {
 }
 
 // UpdateWithdrawalStatusToProcessed update withdrawal status to processed if status = processing
-func (s Storage) UpdateWithdrawalStatusToProcessed(id int64, transactionID string) error {
-	rawSQL := "UPDATE `withdrawals` SET `status` = ?, `transaction_id` = ? WHERE `id` = ? AND `status` = ?"
-	args := []interface{}{models.WithdrawalStatusProcessed, transactionID, id, models.WithdrawalStatusProcessing}
+func (s Storage) UpdateWithdrawalStatusToProcessed(ids []int64, transactionID string) error {
+	rawSQL, args, err := sqlx.In(
+		"UPDATE `withdrawals` SET `status` = ?, `transaction_id` = ? WHERE `id` IN (?) AND `status` = ?",
+		models.WithdrawalStatusProcessed,
+		transactionID,
+		ids,
+		models.WithdrawalStatusProcessing,
+	)
+	if err != nil {
+		return fmt.Errorf("update withdrawal status to processed build sql with in: %v", err)
+	}
+
 	result, err := s.db.Exec(rawSQL, args...)
 	if err != nil {
 		return err
