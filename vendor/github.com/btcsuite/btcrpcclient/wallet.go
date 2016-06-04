@@ -658,12 +658,8 @@ func (r FutureSendManyResult) Receive() (*wire.ShaHash, error) {
 // returned instance.
 //
 // See SendMany for the blocking version and more details.
-func (c *Client) SendManyAsync(fromAccount string, amounts map[btcutil.Address]btcutil.Amount) FutureSendManyResult {
-	convertedAmounts := make(map[string]float64, len(amounts))
-	for addr, amount := range amounts {
-		convertedAmounts[addr.EncodeAddress()] = amount.ToBTC()
-	}
-	cmd := btcjson.NewSendManyCmd(fromAccount, convertedAmounts, nil, nil)
+func (c *Client) SendManyAsync(fromAccount string, amounts map[string]float64) FutureSendManyResult {
+	cmd := btcjson.NewSendManyCmd(fromAccount, amounts, nil, nil)
 	return c.sendCmd(cmd)
 }
 
@@ -675,7 +671,7 @@ func (c *Client) SendManyAsync(fromAccount string, amounts map[btcutil.Address]b
 //
 // NOTE: This function requires to the wallet to be unlocked.  See the
 // WalletPassphrase function for more details.
-func (c *Client) SendMany(fromAccount string, amounts map[btcutil.Address]btcutil.Amount) (*wire.ShaHash, error) {
+func (c *Client) SendMany(fromAccount string, amounts map[string]float64) (*wire.ShaHash, error) {
 	return c.SendManyAsync(fromAccount, amounts).Receive()
 }
 
