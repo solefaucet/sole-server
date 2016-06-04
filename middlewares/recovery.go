@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
+	"github.com/solefaucet/sole-server/models"
 )
 
 const k = 1 << 10
@@ -27,10 +29,10 @@ func RecoveryWithWriter(out io.Writer) gin.HandlerFunc {
 
 				logger.Printf("[Recovery] panic recovered:\n%s\n%s\n%s\n", httprequest, err, buf[:n])
 				logrus.WithFields(logrus.Fields{
+					"event":   models.EventHTTPRequest,
 					"request": string(httprequest),
-					"error":   err,
 					"stack":   string(buf[:n]),
-				}).Error("panic")
+				}).Error(fmt.Sprintf("%#v", err))
 
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}

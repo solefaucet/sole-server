@@ -3,8 +3,10 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/solefaucet/sole-server/errors"
+	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
+	"github.com/solefaucet/sole-server/errors"
+	"github.com/solefaucet/sole-server/models"
 )
 
 type dependencyValidateCaptcha func(challenge, validate, seccode string) (bool, error)
@@ -18,6 +20,12 @@ func CaptchaValidationRequired(validateCaptcha dependencyValidateCaptcha) gin.Ha
 
 		valid, err := validateCaptcha(challenge, validate, seccode)
 		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"event":     models.EventValidateCaptcha,
+				"challenge": challenge,
+				"validate":  validate,
+				"seccode":   seccode,
+			}).Warn(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

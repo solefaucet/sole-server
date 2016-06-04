@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 	"github.com/solefaucet/sole-server/models"
 	"github.com/solefaucet/sole-server/utils"
-	"github.com/gin-gonic/gin"
 )
 
 // GetReward randomly gives users reward
@@ -72,6 +73,12 @@ func GetReward(
 		// broadcast delta income to all clients
 		msg, _ := json.Marshal(models.WebsocketMessage{DeltaIncome: deltaIncome})
 		broadcast(msg)
+
+		logrus.WithFields(logrus.Fields{
+			"event":            models.EventReward,
+			"reward_rate_type": rewardRateType,
+			"amount":           reward,
+		}).Info()
 
 		c.JSON(http.StatusOK, income)
 	}

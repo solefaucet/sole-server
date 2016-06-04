@@ -3,7 +3,9 @@ package v1
 import (
 	"net/http"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // RegisterCaptcha register get challenge from geetest
@@ -14,6 +16,7 @@ func RegisterCaptcha(
 	return func(c *gin.Context) {
 		challenge, err := registerCaptcha()
 		if err != nil {
+			logrus.WithField("event", models.EventRegisterCaptcha).Warn(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

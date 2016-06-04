@@ -2,6 +2,10 @@ package models
 
 // events
 const (
+	EventHTTPRequest        = "http request"
 	EventCreateWithdrawals  = "create withdrawals"
 	EventProcessWithdrawals = "process withdrawals"
+	EventValidateCaptcha    = "validate captcha"
+	EventRegisterCaptcha    = "register captcha"
+	EventReward             = "reward"
 )
