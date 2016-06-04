@@ -3,6 +3,7 @@ package mysql
 import (
 	"fmt"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
@@ -93,6 +94,11 @@ func (s Storage) UpdateWithdrawalStatusToProcessing(ids []int64) error {
 		return fmt.Errorf("update withdrawal status to processing build sql with in: %v", err)
 	}
 
+	logrus.WithFields(logrus.Fields{
+		"sql":  rawSQL,
+		"args": args,
+	}).Info("sql update withdrawals status to processing")
+
 	result, err := s.db.Exec(rawSQL, args...)
 	if err != nil {
 		return err
@@ -117,6 +123,11 @@ func (s Storage) UpdateWithdrawalStatusToProcessed(ids []int64, transactionID st
 	if err != nil {
 		return fmt.Errorf("update withdrawal status to processed build sql with in: %v", err)
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"sql":  rawSQL,
+		"args": args,
+	}).Info("sql update withdrawals status to processed")
 
 	result, err := s.db.Exec(rawSQL, args...)
 	if err != nil {
