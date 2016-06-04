@@ -301,10 +301,19 @@ func processWithdrawals() {
 		return
 	}
 
-	// calculate total withdraw amount
+	// do nothing if there is nothing to withdraw
+	if len(withdrawals) == 0 {
+		return
+	}
+
+	// parse data from withdrawals
 	total := 0.0
-	for i := range withdrawals {
-		total += withdrawals[i].Amount * 1.1 // NOTE: assume tx_fee = amount * 0.1
+	amounts := map[string]float64{}
+	withdrawalIDs := []int64{}
+	for _, v := range withdrawals {
+		total += v.Amount * 1.1 // NOTE: assume tx_fee = amount * 0.1
+		amounts[v.Address] += v.Amount
+		withdrawalIDs = append(withdrawalIDs, v.ID)
 	}
 
 	// get current remaining balance
@@ -316,51 +325,52 @@ func processWithdrawals() {
 			"total":                   total,
 			"current_balance":         balance,
 			"amount_of_coins_needed":  total - balance,
+			"number_of_address":       len(amounts),
 		}).Warn("need more coins to process withdrawal request")
 		return
 	}
 
-	for _, v := range withdrawals {
-		// update withdrawal status to processing
-		if err := store.UpdateWithdrawalStatusToProcessing(v.ID); err != nil {
-			logger.Printf("update withdrawal status to processing error: %v\n", err)
-			logrus.WithFields(logrus.Fields{
-				"event": models.EventProcessWithdrawals,
-				"error": err,
-			}).Error("failed to update withdrawal status to processing")
-			return
-		}
+	// update withdrawal status to processing
+	if err := store.UpdateWithdrawalStatusToProcessing(withdrawalIDs); err != nil {
+		logger.Printf("update withdrawal status to processing error: %v\n", err)
+		logrus.WithFields(logrus.Fields{
+			"event":          models.EventProcessWithdrawals,
+			"error":          err,
+			"withdrawal_ids": withdrawalIDs,
+		}).Error("fail to update withdrawal status to processing")
+		return
+	}
 
-		// send coin to address
-		hash, err := coinClient.SendToAddress(v.Address, v.Amount)
-		if err != nil {
-			logger.Printf("send coin to address %s error: %v\n", v.Address, err)
-			logrus.WithFields(logrus.Fields{
-				"event":   models.EventProcessWithdrawals,
-				"address": v.Address,
-				"error":   err.Error(),
-			}).Error("failed to send coin")
-			return
-		}
+	// send coins
+	hash, err := coinClient.SendMany("", amounts)
+	if err != nil {
+		logger.Printf("sendmany error: %v\n", err)
+		logrus.WithFields(logrus.Fields{
+			"event": models.EventProcessWithdrawals,
+			"error": err.Error(),
+		}).Error("fail to send coin")
+		return
+	}
 
-		// update withdrawal status to processed in db
-		if err := store.UpdateWithdrawalStatusToProcessed(v.ID, hash.String()); err != nil {
-			logger.Printf("update withdrawal status to processed and transaction id to %v error: %v\n", hash.String(), err)
-			logrus.WithFields(logrus.Fields{
-				"event":          models.EventProcessWithdrawals,
-				"id":             v.ID,
-				"transaction_id": hash.String(),
-				"error":          err,
-			}).Error("failed to update withdrawal status to processed")
-			return
-		}
+	// update withdrawal status to processed in db
+	if err := store.UpdateWithdrawalStatusToProcessed(withdrawalIDs, hash.String()); err != nil {
+		logger.Printf("update withdrawal status to processed and transaction id to %v error: %v\n", hash.String(), err)
+		logrus.WithFields(logrus.Fields{
+			"event":          models.EventProcessWithdrawals,
+			"id":             withdrawalIDs,
+			"transaction_id": hash.String(),
+			"error":          err,
+		}).Error("failed to update withdrawal status to processed")
+		return
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"event":             models.EventProcessWithdrawals,
-		"duration":          time.Since(start),
-		"total":             total,
-		"remaining_balance": must(getBalance()).(float64),
+		"event":                 models.EventProcessWithdrawals,
+		"duration":              float64(time.Since(start).Nanoseconds()) / 1e6,
+		"total":                 total,
+		"remaining_balance":     must(getBalance()).(float64),
+		"number_of_withdrawals": len(amounts),
+		"txid":                  hash.String(),
 	}).Info("succeed to process withdraw requests")
 }
 
