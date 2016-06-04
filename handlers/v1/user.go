@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	"github.com/gin-gonic/gin"
 )
 
 type signupPayload struct {
@@ -56,6 +57,12 @@ func Signup(
 			}
 			return
 		}
+
+		logrus.WithFields(logrus.Fields{
+			"event":   models.EventUserSignup,
+			"email":   payload.Email,
+			"address": payload.Address,
+		}).Info("succeed to signup user")
 
 		c.JSON(http.StatusOK, user)
 	}
