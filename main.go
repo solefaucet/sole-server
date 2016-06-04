@@ -77,6 +77,8 @@ func init() {
 
 	// cache
 	memoryCache = memory.New(config.Cache.NumCachedIncomes)
+	total := must(store.GetLatestTotalReward()).(models.TotalReward)
+	memoryCache.IncrementTotalReward(total.CreatedAt, total.Total)
 	updateCache()
 
 	// coin client
