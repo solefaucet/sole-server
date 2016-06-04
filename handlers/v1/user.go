@@ -79,7 +79,7 @@ func VerifyEmail(
 
 		// check session lifetime
 		session, err := getSessionByToken(token)
-		if err != nil {
+		if err != nil && err != errors.ErrNotFound {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
