@@ -57,10 +57,10 @@ func Logger(geo *geoip2.Reader) gin.HandlerFunc {
 func getLocationFromIP(geo *geoip2.Reader, ip string) location {
 	record, err := geo.City(net.ParseIP(ip))
 	loc := location{
-		"unknown",
-		"unknown",
-		"unknown",
-		"unknown",
+		continent: "unknown",
+		country:   "unknown",
+		region:    "unknown",
+		city:      "unknown",
 	}
 
 	if err != nil {
@@ -74,6 +74,7 @@ func getLocationFromIP(geo *geoip2.Reader, ip string) location {
 	loc.continent = record.Continent.Names["en"]
 	loc.country = record.Country.Names["en"]
 	loc.city = record.City.Names["en"]
+	loc.region = ""
 	for _, v := range record.Subdivisions {
 		loc.region += v.Names["en"]
 	}
@@ -85,5 +86,5 @@ type location struct {
 }
 
 func (l location) String() string {
-	return strings.Join([]string{l.continent, l.country, l.region, l.city}, "")
+	return strings.Join([]string{l.continent, l.country, l.region, l.city}, "-")
 }
