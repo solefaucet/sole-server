@@ -158,6 +158,16 @@
 			"Rev": "1812aee76a1ce98d604a44200c6a23c689b17a89"
 		},
 		{
+			"ImportPath": "github.com/oschwald/geoip2-golang",
+			"Comment": "v0.1.0-31-gb8dbdc3",
+			"Rev": "b8dbdc368b6db46de50f7eecf7a7a31b4822aa00"
+		},
+		{
+			"ImportPath": "github.com/oschwald/maxminddb-golang",
+			"Comment": "v0.2.0-52-g03a3fea",
+			"Rev": "03a3feaec4e514002b446197c10e8ee50e39574c"
+		},
+		{
 			"ImportPath": "github.com/parnurzeal/gorequest",
 			"Comment": "v0.2.13-9-gc73179d",
 			"Rev": "c73179dd31355d86bd7692de9b47623d6d0fa696"
@@ -211,6 +221,10 @@
 		},
 		{
 			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "9d4e42a20653790449273b3c85e67d6d8bae6e2e"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/windows",
 			"Rev": "9d4e42a20653790449273b3c85e67d6d8bae6e2e"
 		},
 		{
