@@ -78,7 +78,7 @@ func GetReward(
 			"event":            models.EventReward,
 			"reward_rate_type": rewardRateType,
 			"amount":           reward,
-		}).Info()
+		}).Info("user get reward")
 
 		c.JSON(http.StatusOK, income)
 	}
