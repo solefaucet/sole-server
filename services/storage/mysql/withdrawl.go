@@ -104,8 +104,8 @@ func (s Storage) UpdateWithdrawalStatusToProcessing(ids []int64) error {
 		return err
 	}
 
-	if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
-		return fmt.Errorf("expected 1 but %v rows affected", rowAffected)
+	if rowAffected, _ := result.RowsAffected(); rowAffected != int64(len(ids)) {
+		return fmt.Errorf("expected %v but %v rows affected", len(ids), rowAffected)
 	}
 
 	return nil
@@ -134,8 +134,8 @@ func (s Storage) UpdateWithdrawalStatusToProcessed(ids []int64, transactionID st
 		return err
 	}
 
-	if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
-		return fmt.Errorf("expected 1 but %v rows affected", rowAffected)
+	if rowAffected, _ := result.RowsAffected(); rowAffected != int64(len(ids)) {
+		return fmt.Errorf("expected %v but %v rows affected", len(ids), rowAffected)
 	}
 
 	return nil
