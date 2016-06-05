@@ -26,7 +26,7 @@ func CaptchaValidationRequired(validateCaptcha dependencyValidateCaptcha) gin.Ha
 				"challenge": challenge,
 				"validate":  validate,
 				"seccode":   seccode,
-			}).Warn(err.Error())
+			}).Error(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

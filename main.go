@@ -296,7 +296,7 @@ func processWithdrawals() {
 		logger.Printf("get pending withdrawals error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"event": models.EventProcessWithdrawals,
-			"error": err,
+			"error": err.Error(),
 		}).Error("failed to get pending withdrawals")
 		return
 	}
@@ -335,7 +335,7 @@ func processWithdrawals() {
 		logger.Printf("update withdrawal status to processing error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
 			"event":          models.EventProcessWithdrawals,
-			"error":          err,
+			"error":          err.Error(),
 			"withdrawal_ids": withdrawalIDs,
 		}).Error("fail to update withdrawal status to processing")
 		return

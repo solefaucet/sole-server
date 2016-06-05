@@ -21,7 +21,7 @@ func RegisterCaptcha(
 			logrus.WithFields(logrus.Fields{
 				"event":      models.EventRegisterCaptcha,
 				"captcha_id": captchaID,
-			}).Warn(err.Error())
+			}).Error(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
