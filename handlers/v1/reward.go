@@ -76,6 +76,9 @@ func GetReward(
 
 		logrus.WithFields(logrus.Fields{
 			"event":            models.EventReward,
+			"user_email":       user.Email,
+			"user_ip":          c.ClientIP(),
+			"user_rewarded_at": user.RewardedAt,
 			"reward_rate_type": rewardRateType,
 			"amount":           reward,
 		}).Info("user get reward")
