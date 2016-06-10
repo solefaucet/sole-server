@@ -83,6 +83,7 @@ func (h *Hub) removeErrElems(errElems []*list.Element) {
 	h.rwlock.Lock()
 	defer h.rwlock.Unlock()
 	for i := range errElems {
+		errElems[i].Value.(hub.Conn).Close()
 		h.conns.Remove(errElems[i])
 	}
 }

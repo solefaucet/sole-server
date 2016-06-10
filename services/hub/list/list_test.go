@@ -14,6 +14,10 @@ func (m mockConn) Write([]byte) error {
 	return m.err
 }
 
+func (m mockConn) Close() error {
+	return nil
+}
+
 func TestHub(t *testing.T) {
 	h := New()
 	n := 10000

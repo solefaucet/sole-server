@@ -16,10 +16,12 @@ type Hub interface {
 // Conn describes a connection's behaviour
 type Conn interface {
 	Write([]byte) error
+	Close() error
 }
 
 type connWrapper struct {
 	write func([]byte) error
+	close func() error
 	mutex sync.Mutex
 }
 
@@ -29,15 +31,24 @@ func (c *connWrapper) Write(raw []byte) error {
 	return c.write(raw)
 }
 
-func newConnWrapper(write func([]byte) error) Conn {
-	return &connWrapper{write: write}
+func (c *connWrapper) Close() error {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	return c.close()
+}
+
+func newConnWrapper(write func([]byte) error, close func() error) Conn {
+	return &connWrapper{write: write, close: close}
 }
 
 // WrapPutWebsocketConn wraps func(Conn) to func(*websocket.Conn)
 func WrapPutWebsocketConn(put func(Conn)) func(*websocket.Conn) {
 	return func(c *websocket.Conn) {
-		put(newConnWrapper(func(raw []byte) error {
-			return c.WriteMessage(websocket.TextMessage, raw)
-		}))
+		put(newConnWrapper(
+			func(raw []byte) error {
+				return c.WriteMessage(websocket.TextMessage, raw)
+			},
+			c.Close,
+		))
 	}
 }
