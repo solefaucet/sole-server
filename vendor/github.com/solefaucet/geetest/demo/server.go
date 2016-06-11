@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/solefaucet/geetest"
 )
@@ -14,7 +15,7 @@ const (
 )
 
 func main() {
-	g := geetest.New(captchaID, privateKey, false)
+	g := geetest.New(captchaID, privateKey, false, 5*time.Second, 5*time.Second, 8)
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/", fs)

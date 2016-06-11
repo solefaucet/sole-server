@@ -76,7 +76,7 @@
 		},
 		{
 			"ImportPath": "github.com/solefaucet/geetest",
-			"Rev": "3abed0b181dd3e44924870a8f4b16de9f8cd500f"
+			"Rev": "add2a6c1165eb09b3a1f4638b0888853eb8a9ede"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/contrib/cors",
