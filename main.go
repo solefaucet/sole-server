@@ -35,7 +35,7 @@ var (
 	connsHub             hub.Hub
 	coinClient           *btcrpcclient.Client
 	addressToReceiveCoin string
-	geetest              gt.Geetest
+	geetest              *gt.Geetest
 	geo                  *geoip2.Reader
 )
 
@@ -91,7 +91,7 @@ func init() {
 	mailer = mandrill.New(config.Mandrill.Key, config.Mandrill.FromEmail, config.Mandrill.FromName)
 
 	// geetest
-	geetest = gt.New(config.Geetest.CaptchaID, config.Geetest.PrivateKey, false, time.Second*10, time.Second*10)
+	geetest = gt.New(config.Geetest.CaptchaID, config.Geetest.PrivateKey, false, time.Second*10, time.Second*10, 2048)
 
 	// geo
 	geo = must(geoip2.Open(config.Geo.Database)).(*geoip2.Reader)
