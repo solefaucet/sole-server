@@ -28,15 +28,14 @@ import (
 )
 
 var (
-	logger               = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Llongfile)
-	mailer               mail.Mailer
-	store                storage.Storage
-	memoryCache          cache.Cache
-	connsHub             hub.Hub
-	coinClient           *btcrpcclient.Client
-	addressToReceiveCoin string
-	geetest              *gt.Geetest
-	geo                  *geoip2.Reader
+	logger      = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Llongfile)
+	mailer      mail.Mailer
+	store       storage.Storage
+	memoryCache cache.Cache
+	connsHub    hub.Hub
+	coinClient  *btcrpcclient.Client
+	geetest     *gt.Geetest
+	geo         *geoip2.Reader
 )
 
 func init() {
@@ -165,7 +164,6 @@ func main() {
 
 	logrus.WithFields(logrus.Fields{
 		"http_address": config.HTTP.Address,
-		"coin_address": addressToReceiveCoin,
 	}).Info("service up")
 	if err := router.Run(config.HTTP.Address); err != nil {
 		logrus.WithError(err).Fatal("failed to start service")
@@ -259,7 +257,6 @@ func initCoinClient() {
 		DisableTLS:   true, // Bitcoin core does not provide TLS by default
 	}
 	coinClient = must(btcrpcclient.New(config, nil)).(*btcrpcclient.Client)
-	addressToReceiveCoin = must(coinClient.GetAccountAddress("")).(string)
 }
 
 func validateAddress(address string) (bool, error) {
@@ -321,7 +318,7 @@ func processWithdrawals() {
 	if balance < total {
 		logrus.WithFields(logrus.Fields{
 			"event":                   models.EventProcessWithdrawals,
-			"address_to_receive_coin": addressToReceiveCoin,
+			"address_to_receive_coin": must(coinClient.GetAccountAddress("")).(string),
 			"total":                   total,
 			"current_balance":         balance,
 			"amount_of_coins_needed":  total - balance,
