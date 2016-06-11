@@ -89,6 +89,7 @@ resp, body, errs := request.Post("http://example.com").End()
 // PUT -> request.Put("http://example.com").End()
 // DELETE -> request.Delete("http://example.com").End()
 // HEAD -> request.Head("http://example.com").End()
+// ANYTHING -> request.CustomMethod("TRACE", "http://example.com").End()
 ```
 
 ### JSON
@@ -156,7 +157,7 @@ In the case when you are behind proxy, GoRequest can handle it easily with Proxy
 request := gorequest.New().Proxy("http://proxy:999")
 resp, body, errs := request.Get("http://example-proxy.com").End()
 // To reuse same client with no_proxy, use empty string:
-resp, body, errs = request.Proxy("").("http://example-no-proxy.com").End()
+resp, body, errs = request.Proxy("").Get("http://example-no-proxy.com").End()
 ```
 
 ## Basic Authentication
@@ -206,7 +207,7 @@ If you find any improvement or issue you want to fix, feel free to send me a pul
 
 Thanks to all contributors thus far:
 
-@kemadz, @austinov, @figlief, @dickeyxxx, @killix, @jaytaylor, @na-ga, @dafang, @alaingilbert, @6david9, @pencil001, @QuentinPerez, @smallnest, @piotrmiskiewicz and @coderhaoxin.
+@kemadz, @austinov, @figlief, @dickeyxxx, @killix, @jaytaylor, @na-ga, @dafang, @alaingilbert, @6david9, @pencil001, @QuentinPerez, @smallnest, @piotrmiskiewicz, @coderhaoxin, and @WaveCutz
 
 Also, co-maintainer is needed here. If anyone is interested, please email me (parnurzeal at gmail.com)
 

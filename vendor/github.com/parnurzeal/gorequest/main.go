@@ -86,6 +86,8 @@ func New() *SuperAgent {
 		CurlCommand:       false,
 		logger:            log.New(os.Stderr, "[gorequest]", log.LstdFlags),
 	}
+	// desable keep alives by default, see this issue https://github.com/parnurzeal/gorequest/issues/75
+	s.Transport.DisableKeepAlives = true
 	return s
 }
 
@@ -121,6 +123,32 @@ func (s *SuperAgent) ClearSuperAgent() {
 	s.TargetType = "json"
 	s.Cookies = make([]*http.Cookie, 0)
 	s.Errors = nil
+}
+
+// Just a wrapper to initialize SuperAgent instance by method string
+func (s *SuperAgent) CustomMethod(method, targetUrl string) *SuperAgent {
+	switch method {
+	case POST:
+		return s.Post(targetUrl)
+	case GET:
+		return s.Get(targetUrl)
+	case HEAD:
+		return s.Head(targetUrl)
+	case PUT:
+		return s.Put(targetUrl)
+	case DELETE:
+		return s.Delete(targetUrl)
+	case PATCH:
+		return s.Patch(targetUrl)
+	case OPTIONS:
+		return s.Options(targetUrl)
+	default:
+		s.ClearSuperAgent()
+		s.Method = method
+		s.Url = targetUrl
+		s.Errors = nil
+		return s
+	}
 }
 
 func (s *SuperAgent) Get(targetUrl string) *SuperAgent {
@@ -747,17 +775,21 @@ func (s *SuperAgent) MakeRequest() (*http.Request, error) {
 		} else {
 			// TODO: if nothing match, let's return warning here
 		}
-	case GET, HEAD, DELETE, OPTIONS:
+	case "":
+		return nil, errors.New("No method specified")
+	default:
 		req, err = http.NewRequest(s.Method, s.Url, nil)
 		if err != nil {
 			return nil, err
 		}
-	default:
-		return nil, errors.New("No method specified")
 	}
 
 	for k, v := range s.Header {
 		req.Header.Set(k, v)
+		// Setting the host header is a special case, see this issue: https://github.com/golang/go/issues/7682
+		if strings.EqualFold(k, "host") {
+			req.Host = v;
+		}
 	}
 	// Add all querystring from Query func
 	q := req.URL.Query()
@@ -779,4 +811,18 @@ func (s *SuperAgent) MakeRequest() (*http.Request, error) {
 	}
 
 	return req, nil
+}
+
+// AsCurlCommand returns a string representing the runnable `curl' command
+// version of the request.
+func (s *SuperAgent) AsCurlCommand() (string, error) {
+	req, err := s.MakeRequest()
+	if err != nil {
+		return "", err
+	}
+	cmd, err := http2curl.GetCurlCommand(req)
+	if err != nil {
+		return "", err
+	}
+	return cmd.String(), nil
 }
