@@ -39,14 +39,21 @@ func GetReward(
 		}
 
 		// get random reward
+		config := getSystemConfig()
 		latestTotalReward := getLatestTotalReward()
 		rewardRateType := models.RewardRateTypeLess
-		if latestTotalReward.IsSameDay(now) && latestTotalReward.Total > getSystemConfig().TotalRewardThreshold {
+		if latestTotalReward.IsSameDay(now) && latestTotalReward.Total > config.TotalRewardThreshold {
 			rewardRateType = models.RewardRateTypeMore
 		}
 		rewardRates := getRewardRatesByType(rewardRateType)
 		reward := utils.RandomReward(rewardRates)
-		rewardReferer := reward * getSystemConfig().RefererRewardRate
+		rewardReferer := reward * config.RefererRewardRate
+
+		// double reward if needed
+		doubled := config.DoubleToday()
+		if doubled {
+			reward *= 2
+		}
 
 		// create income reward
 		income := models.Income{
@@ -82,6 +89,7 @@ func GetReward(
 			"user_rewarded_at": user.RewardedAt,
 			"reward_rate_type": rewardRateType,
 			"amount":           reward,
+			"reward_doubled":   doubled,
 		}).Info("user get reward")
 
 		c.JSON(http.StatusOK, income)
