@@ -10,7 +10,7 @@ import (
 // Hub stores connections in doubly linked list
 type Hub struct {
 	conns  *list.List
-	rwlock sync.RWMutex
+	rwlock sync.Mutex
 }
 
 var _ hub.Hub = &Hub{}
@@ -36,8 +36,6 @@ func (h *Hub) Broadcast(m []byte) {
 
 // Len returns number of active connections
 func (h *Hub) Len() int {
-	h.rwlock.RLock()
-	defer h.rwlock.RUnlock()
 	return h.conns.Len()
 }
 
