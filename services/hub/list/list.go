@@ -76,12 +76,9 @@ func (h *Hub) elems() []*list.Element {
 
 // remove errored connections from list
 func (h *Hub) removeErrElems(errElems []*list.Element) {
-	if len(errElems) == 0 {
-		return
-	}
-
 	h.rwlock.Lock()
 	defer h.rwlock.Unlock()
+
 	for i := range errElems {
 		errElems[i].Value.(hub.Conn).Close()
 		h.conns.Remove(errElems[i])
