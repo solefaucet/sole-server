@@ -339,7 +339,7 @@ func processWithdrawals() {
 	}
 
 	// send coins
-	hash, err := coinClient.SendMany("", amounts)
+	hash, err := coinClient.SendManyComment("", amounts, 1, "Payment from solefaucet, visit us at "+config.App.URL)
 	if err != nil {
 		logger.Printf("sendmany error: %v\n", err)
 		logrus.WithFields(logrus.Fields{

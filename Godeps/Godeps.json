@@ -46,7 +46,7 @@
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcrpcclient",
-			"Rev": "b14f911b6d6c04446d9bae65c9fe6ad778695558"
+			"Rev": "5b2b9a529d329c97bea1f1a4fe98aa7cee997282"
 		},
 		{
 			"ImportPath": "github.com/btcsuite/btcutil",

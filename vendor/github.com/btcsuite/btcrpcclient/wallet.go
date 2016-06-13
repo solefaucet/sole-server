@@ -715,15 +715,10 @@ func (c *Client) SendManyMinConf(fromAccount string,
 //
 // See SendManyComment for the blocking version and more details.
 func (c *Client) SendManyCommentAsync(fromAccount string,
-	amounts map[btcutil.Address]btcutil.Amount, minConfirms int,
+	amounts map[string]float64, minConfirms int,
 	comment string) FutureSendManyResult {
 
-	convertedAmounts := make(map[string]float64, len(amounts))
-	for addr, amount := range amounts {
-		convertedAmounts[addr.EncodeAddress()] = amount.ToBTC()
-	}
-	cmd := btcjson.NewSendManyCmd(fromAccount, convertedAmounts,
-		&minConfirms, &comment)
+	cmd := btcjson.NewSendManyCmd(fromAccount, amounts, &minConfirms, &comment)
 	return c.sendCmd(cmd)
 }
 
@@ -738,11 +733,10 @@ func (c *Client) SendManyCommentAsync(fromAccount string,
 // NOTE: This function requires to the wallet to be unlocked.  See the
 // WalletPassphrase function for more details.
 func (c *Client) SendManyComment(fromAccount string,
-	amounts map[btcutil.Address]btcutil.Amount, minConfirms int,
+	amounts map[string]float64, minConfirms int,
 	comment string) (*wire.ShaHash, error) {
 
-	return c.SendManyCommentAsync(fromAccount, amounts, minConfirms,
-		comment).Receive()
+	return c.SendManyCommentAsync(fromAccount, amounts, minConfirms, comment).Receive()
 }
 
 // *************************
