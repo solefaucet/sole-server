@@ -13,6 +13,7 @@ const (
 type User struct {
 	ID                      int64     `db:"id" json:"id,omitempty"`
 	Email                   string    `db:"email" json:"email,omitempty"`
+	EmailSentAt             time.Time `db:"email_sent_at" json:"email_sent_at,omitempty"`
 	Address                 string    `db:"address" json:"address,omitempty"`
 	Status                  string    `db:"status" json:"status,omitempty"`
 	Balance                 float64   `db:"balance" json:"balance"`

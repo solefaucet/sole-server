@@ -6,10 +6,11 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
+	"time"
 
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // RequestVerifyEmail send verification url to user via email
@@ -28,6 +29,12 @@ func RequestVerifyEmail(
 		user, err := getUserByID(authToken.UserID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		// do not send email if last one is sent within half one hour
+		if user.EmailSentAt.Add(30 * time.Minute).After(time.Now()) {
+			c.AbortWithStatus(http.StatusTooManyRequests)
 			return
 		}
 

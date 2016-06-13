@@ -5,10 +5,11 @@ import (
 	"html/template"
 	"net/http"
 	"testing"
+	"time"
 
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/solefaucet/sole-server/models"
 )
 
 func TestRequestVerifyEmail(t *testing.T) {
@@ -28,6 +29,26 @@ func TestRequestVerifyEmail(t *testing.T) {
 
 			Convey("Response code should be 500", func() {
 				So(resp.Code, ShouldEqual, 500)
+			})
+		})
+	})
+
+	Convey("Given request verify email controller with user last sent email within one hour", t, func() {
+		getUserByID := mockGetUserByID(models.User{EmailSentAt: time.Now().Add(-29 * time.Minute)}, nil)
+		handler := RequestVerifyEmail(getUserByID, nil, nil, nil, "", "")
+
+		Convey("When request verify email", func() {
+			route := "/sessions"
+			_, resp, r := gin.CreateTestContext()
+			r.Use(func(c *gin.Context) {
+				c.Set("auth_token", models.AuthToken{})
+			})
+			r.POST(route, handler)
+			req, _ := http.NewRequest("POST", route, nil)
+			r.ServeHTTP(resp, req)
+
+			Convey("Response code should be 429", func() {
+				So(resp.Code, ShouldEqual, http.StatusTooManyRequests)
 			})
 		})
 	})
