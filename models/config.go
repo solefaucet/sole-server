@@ -8,6 +8,7 @@ type Config struct {
 	TotalRewardThreshold float64   `db:"total_reward_threshold"`
 	RefererRewardRate    float64   `db:"referer_reward_rate"`
 	DoubleOnWeekday      int       `db:"double_on_weekday"`
+	MinWithdrawalAmount  float64   `db:"min_withdrawal_amount"`
 	UpdatedAt            time.Time `db:"updated_at"`
 	CreatedAt            time.Time `db:"created_at"`
 }

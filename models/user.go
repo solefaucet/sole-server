@@ -19,7 +19,6 @@ type User struct {
 	TotalIncome             float64   `db:"total_income" json:"total_income"`
 	TotalIncomeFromReferees float64   `db:"total_income_from_referees" json:"total_income_from_referees"`
 	RefererTotalIncome      float64   `db:"referer_total_income" json:"referer_total_income"`
-	MinWithdrawalAmount     float64   `db:"min_withdrawal_amount" json:"min_withdrawal_amount"`
 	RewardInterval          int64     `db:"reward_interval" json:"reward_interval"`
 	RewardedAt              time.Time `db:"rewarded_at" json:"rewarded_at"`
 	RefererID               int64     `db:"referer_id" json:"-"`

@@ -3,9 +3,9 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/solefaucet/sole-server/services/storage"
 	_ "github.com/go-sql-driver/mysql" // is needed for mysql driver registeration
 	"github.com/jmoiron/sqlx"
+	"github.com/solefaucet/sole-server/services/storage"
 )
 
 // Storage implements Storage interface for data storage
@@ -18,7 +18,7 @@ var _ storage.Storage = Storage{}
 // New returns a Storage with data source name
 func New(dsn string) Storage {
 	return Storage{
-		db: sqlx.MustConnect("mysql", dsn),
+		db: sqlx.MustConnect("mysql", dsn).Unsafe(),
 	}
 }
 
