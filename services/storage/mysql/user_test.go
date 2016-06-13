@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetUserByID(t *testing.T) {
@@ -181,7 +181,7 @@ func TestGetWithdrawableUser(t *testing.T) {
 		s.db.Exec("INSERT INTO users(email, address, status, balance, min_withdrawal_amount) VALUES('e2', 'b2', 'verified', 5, 10)")
 
 		Convey("When get withdrawable users", func() {
-			result, _ := s.GetWithdrawableUsers()
+			result, _ := s.GetWithdrawableUsers(6)
 
 			Convey("Users should equal", func() {
 				So(result, func(actual interface{}, expected ...interface{}) string {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	"github.com/go-sql-driver/mysql"
 )
 
 // GetUserByID gets a user with id given
@@ -96,9 +96,9 @@ func (s Storage) GetNumberOfReferees(userID int64) (int64, error) {
 }
 
 // GetWithdrawableUsers gets users who are able to withdraw
-func (s Storage) GetWithdrawableUsers() ([]models.User, error) {
-	rawSQL := "SELECT * FROM users WHERE `status` = ? AND `balance` > `min_withdrawal_amount`"
-	args := []interface{}{models.UserStatusVerified}
+func (s Storage) GetWithdrawableUsers(minAmount float64) ([]models.User, error) {
+	rawSQL := "SELECT * FROM users WHERE `status` = ? AND `balance` > ?"
+	args := []interface{}{models.UserStatusVerified, minAmount}
 	dest := []models.User{}
 	err := s.selects(&dest, rawSQL, args...)
 	return dest, err

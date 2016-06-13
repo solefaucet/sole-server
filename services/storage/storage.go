@@ -15,7 +15,7 @@ type Storage interface {
 	UpdateUserStatus(int64, string) error
 	GetReferees(userID int64, limit, offset int64) ([]models.User, error)
 	GetNumberOfReferees(userID int64) (int64, error)
-	GetWithdrawableUsers() ([]models.User, error)
+	GetWithdrawableUsers(minAmount float64) ([]models.User, error)
 
 	// AuthToken
 	GetAuthToken(string) (models.AuthToken, error)

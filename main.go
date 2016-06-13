@@ -204,7 +204,7 @@ func initCronjob() {
 
 // automatically create withdrawal
 func createWithdrawal() {
-	users, err := store.GetWithdrawableUsers()
+	users, err := store.GetWithdrawableUsers(memoryCache.GetLatestConfig().MinWithdrawalAmount)
 	if err != nil {
 		logger.Printf("get withdrawable users error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
