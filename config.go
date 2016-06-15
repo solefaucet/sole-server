@@ -58,6 +58,9 @@ type configuration struct {
 	Geo struct {
 		Database string `validate:"required"`
 	} `validate:"required"`
+	Offerwall struct {
+		EnableOfferwow bool `validate:"required"`
+	} `validate:"offerwall"`
 }
 
 var config configuration
@@ -100,6 +103,8 @@ func initConfig() {
 	config.Geetest.PrivateKey = viper.GetString("geetest_private_key")
 
 	config.Geo.Database = viper.GetString("geo_database")
+
+	config.Offerwall.EnableOfferwow = viper.GetBool("offerwall_enable_offerwow")
 
 	// validate config
 	must(nil, validateConfiguration(config))
