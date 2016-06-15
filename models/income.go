@@ -8,8 +8,8 @@ import (
 
 // Income Type
 const (
-	IncomeTypeReward    = 0
-	IncomeTypeOfferwall = 1
+	IncomeTypeReward   = 0
+	IncomeTypeOfferwow = 1
 )
 
 // Income model
@@ -29,8 +29,8 @@ func (i Income) MarshalJSON() ([]byte, error) {
 	switch i.Type {
 	case IncomeTypeReward:
 		t = "reward"
-	case IncomeTypeOfferwall:
-		t = "offerwall"
+	case IncomeTypeOfferwow:
+		t = "offerwow"
 	default:
 		panic(fmt.Sprintf("Invalid income type %v", i.Type))
 	}

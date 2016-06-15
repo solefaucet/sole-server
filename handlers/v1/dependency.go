@@ -41,6 +41,7 @@ type (
 
 	// income
 	dependencyCreateRewardIncome       func(models.Income, time.Time) error
+	dependencyCreateOfferwowIncome     func(models.Income, string) error
 	dependencyGetRewardIncomes         func(userID int64, limit, offset int64) ([]models.Income, error)
 	dependencyGetNumberOfRewardIncomes func(userID int64) (int64, error)
 	dependencyInsertIncome             func(interface{}) // cache for broadcasting
@@ -62,4 +63,7 @@ type (
 	// captcha
 	dependencyRegisterCaptcha func() (string, error)
 	dependencyGetCaptchaID    func() string
+
+	// offerwow
+	dependencyGetOfferwowEventByID func(eventID string) (models.OfferwowEvent, error)
 )

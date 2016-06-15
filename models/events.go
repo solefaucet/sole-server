@@ -10,4 +10,5 @@ const (
 	EventReward             = "reward"
 	EventGetGeoFromIP       = "get geo from ip"
 	EventUserSignup         = "user signup"
+	EventOfferwowCallback   = "offerwow callback"
 )
