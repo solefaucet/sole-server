@@ -153,6 +153,16 @@ func main() {
 	// captcha endpoint
 	v1Endpoints.GET("/captchas", v1.RegisterCaptcha(geetest.Register, geetest.CaptchaID))
 
+	offerwowEnableRequired := middlewares.OfferwowEnableRequired(config.Offerwall.EnableOfferwow)
+	v1Endpoints.GET("/offerwalls/offerwow", offerwowEnableRequired,
+		v1.OfferwowCallback(
+			store.GetUserByID,
+			store.GetOfferwowEventByID,
+			memoryCache.GetLatestConfig,
+			store.CreateOfferwowIncome,
+		),
+	)
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(
