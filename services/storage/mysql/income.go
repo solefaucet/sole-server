@@ -173,11 +173,8 @@ func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID strin
 		IncomeID: id,
 		Amount:   income.Income,
 	}
-	if _, err := tx.NamedExec("INSERT INTO `offerwow` (`event_id`, `income_id`, `amount`) VALUE (:event_id, :income_id, :amount)", offerwowEvent); err != nil {
-		return err
-	}
-
-	return nil
+	_, err = tx.NamedExec("INSERT INTO `offerwow` (`event_id`, `income_id`, `amount`) VALUE (:event_id, :income_id, :amount)", offerwowEvent)
+	return err
 }
 
 // update user balance, total_income, referer_total_income
