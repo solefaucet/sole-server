@@ -48,4 +48,8 @@ type Storage interface {
 	GetPendingWithdrawals() ([]models.Withdrawal, error)
 	UpdateWithdrawalStatusToProcessing(ids []int64) error
 	UpdateWithdrawalStatusToProcessed(ids []int64, transactionID string) error
+
+	// Offerwow
+	GetOfferwowEventByID(eventID string) (models.OfferwowEvent, error)
+	CreateOfferwowIncome(income models.Income, eventID string) error
 }
