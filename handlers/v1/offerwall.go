@@ -13,7 +13,7 @@ import (
 )
 
 /*
-immediate:
+
 
 0：非即时返利活动,处于待审核状态；
 1：即时返利活动，需发放奖励给会员；
@@ -133,13 +133,15 @@ func OfferwowCallback(
 		}
 
 		// check if eventid duplicates
-		if _, err := getOfferwowEventByID(payload.EventID); err != nil {
-			switch err {
-			case errors.ErrNotFound:
-				responseAndLog(offerwowStatusFailure, offerwowErrno04)
-			default:
-				c.AbortWithError(http.StatusInternalServerError, err)
-			}
+		_, err = getOfferwowEventByID(payload.EventID)
+		switch err {
+		case errors.ErrNotFound:
+			// pass validation
+		case nil:
+			responseAndLog(offerwowStatusFailure, offerwowErrno04)
+			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
