@@ -66,6 +66,7 @@ func (r offerwowResponse) MarshalJSON() ([]byte, error) {
 
 // OfferwowCallback handles callback from offerwow
 func OfferwowCallback(
+	offerwowKey string,
 	getUserByID dependencyGetUserByID,
 	getOfferwowEventByID dependencyGetOfferwowEventByID,
 	getSystemConfig dependencyGetSystemConfig,
@@ -75,7 +76,7 @@ func OfferwowCallback(
 		payload := offerwowPayload{}
 		c.BindWith(&payload, binding.Form)
 
-		if !validateOfferwowSignature(payload, "86611105freeusd") {
+		if !validateOfferwowSignature(payload, offerwowKey) {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
