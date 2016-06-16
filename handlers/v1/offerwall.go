@@ -14,31 +14,13 @@ import (
 	"github.com/solefaucet/sole-server/models"
 )
 
-/*
-
-
-0：非即时返利活动,处于待审核状态；
-1：即时返利活动，需发放奖励给会员；
-2：非即时返利活动，审核通过，重新回传，发放奖励给会员；
-3：非即时返利活动，审核不通过，重新回传，不发放奖励；
-
-errno:
-
-offerwow-01: 出现空参数
-offerwow-02: 网站id不存在
-offerwow-03: uid会员不存在
-offerwow-04: 已发放奖励的Eventid重复
-offerwow-05: immediate=0
-offerwow-06: immediate=3
-*/
-
 // offerwow const
 const (
 	offerwowWebsiteID     = "2626"
-	offerwowImmediate0    = "0"
-	offerwowImmediate1    = "1"
-	offerwowImmediate2    = "2"
-	offerwowImmediate3    = "3"
+	offerwowImmediate0    = "0" // 非即时返利活动,处于待审核状态；
+	offerwowImmediate1    = "1" // 即时返利活动，需发放奖励给会员；
+	offerwowImmediate2    = "2" // 非即时返利活动，审核通过，重新回传，发放奖励给会员；
+	offerwowImmediate3    = "3" // 非即时返利活动，审核不通过，重新回传，不发放奖励；
 	offerwowStatusSuccess = "success"
 	offerwowStatusFailure = "failure"
 	offerwowErrno01       = "offerwow-01"
@@ -116,48 +98,12 @@ func OfferwowCallback(
 			}).Debug("get offerwow callback")
 		}
 
-		if payload.UserID == 0 || payload.Amount == 0 || payload.EventID == "" || payload.WebsiteID == "" || payload.Immediate == "" {
-			responseAndLog(offerwowStatusFailure, offerwowErrno01)
-			return
-		}
-
-		if payload.WebsiteID != offerwowWebsiteID {
-			responseAndLog(offerwowStatusFailure, offerwowErrno02)
-			return
-		}
-
-		// check if user exists
-		user, err := getUserByID(payload.UserID)
+		errno, user, err := validateOfferwowEvent(payload, getUserByID, getOfferwowEventByID)
 		if err != nil {
-			switch err {
-			case errors.ErrNotFound:
-				responseAndLog(offerwowStatusFailure, offerwowErrno03)
-			default:
-				c.AbortWithError(http.StatusInternalServerError, err)
-			}
-			return
-		}
-
-		// check if eventid duplicates
-		_, err = getOfferwowEventByID(payload.EventID)
-		switch err {
-		case errors.ErrNotFound:
-			// pass validation
-		case nil:
-			responseAndLog(offerwowStatusFailure, offerwowErrno04)
-			return
-		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
-		}
-
-		if payload.Immediate == offerwowImmediate0 {
-			responseAndLog(offerwowStatusFailure, offerwowErrno05)
-			return
-		}
-
-		if payload.Immediate == offerwowImmediate3 {
-			responseAndLog(offerwowStatusFailure, offerwowErrno06)
+		} else if errno != "" {
+			responseAndLog(offerwowStatusFailure, errno)
 			return
 		}
 
@@ -185,4 +131,64 @@ func validateOfferwowSignature(payload offerwowPayload, key string) bool {
 		"event": models.EventOfferwowCallback,
 	}).Info(sign)
 	return sign == payload.Sign
+}
+
+/*
+We need to check it one by one
+
+offerwow-01: 出现空参数
+offerwow-02: 网站id不存在
+offerwow-03: uid会员不存在
+offerwow-04: 已发放奖励的Eventid重复
+offerwow-05: immediate=0
+offerwow-06: immediate=3
+*/
+func validateOfferwowEvent(
+	payload offerwowPayload,
+	getUserByID dependencyGetUserByID,
+	getOfferwowEventByID dependencyGetOfferwowEventByID,
+) (errno string, user models.User, err error) {
+	if payload.UserID == 0 || payload.Amount == 0 || payload.EventID == "" || payload.WebsiteID == "" || payload.Immediate == "" {
+		errno = offerwowErrno01
+		return
+	}
+
+	if payload.WebsiteID != offerwowWebsiteID {
+		errno = offerwowErrno02
+		return
+	}
+
+	// check if user exists
+	user, err = getUserByID(payload.UserID)
+	if err == errors.ErrNotFound {
+		errno = offerwowErrno03
+		err = nil
+		return
+	} else if err != nil {
+		return
+	}
+
+	// check if eventid duplicates
+	_, err = getOfferwowEventByID(payload.EventID)
+	switch err {
+	case errors.ErrNotFound:
+		err = nil
+	case nil:
+		errno = offerwowErrno04
+		return
+	default:
+		return
+	}
+
+	if payload.Immediate == offerwowImmediate0 {
+		errno = offerwowErrno05
+		return
+	}
+
+	if payload.Immediate == offerwowImmediate3 {
+		errno = offerwowErrno06
+		return
+	}
+
+	return
 }
