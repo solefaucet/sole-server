@@ -1,9 +1,11 @@
 package v1
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
@@ -48,13 +50,12 @@ const (
 )
 
 type offerwowPayload struct {
-	UserID      int64   `form:"memberid"`
-	Amount      float64 `form:"point"`
-	EventID     string  `form:"eventid"`
-	WebsiteID   string  `form:"websiteid"`
-	Immediate   string  `form:"immediate"`
-	ProgramName string  `form:"programname"`
-	Sign        string  `form:"sign"` // NOTE: should be required in production
+	UserID    int64   `form:"memberid"`
+	Amount    float64 `form:"point"`
+	EventID   string  `form:"eventid"`
+	WebsiteID string  `form:"websiteid"`
+	Immediate string  `form:"immediate"`
+	Sign      string  `form:"sign"`
 }
 
 type offerwowResponse struct {
@@ -72,7 +73,7 @@ func (r offerwowResponse) MarshalJSON() ([]byte, error) {
 		"point":     fmt.Sprint(r.Amount),
 		"websiteid": offerwowWebsiteID,
 		"eventid":   r.EventID,
-		"Immediate": r.Immediate,
+		"immediate": r.Immediate,
 		"status":    r.Status,
 	}
 	if r.Error != "" {
@@ -91,6 +92,11 @@ func OfferwowCallback(
 	return func(c *gin.Context) {
 		payload := offerwowPayload{}
 		c.BindWith(&payload, binding.Form)
+
+		if !validateOfferwowSignature(payload, "86611105freeusd") {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
 
 		responseAndLog := func(status, err string) {
 			response := offerwowResponse{
@@ -170,4 +176,13 @@ func OfferwowCallback(
 
 		responseAndLog(offerwowStatusSuccess, "")
 	}
+}
+
+func validateOfferwowSignature(payload offerwowPayload, key string) bool {
+	data := fmt.Sprintf("%v%v%v%v%v%v", payload.UserID, payload.Amount, payload.EventID, payload.WebsiteID, payload.Immediate, key)
+	sign := strings.ToUpper(fmt.Sprintf("%x", md5.Sum([]byte(data))))
+	logrus.WithFields(logrus.Fields{
+		"event": models.EventOfferwowCallback,
+	}).Info(sign)
+	return sign == payload.Sign
 }
