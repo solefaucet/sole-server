@@ -19,7 +19,7 @@ before_script:
   - bash travis.upgrade.mysql.sh
 
 script:
-  - gometalinter --concurrency=8 --vendor --disable-all --enable=golint --enable=gocyclo --enable=vetshadow --enable=goconst --enable=gosimple --enable=staticcheck --enable=dupl --linter='dupl:dupl -plumbing -threshold {duplthreshold} ./*.go | grep -v "_test.go"::(?P<path>[^\s][^:]+?\.go):(?P<line>\d+)-\d+:\s*(?P<message>.*)' ./...
+  - gometalinter --concurrency=8 --vendor --disable-all --enable=golint --enable=gocyclo --enable=vetshadow --enable=goconst --enable=gosimple --enable=staticcheck --enable=dupl --linter='dupl:dupl -plumbing -threshold {duplthreshold} ./*.go | grep -v "_test.go"::(?P<path>[^\s][^:]+?\.go):(?P<line>\d+)-\d+:\s*(?P<message>.*)' --linter='gocyclo:gocyclo -over {10} ./*.go | grep -v "*/handlers/v1/offerwall.go"::(?P<cyclo>\d+)\s+\S+\s(?P<function>\S+)\s+(?P<path>[^:]+):(?P<line>\d+):(\d+)' ./...
   - bash test.sh
 
 after_script:
