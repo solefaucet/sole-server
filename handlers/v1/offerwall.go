@@ -89,13 +89,13 @@ func OfferwowCallback(
 				Status:    status,
 				Error:     err,
 			}
-			c.JSON(http.StatusOK, response)
 			logrus.WithFields(logrus.Fields{
 				"event":    models.EventOfferwowCallback,
 				"query":    c.Request.URL.Query().Encode(),
 				"payload":  payload,
 				"response": response,
 			}).Debug("get offerwow callback")
+			c.JSON(http.StatusOK, response)
 		}
 
 		errno, user, err := validateOfferwowEvent(payload, getUserByID, getOfferwowEventByID)
@@ -126,11 +126,15 @@ func OfferwowCallback(
 
 func validateOfferwowSignature(payload offerwowPayload, key string) bool {
 	data := fmt.Sprintf("%v%v%v%v%v%v", payload.UserID, payload.Amount, payload.EventID, payload.WebsiteID, payload.Immediate, key)
-	sign := strings.ToUpper(fmt.Sprintf("%x", md5.Sum([]byte(data))))
-	logrus.WithFields(logrus.Fields{
-		"event": models.EventOfferwowCallback,
-	}).Info(sign)
-	return sign == payload.Sign
+	if sign := strings.ToUpper(fmt.Sprintf("%x", md5.Sum([]byte(data)))); sign != payload.Sign {
+		logrus.WithFields(logrus.Fields{
+			"event":   models.EventOfferwowCallback,
+			"payload": payload,
+			"sign":    sign,
+		}).Debug("signature not match")
+		return false
+	}
+	return true
 }
 
 /*
