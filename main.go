@@ -373,12 +373,13 @@ func processWithdrawals() {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"event":                 models.EventProcessWithdrawals,
-		"duration":              float64(time.Since(start).Nanoseconds()) / 1e6,
-		"total":                 total,
-		"remaining_balance":     must(getBalance()).(float64),
-		"number_of_withdrawals": len(amounts),
-		"txid":                  hash.String(),
+		"event":                   models.EventProcessWithdrawals,
+		"duration":                float64(time.Since(start).Nanoseconds()) / 1e6,
+		"total":                   total,
+		"remaining_balance":       must(getBalance()).(float64),
+		"address_to_receive_coin": must(coinClient.GetAccountAddress("")).(string),
+		"number_of_withdrawals":   len(amounts),
+		"txid":                    hash.String(),
 	}).Info("succeed to process withdraw requests")
 }
 
