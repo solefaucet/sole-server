@@ -207,9 +207,10 @@ func updateCache() {
 
 func initCronjob() {
 	c := cron.New()
-	must(nil, c.AddFunc("@every 1m", safeFuncWrapper(updateCache)))         // update cache every 1 minute
-	must(nil, c.AddFunc("@daily", safeFuncWrapper(createWithdrawal)))       // create withdrawal every day
-	must(nil, c.AddFunc("@every 30m", safeFuncWrapper(processWithdrawals))) // process withdraw request every half hour
+	must(nil, c.AddFunc("@every 1m", safeFuncWrapper(updateCache)))          // update cache every 1 minute
+	must(nil, c.AddFunc("@daily", safeFuncWrapper(createWithdrawal)))        // create withdrawal every day
+	must(nil, c.AddFunc("@every 30m", safeFuncWrapper(processWithdrawals)))  // process withdraw request every half hour
+	must(nil, c.AddFunc("@every 6h", safeFuncWrapper(logBalanceAndAddress))) // log balance and address every 6 hours
 	c.Start()
 }
 
@@ -281,6 +282,14 @@ func validateAddress(address string) (bool, error) {
 	}
 
 	return result.IsValid, nil
+}
+
+func logBalanceAndAddress() {
+	logrus.WithFields(logrus.Fields{
+		"event":                   models.EventLogBalanceAndAddress,
+		"address_to_receive_coin": must(coinClient.GetAccountAddress("")).(string),
+		"balance":                 must(getBalance()).(float64),
+	}).Info("current balance and address")
 }
 
 func getBalance() (float64, error) {

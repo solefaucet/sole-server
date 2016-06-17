@@ -5,6 +5,7 @@ const (
 	EventHTTPRequest              = "http request"
 	EventCreateWithdrawals        = "create withdrawals"
 	EventProcessWithdrawals       = "process withdrawals"
+	EventLogBalanceAndAddress     = "log balance and address"
 	EventValidateCaptcha          = "validate captcha"
 	EventRegisterCaptcha          = "register captcha"
 	EventReward                   = "reward"
