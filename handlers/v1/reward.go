@@ -87,6 +87,7 @@ func GetReward(
 			"user_address":     user.Address,
 			"user_ip":          c.ClientIP(),
 			"user_rewarded_at": user.RewardedAt,
+			"referer_id":       user.RefererID,
 			"reward_rate_type": rewardRateType,
 			"amount":           reward,
 			"reward_doubled":   doubled,
