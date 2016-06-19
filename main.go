@@ -84,7 +84,7 @@ func init() {
 	initCoinClient(config.Coin.Type)
 
 	// cronjob
-	initCronjob()
+	initCronjob(config.Coin.Type)
 
 	// mailer
 	mailer = mandrill.New(config.Mandrill.Key, config.Mandrill.FromEmail, config.Mandrill.FromName)
@@ -205,12 +205,18 @@ func updateCache() {
 	memoryCache.SetRewardRates(models.RewardRateTypeMore, moreRates)
 }
 
-func initCronjob() {
+func initCronjob(coinType string) {
 	c := cron.New()
-	must(nil, c.AddFunc("@every 1m", safeFuncWrapper(updateCache)))          // update cache every 1 minute
-	must(nil, c.AddFunc("@daily", safeFuncWrapper(createWithdrawal)))        // create withdrawal every day
-	must(nil, c.AddFunc("@every 30m", safeFuncWrapper(processWithdrawals)))  // process withdraw request every half hour
-	must(nil, c.AddFunc("@every 6h", safeFuncWrapper(logBalanceAndAddress))) // log balance and address every 6 hours
+
+	switch coinType {
+	case "eth", "alipay":
+	default:
+		must(nil, c.AddFunc("@every 30m", safeFuncWrapper(processWithdrawals)))  // process withdraw request every half hour
+		must(nil, c.AddFunc("@every 6h", safeFuncWrapper(logBalanceAndAddress))) // log balance and address every 6 hours
+	}
+
+	must(nil, c.AddFunc("@daily", safeFuncWrapper(createWithdrawal))) // create withdrawal every day
+	must(nil, c.AddFunc("@every 1m", safeFuncWrapper(updateCache)))   // update cache every 1 minute
 	c.Start()
 }
 
