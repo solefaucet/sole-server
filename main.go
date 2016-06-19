@@ -209,7 +209,7 @@ func initCronjob(coinType string) {
 	c := cron.New()
 
 	switch coinType {
-	case "eth", "alipay":
+	case models.CoinTypeEthereum, models.CoinTypeAlipay:
 	default:
 		must(nil, c.AddFunc("@every 30m", safeFuncWrapper(processWithdrawals)))  // process withdraw request every half hour
 		must(nil, c.AddFunc("@every 6h", safeFuncWrapper(logBalanceAndAddress))) // log balance and address every 6 hours
@@ -268,7 +268,7 @@ func createWithdrawal() {
 
 func initCoinClient(coinType string) {
 	switch coinType {
-	case "eth", "alipay":
+	case models.CoinTypeEthereum, models.CoinTypeAlipay:
 		return
 	default:
 		config := &btcrpcclient.ConnConfig{
@@ -285,7 +285,7 @@ func initCoinClient(coinType string) {
 func validateAddressFunc(coinType string) func(string) (bool, error) {
 	var validateAddress func(string) (bool, error)
 	switch coinType {
-	case "eth", "alipay":
+	case models.CoinTypeEthereum, models.CoinTypeAlipay:
 		validateAddress = func(string) (bool, error) {
 			return true, nil
 		}
