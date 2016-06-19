@@ -50,6 +50,7 @@ type configuration struct {
 	} `validate:"required"`
 	Coin struct {
 		TxExplorer string `validate:"required"`
+		Type       string `validate:"required,eq=btc|eq=doge|eq=ltc|eq=dash|eq=eth|eq=alipay"`
 	} `validate:"required"`
 	Geetest struct {
 		CaptchaID  string `validate:"required"`
@@ -98,6 +99,7 @@ func initConfig() {
 	config.Template.EmailVerificationTemplate = viper.GetString("email_verification_template")
 
 	config.Coin.TxExplorer = viper.GetString("tx_explorer")
+	config.Coin.Type = viper.GetString("coin_type")
 
 	config.Geetest.CaptchaID = viper.GetString("geetest_captcha_id")
 	config.Geetest.PrivateKey = viper.GetString("geetest_private_key")
