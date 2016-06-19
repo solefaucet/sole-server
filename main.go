@@ -81,7 +81,7 @@ func init() {
 	updateCache()
 
 	// coin client
-	initCoinClient()
+	initCoinClient(config.Coin.Type)
 
 	// cronjob
 	initCronjob()
@@ -260,15 +260,20 @@ func createWithdrawal() {
 	})
 }
 
-func initCoinClient() {
-	config := &btcrpcclient.ConnConfig{
-		Host:         "localhost:8332",
-		User:         "rpcuser",
-		Pass:         "rpcpass",
-		HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
-		DisableTLS:   true, // Bitcoin core does not provide TLS by default
+func initCoinClient(coinType string) {
+	switch coinType {
+	case "eth", "alipay":
+		return
+	default:
+		config := &btcrpcclient.ConnConfig{
+			Host:         "localhost:8332",
+			User:         "rpcuser",
+			Pass:         "rpcpass",
+			HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
+			DisableTLS:   true, // Bitcoin core does not provide TLS by default
+		}
+		coinClient = must(btcrpcclient.New(config, nil)).(*btcrpcclient.Client)
 	}
-	coinClient = must(btcrpcclient.New(config, nil)).(*btcrpcclient.Client)
 }
 
 func validateAddress(address string) (bool, error) {
