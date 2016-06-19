@@ -118,7 +118,7 @@ func main() {
 	// user endpoints
 	v1UserEndpoints := v1Endpoints.Group("/users")
 	v1UserEndpoints.GET("", authRequired, v1.UserInfo(store.GetUserByID))
-	v1UserEndpoints.POST("", v1.Signup(validateAddress, store.CreateUser, store.GetUserByID))
+	v1UserEndpoints.POST("", v1.Signup(validateAddressFunc(config.Coin.Type), store.CreateUser, store.GetUserByID))
 	v1UserEndpoints.PUT("/:id/status", v1.VerifyEmail(store.GetSessionByToken, store.GetUserByID, store.UpdateUserStatus))
 	v1UserEndpoints.GET("/referees", authRequired, v1.RefereeList(store.GetReferees, store.GetNumberOfReferees))
 
@@ -276,17 +276,28 @@ func initCoinClient(coinType string) {
 	}
 }
 
-func validateAddress(address string) (bool, error) {
-	result, err := coinClient.ValidateAddress(address)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"address": address,
-			"error":   err.Error(),
-		}).Debug("failed to validate address")
-		return false, err
-	}
+func validateAddressFunc(coinType string) func(string) (bool, error) {
+	var validateAddress func(string) (bool, error)
+	switch coinType {
+	case "eth", "alipay":
+		validateAddress = func(string) (bool, error) {
+			return true, nil
+		}
+	default:
+		validateAddress = func(address string) (bool, error) {
+			result, err := coinClient.ValidateAddress(address)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"address": address,
+					"error":   err.Error(),
+				}).Debug("failed to validate address")
+				return false, err
+			}
 
-	return result.IsValid, nil
+			return result.IsValid, nil
+		}
+	}
+	return validateAddress
 }
 
 func logBalanceAndAddress() {
