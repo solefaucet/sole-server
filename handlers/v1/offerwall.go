@@ -113,13 +113,14 @@ func OfferwowCallback(
 			return
 		}
 
+		amount := payload.Amount / 1e8
 		// create income offerwow
 		income := models.Income{
 			UserID:        user.ID,
 			RefererID:     user.RefererID,
 			Type:          models.IncomeTypeOfferwow,
-			Income:        payload.Amount / 1e8,
-			RefererIncome: getSystemConfig().RefererRewardRate * payload.Amount,
+			Income:        amount,
+			RefererIncome: amount * getSystemConfig().RefererRewardRate,
 		}
 		if err := createOfferwowIncome(income, payload.EventID); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
