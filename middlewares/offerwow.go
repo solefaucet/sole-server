@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// OfferwowEnableRequired rejects request if offerwow is disabled
-func OfferwowEnableRequired(enabled bool) gin.HandlerFunc {
+// OfferwowAuthRequired rejects request if offerwow key is empty
+func OfferwowAuthRequired(key string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if !enabled {
+		if key == "" {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
