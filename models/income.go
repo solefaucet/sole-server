@@ -8,9 +8,16 @@ import (
 
 // Income Type
 const (
-	IncomeTypeReward   = 0
-	IncomeTypeOfferwow = 1
+	IncomeTypeReward       = 0
+	IncomeTypeOfferwow     = 1
+	IncomeTypeSuperrewards = 2
 )
+
+var incomeTypes = map[int64]string{
+	IncomeTypeReward:       "reward",
+	IncomeTypeOfferwow:     "offerwow",
+	IncomeTypeSuperrewards: "superrewards",
+}
 
 // Income model
 type Income struct {
@@ -25,13 +32,8 @@ type Income struct {
 
 // MarshalJSON implements json.Marshaler interface
 func (i Income) MarshalJSON() ([]byte, error) {
-	t := ""
-	switch i.Type {
-	case IncomeTypeReward:
-		t = "reward"
-	case IncomeTypeOfferwow:
-		t = "offerwow"
-	default:
+	t, ok := incomeTypes[i.Type]
+	if !ok {
 		panic(fmt.Sprintf("Invalid income type %v", i.Type))
 	}
 
