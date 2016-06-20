@@ -153,14 +153,26 @@ func main() {
 	// captcha endpoint
 	v1Endpoints.GET("/captchas", v1.RegisterCaptcha(geetest.Register, geetest.CaptchaID))
 
-	offerwowEnableRequired := middlewares.OfferwowEnableRequired(config.Offerwall.OfferwowKey != "")
-	v1Endpoints.GET("/offerwalls/offerwow", offerwowEnableRequired,
+	// offerwall endpoint
+	v1OfferwallEndpoints := v1Endpoints.Group("/offerwalls")
+	offerwowAuthRequired := middlewares.OfferwowAuthRequired(config.Offerwall.Offerwow.Key)
+	v1OfferwallEndpoints.GET("/offerwow", offerwowAuthRequired,
 		v1.OfferwowCallback(
-			config.Offerwall.OfferwowKey,
+			config.Offerwall.Offerwow.Key,
 			store.GetUserByID,
 			store.GetOfferwowEventByID,
 			memoryCache.GetLatestConfig,
 			store.CreateOfferwowIncome,
+		),
+	)
+	superrewardsAuthRequired := middlewares.SuperrewardsAuthRequired(config.Offerwall.Superrewards.WhitelistIps)
+	v1OfferwallEndpoints.GET("/superrewards", superrewardsAuthRequired,
+		v1.SuperrewardsCallback(
+			config.Offerwall.Superrewards.SecretKey,
+			store.GetUserByID,
+			store.GetSuperrewardsOfferByID,
+			memoryCache.GetLatestConfig,
+			store.CreateSuperrewardsIncome,
 		),
 	)
 

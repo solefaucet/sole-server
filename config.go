@@ -63,6 +63,10 @@ type configuration struct {
 		Offerwow struct {
 			Key string
 		}
+		Superrewards struct {
+			SecretKey    string
+			WhitelistIps string
+		}
 	}
 }
 
@@ -109,6 +113,8 @@ func initConfig() {
 	config.Geo.Database = viper.GetString("geo_database")
 
 	config.Offerwall.Offerwow.Key = viper.GetString("offerwow_key")
+	config.Offerwall.Superrewards.SecretKey = viper.GetString("superrewards_secret_key")
+	config.Offerwall.Superrewards.WhitelistIps = viper.GetString("superrewards_whitelist_ips")
 
 	// validate config
 	must(nil, validateConfiguration(config))
