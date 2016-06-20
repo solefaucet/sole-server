@@ -52,4 +52,8 @@ type Storage interface {
 	// Offerwow
 	GetOfferwowEventByID(eventID string) (models.OfferwowEvent, error)
 	CreateOfferwowIncome(income models.Income, eventID string) error
+
+	// Superrewards
+	GetSuperrewardsOfferByID(transactionID string, userID int64) (models.SuperrewardsOffer, error)
+	CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error
 }

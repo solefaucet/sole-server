@@ -133,7 +133,7 @@ func (s Storage) GetOfferwowEventByID(eventID string) (models.OfferwowEvent, err
 	return event, nil
 }
 
-// CreateOfferwowIncome creates a new reward type income
+// CreateOfferwowIncome creates a new offerwow type income
 func (s Storage) CreateOfferwowIncome(income models.Income, eventID string) error {
 	tx := s.db.MustBegin()
 
@@ -195,6 +195,91 @@ func insertIntoIncomesTableByOfferwowIncome(tx *sqlx.Tx, income models.Income) (
 	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
 	if err != nil {
 		return 0, fmt.Errorf("create offerwow income insert into incomes error: %v", err)
+	}
+
+	return result.LastInsertId()
+}
+
+// GetSuperrewardsOfferByID finds superrewards offer by transaction Id and user id
+func (s Storage) GetSuperrewardsOfferByID(transactionID string, userID int64) (models.SuperrewardsOffer, error) {
+	offer := models.SuperrewardsOffer{}
+	err := s.db.Get(&offer, "SELECT * FROM `superrewards` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return offer, errors.ErrNotFound
+		}
+
+		return offer, fmt.Errorf("query superrewards offer by id error: %v", err)
+	}
+
+	return offer, nil
+}
+
+// CreateSuperrewardsIncome creates a new superrewards type income
+func (s Storage) CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createSuperrewardsIncomeWithTx(tx, income, transactionID, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create reward income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
+	// update user balance, total_income, referer_total_income
+	if err := incrementUserBalanceBySuperrewardsIncome(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
+		return err
+	}
+
+	// update referer balance
+	if _, err := incrementRefererBalanceByRewardIncome(tx, income.RefererID, income.RefererIncome); err != nil {
+		return err
+	}
+
+	// insert superrewards income into incomes table
+	id, err := insertIntoIncomesTableBySuperrewardsIncome(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert superrewards offer
+	offer := models.SuperrewardsOffer{
+		IncomeID:      id,
+		UserID:        income.UserID,
+		TransactionID: transactionID,
+		OfferID:       offerID,
+		Amount:        income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `superrewards` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
+	return err
+}
+
+// update user balance, total_income, referer_total_income
+func incrementUserBalanceBySuperrewardsIncome(tx *sqlx.Tx, userID int64, delta, refererDelta float64) error {
+	rawSQL := "UPDATE users SET `balance` = `balance` + ?, `total_income` = `total_income` + ?, `referer_total_income` = `referer_total_income` + ? WHERE id = ?"
+	args := []interface{}{delta, delta, refererDelta, userID}
+	if result, err := tx.Exec(rawSQL, args...); err != nil {
+		return fmt.Errorf("create superrewards income update user balance error: %v", err)
+	} else if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
+		return fmt.Errorf("create superrewards income update user balance affected %v rows", rowAffected)
+	}
+
+	return nil
+}
+
+// insert rewards income into incomes table
+func insertIntoIncomesTableBySuperrewardsIncome(tx *sqlx.Tx, income models.Income) (int64, error) {
+	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
+	if err != nil {
+		return 0, fmt.Errorf("create superrewards income insert into incomes error: %v", err)
 	}
 
 	return result.LastInsertId()
