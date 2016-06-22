@@ -2,8 +2,10 @@ package v1
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,7 @@ func SuperrewardsCallback(
 	getSuperrewardsOfferByID dependencyGetSuperrewardsOfferByID,
 	getSystemConfig dependencyGetSystemConfig,
 	createSuperrewardsIncome dependencyCreateSuperrewardsIncome,
+	broadcast dependencyBroadcast,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		payload := superrewardPayload{}
@@ -80,6 +83,16 @@ func SuperrewardsCallback(
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
+
+		// broadcast delta income to all clients
+		deltaIncome := struct {
+			Address string    `json:"address"`
+			Amount  float64   `json:"amount"`
+			Type    string    `json:"type"`
+			Time    time.Time `json:"time"`
+		}{user.Address, amount, "superrewards", time.Now()}
+		msg, _ := json.Marshal(models.WebsocketMessage{DeltaIncome: deltaIncome})
+		broadcast(msg)
 
 		c.String(http.StatusOK, "1")
 	}

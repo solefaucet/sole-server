@@ -173,6 +173,7 @@ func main() {
 			store.GetSuperrewardsOfferByID,
 			memoryCache.GetLatestConfig,
 			store.CreateSuperrewardsIncome,
+			connsHub.Broadcast,
 		),
 	)
 
