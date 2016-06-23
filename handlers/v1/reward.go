@@ -81,13 +81,14 @@ func GetReward(
 		msg, _ := json.Marshal(models.WebsocketMessage{DeltaIncome: deltaIncome})
 		broadcast(msg)
 
+		referer, _ := getUserByID(user.RefererID)
 		logrus.WithFields(logrus.Fields{
 			"event":            models.EventReward,
 			"user_email":       user.Email,
 			"user_address":     user.Address,
 			"user_ip":          c.ClientIP(),
 			"user_rewarded_at": user.RewardedAt,
-			"referer_id":       user.RefererID,
+			"referer_email":    referer.Email,
 			"reward_rate_type": rewardRateType,
 			"amount":           reward,
 			"reward_doubled":   doubled,
