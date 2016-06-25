@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
+	"github.com/solefaucet/sole-server/models"
 )
 
 // WithdrawalList returns user's withdrawal list as response

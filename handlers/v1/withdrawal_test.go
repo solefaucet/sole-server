@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/solefaucet/sole-server/models"
 )
 
 func TestWithdrawalList(t *testing.T) {

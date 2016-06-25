@@ -22,12 +22,19 @@ depend:
 
 metalint:
 	gometalinter \
-		--disable=gotype \
-		--disable=errcheck \
-		--disable=deadcode \
-		--enable=goimports \
 		--deadline=60s \
+		--disable-all \
+		--vendor \
+		--enable=goimports \
+		--enable=golint \
+		--enable=vetshadow \
+		--enable=goconst \
+		--enable=gosimple \
+		--enable=staticcheck \
+		--enable=dupl \
+		--enable=gocyclo \
 		--linter='dupl:dupl -plumbing -threshold {duplthreshold} ./*.go | grep -v "_test.go"::(?P<path>[^\s][^:]+?\.go):(?P<line>\d+)-\d+:\s*(?P<message>.*)' \
+		--linter='gocyclo:gocyclo -over {10} ./*.go | grep -v "*/handlers/v1/offerwall.go"::(?P<cyclo>\d+)\s+\S+\s(?P<function>\S+)\s+(?P<path>[^:]+):(?P<line>\d+):(\d+)' \
 		./...
 
 test:

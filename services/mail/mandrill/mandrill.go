@@ -1,8 +1,8 @@
 package mandrill
 
 import (
-	"github.com/solefaucet/sole-server/services/mail"
 	"github.com/keighl/mandrill"
+	"github.com/solefaucet/sole-server/services/mail"
 )
 
 // Mailer implements Mail interface for sending email

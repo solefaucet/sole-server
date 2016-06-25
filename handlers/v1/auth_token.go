@@ -3,10 +3,10 @@ package v1
 import (
 	"net/http"
 
-	"github.com/solefaucet/sole-server/errors"
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
+	"github.com/solefaucet/sole-server/errors"
+	"github.com/solefaucet/sole-server/models"
 )
 
 type loginPayload struct {

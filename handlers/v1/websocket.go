@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/solefaucet/sole-server/models"
 )
 
 var defaultUpgrader = websocket.Upgrader{

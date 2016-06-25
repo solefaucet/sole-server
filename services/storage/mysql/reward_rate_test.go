@@ -3,8 +3,8 @@ package mysql
 import (
 	"testing"
 
-	"github.com/solefaucet/sole-server/models"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/solefaucet/sole-server/models"
 )
 
 func TestGetRewardRatesByType(t *testing.T) {

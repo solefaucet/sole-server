@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/solefaucet/sole-server/models"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/solefaucet/sole-server/models"
 )
 
 func TestIncrementUserBalanceByRewardIncome(t *testing.T) {

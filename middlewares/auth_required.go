@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	"github.com/gin-gonic/gin"
 )
 
 type authRequiredDependencyGetAuthToken func(authTokenString string) (models.AuthToken, error)

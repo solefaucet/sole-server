@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/solefaucet/sole-server/models"
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/solefaucet/sole-server/models"
 )
 
 func TestGetReward(t *testing.T) {

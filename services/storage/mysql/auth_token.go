@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	"github.com/go-sql-driver/mysql"
 )
 
 // GetAuthToken gets models.AuthToken with auth_token given

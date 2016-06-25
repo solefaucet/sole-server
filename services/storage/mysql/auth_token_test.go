@@ -3,9 +3,9 @@ package mysql
 import (
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetAuthToken(t *testing.T) {
