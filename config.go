@@ -68,6 +68,10 @@ type configuration struct {
 			WhitelistIps string
 		}
 	}
+	CronjobSpec struct {
+		CreateWithdrawal  string
+		ProcessWithdrawal string
+	} `validate:"required"`
 }
 
 var config configuration
@@ -76,6 +80,10 @@ func initConfig() {
 	// env config
 	viper.SetEnvPrefix("sole") // will turn into uppercase, e.g. SOLE_PORT
 	viper.AutomaticEnv()
+
+	// set default
+	viper.SetDefault("cronjob_spec_create_withdrawal", "@daily")
+	viper.SetDefault("cronjob_spec_process_withdrawal", "@every 30m")
 
 	// See Viper doc, config is get in the following order
 	// override, flag, env, config file, key/value store, default
@@ -115,6 +123,9 @@ func initConfig() {
 	config.Offerwall.Offerwow.Key = viper.GetString("offerwow_key")
 	config.Offerwall.Superrewards.SecretKey = viper.GetString("superrewards_secret_key")
 	config.Offerwall.Superrewards.WhitelistIps = viper.GetString("superrewards_whitelist_ips")
+
+	config.CronjobSpec.CreateWithdrawal = viper.GetString("cronjob_spec_create_withdrawal")
+	config.CronjobSpec.ProcessWithdrawal = viper.GetString("cronjob_spec_process_withdrawal")
 
 	// validate config
 	must(nil, validateConfiguration(config))
