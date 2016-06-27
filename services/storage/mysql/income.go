@@ -52,7 +52,12 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	}
 
 	// update user balance, total_income, referer_total_income
-	if err := incrementUserBalanceByRewardIncome(tx, income.UserID, income.Income, income.RefererIncome, now); err != nil {
+	if err := incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
+		return err
+	}
+
+	// update user rewarded_at
+	if _, err := tx.Exec("UPDATE users SET `rewarded_at` = ? WHERE `id` = ?", now, income.UserID); err != nil {
 		return err
 	}
 
@@ -71,33 +76,6 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	return nil
 }
 
-// update user balance, total_income, referer_total_income
-func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta, refererDelta float64, now time.Time) error {
-	rawSQL := "UPDATE users SET `balance` = `balance` + ?, `total_income` = `total_income` + ?, `referer_total_income` = `referer_total_income` + ?, `rewarded_at` = ? WHERE id = ?"
-	args := []interface{}{delta, delta, refererDelta, now, userID}
-	if result, err := tx.Exec(rawSQL, args...); err != nil {
-		return fmt.Errorf("create reward income update user balance error: %v", err)
-	} else if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
-		return fmt.Errorf("create reward income update user balance affected %v rows", rowAffected)
-	}
-
-	return nil
-}
-
-// update referer balance
-func incrementRefererBalance(tx *sqlx.Tx, refererID int64, delta float64) (int64, error) {
-	result, err := tx.NamedExec("UPDATE users SET `balance` = `balance` + :delta, `total_income_from_referees` = `total_income_from_referees` + :delta WHERE id = :id", map[string]interface{}{
-		"id":    refererID,
-		"delta": delta,
-	})
-	if err != nil {
-		return 0, fmt.Errorf("update referer balance error: %v", err)
-	}
-
-	rowAffected, _ := result.RowsAffected()
-	return rowAffected, nil
-}
-
 // insert reward income into incomes table
 func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
 	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
@@ -106,6 +84,33 @@ func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
 	}
 
 	return result, nil
+}
+
+// increment user balance, total_income, referer_total_income
+func incrementUserBalance(tx *sqlx.Tx, userID int64, delta, refererDelta float64) error {
+	rawSQL := "UPDATE users SET `balance` = `balance` + ?, `total_income` = `total_income` + ?, `referer_total_income` = `referer_total_income` + ? WHERE id = ?"
+	args := []interface{}{delta, delta, refererDelta, userID}
+	if result, err := tx.Exec(rawSQL, args...); err != nil {
+		return fmt.Errorf("increment user balance error: %v", err)
+	} else if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
+		return fmt.Errorf("increment user balance affected %v rows", rowAffected)
+	}
+
+	return nil
+}
+
+// increment referer balance
+func incrementRefererBalance(tx *sqlx.Tx, refererID int64, delta float64) (int64, error) {
+	result, err := tx.NamedExec("UPDATE users SET `balance` = `balance` + :delta, `total_income_from_referees` = `total_income_from_referees` + :delta WHERE id = :id", map[string]interface{}{
+		"id":    refererID,
+		"delta": delta,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("increment referer balance error: %v", err)
+	}
+
+	rowAffected, _ := result.RowsAffected()
+	return rowAffected, nil
 }
 
 // increment total reward
