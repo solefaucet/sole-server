@@ -57,7 +57,7 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	}
 
 	// update referer balance
-	if rowAffected, err := incrementRefererBalanceByRewardIncome(tx, income.RefererID, income.RefererIncome); err != nil {
+	if rowAffected, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
 		return err
 	} else if rowAffected == 1 {
 		totalReward += income.RefererIncome
@@ -85,7 +85,7 @@ func incrementUserBalanceByRewardIncome(tx *sqlx.Tx, userID int64, delta, refere
 }
 
 // update referer balance
-func incrementRefererBalanceByRewardIncome(tx *sqlx.Tx, refererID int64, delta float64) (int64, error) {
+func incrementRefererBalance(tx *sqlx.Tx, refererID int64, delta float64) (int64, error) {
 	result, err := tx.NamedExec("UPDATE users SET `balance` = `balance` + :delta, `total_income_from_referees` = `total_income_from_referees` + :delta WHERE id = :id", map[string]interface{}{
 		"id":    refererID,
 		"delta": delta,
@@ -157,7 +157,7 @@ func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID strin
 	}
 
 	// update referer balance
-	if _, err := incrementRefererBalanceByRewardIncome(tx, income.RefererID, income.RefererIncome); err != nil {
+	if _, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
 		return err
 	}
 
@@ -234,7 +234,7 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	}
 
 	// update referer balance
-	if _, err := incrementRefererBalanceByRewardIncome(tx, income.RefererID, income.RefererIncome); err != nil {
+	if _, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
 		return err
 	}
 
