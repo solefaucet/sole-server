@@ -27,7 +27,6 @@ type Storage interface {
 	UpsertSession(models.Session) error
 
 	// TotalReward
-	IncrementTotalReward(time.Time, float64) error
 	GetLatestTotalReward() (models.TotalReward, error)
 
 	// RewardRate
