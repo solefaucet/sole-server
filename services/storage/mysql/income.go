@@ -219,7 +219,7 @@ func (s Storage) CreateSuperrewardsIncome(income models.Income, transactionID, o
 
 	// commit
 	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("create reward income commit transaction error: %v", err)
+		return fmt.Errorf("create superrewards income commit transaction error: %v", err)
 	}
 
 	return nil
