@@ -47,7 +47,7 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	totalReward := income.Income
 
 	// insert income into incomes table
-	if err := insertIntoIncomesTableByRewardIncome(tx, income); err != nil {
+	if _, err := addIncome(tx, income); err != nil {
 		return err
 	}
 
@@ -99,13 +99,13 @@ func incrementRefererBalanceByRewardIncome(tx *sqlx.Tx, refererID int64, delta f
 }
 
 // insert reward income into incomes table
-func insertIntoIncomesTableByRewardIncome(tx *sqlx.Tx, income models.Income) error {
-	_, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
+func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
+	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
 	if err != nil {
-		return fmt.Errorf("create reward income insert into incomes error: %v", err)
+		return nil, fmt.Errorf("add income error: %v", err)
 	}
 
-	return nil
+	return result, nil
 }
 
 // increment total reward
@@ -162,7 +162,11 @@ func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID strin
 	}
 
 	// insert offerwow income into incomes table
-	id, err := insertIntoIncomesTableByOfferwowIncome(tx, income)
+	result, err := addIncome(tx, income)
+	if err != nil {
+		return err
+	}
+	id, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
@@ -188,16 +192,6 @@ func incrementUserBalanceByOfferwowIncome(tx *sqlx.Tx, userID int64, delta, refe
 	}
 
 	return nil
-}
-
-// insert offerwow income into incomes table
-func insertIntoIncomesTableByOfferwowIncome(tx *sqlx.Tx, income models.Income) (int64, error) {
-	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
-	if err != nil {
-		return 0, fmt.Errorf("create offerwow income insert into incomes error: %v", err)
-	}
-
-	return result.LastInsertId()
 }
 
 // GetSuperrewardsOfferByID finds superrewards offer by transaction Id and user id
@@ -245,7 +239,11 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	}
 
 	// insert superrewards income into incomes table
-	id, err := insertIntoIncomesTableBySuperrewardsIncome(tx, income)
+	result, err := addIncome(tx, income)
+	if err != nil {
+		return err
+	}
+	id, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
@@ -273,14 +271,4 @@ func incrementUserBalanceBySuperrewardsIncome(tx *sqlx.Tx, userID int64, delta, 
 	}
 
 	return nil
-}
-
-// insert rewards income into incomes table
-func insertIntoIncomesTableBySuperrewardsIncome(tx *sqlx.Tx, income models.Income) (int64, error) {
-	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
-	if err != nil {
-		return 0, fmt.Errorf("create superrewards income insert into incomes error: %v", err)
-	}
-
-	return result.LastInsertId()
 }
