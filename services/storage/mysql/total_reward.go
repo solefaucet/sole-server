@@ -3,7 +3,6 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/solefaucet/sole-server/models"
 )
@@ -18,13 +17,4 @@ func (s Storage) GetLatestTotalReward() (models.TotalReward, error) {
 	}
 
 	return result, nil
-}
-
-func incrementTotalRewardSQL(now time.Time, delta float64) (string, map[string]interface{}) {
-	sql := "INSERT INTO total_rewards (`total`, `created_at`) VALUES (:delta, :created_at) ON DUPLICATE KEY UPDATE `total` = `total` + :delta"
-	args := map[string]interface{}{
-		"delta":      delta,
-		"created_at": now,
-	}
-	return sql, args
 }

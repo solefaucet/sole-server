@@ -69,7 +69,7 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	}
 
 	// update total reward
-	if err := incrementTotalRewardByRewardIncome(tx, totalReward, now); err != nil {
+	if err := incrementTotalReward(tx, totalReward, now); err != nil {
 		return err
 	}
 
@@ -114,9 +114,15 @@ func incrementRefererBalance(tx *sqlx.Tx, refererID int64, delta float64) (int64
 }
 
 // increment total reward
-func incrementTotalRewardByRewardIncome(tx *sqlx.Tx, totalReward float64, now time.Time) error {
-	if _, err := tx.NamedExec(incrementTotalRewardSQL(now, totalReward)); err != nil {
-		return fmt.Errorf("create reward income increment total reward error: %v", err)
+func incrementTotalReward(tx *sqlx.Tx, totalReward float64, now time.Time) error {
+	sql := "INSERT INTO total_rewards (`total`, `created_at`) VALUES (:delta, :created_at) ON DUPLICATE KEY UPDATE `total` = `total` + :delta"
+	args := map[string]interface{}{
+		"delta":      totalReward,
+		"created_at": now,
+	}
+
+	if _, err := tx.NamedExec(sql, args); err != nil {
+		return fmt.Errorf("increment total reward error: %v", err)
 	}
 
 	return nil
