@@ -239,16 +239,6 @@ func (s Storage) CreateSuperrewardsIncome(income models.Income, transactionID, o
 }
 
 func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	// update user balance, total_income, referer_total_income
-	if err := incrementUserBalanceBySuperrewardsIncome(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
-		return err
-	}
-
-	// update referer balance
-	if _, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
-		return err
-	}
-
 	// insert superrewards income into incomes table
 	result, err := addIncome(tx, income)
 	if err != nil {
@@ -256,6 +246,16 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
+		return err
+	}
+
+	// update user balance, total_income, referer_total_income
+	if err := incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
+		return err
+	}
+
+	// update referer balance
+	if _, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
 		return err
 	}
 
@@ -269,17 +269,4 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	}
 	_, err = tx.NamedExec("INSERT INTO `superrewards` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
 	return err
-}
-
-// update user balance, total_income, referer_total_income
-func incrementUserBalanceBySuperrewardsIncome(tx *sqlx.Tx, userID int64, delta, refererDelta float64) error {
-	rawSQL := "UPDATE users SET `balance` = `balance` + ?, `total_income` = `total_income` + ?, `referer_total_income` = `referer_total_income` + ? WHERE id = ?"
-	args := []interface{}{delta, delta, refererDelta, userID}
-	if result, err := tx.Exec(rawSQL, args...); err != nil {
-		return fmt.Errorf("create superrewards income update user balance error: %v", err)
-	} else if rowAffected, _ := result.RowsAffected(); rowAffected != 1 {
-		return fmt.Errorf("create superrewards income update user balance affected %v rows", rowAffected)
-	}
-
-	return nil
 }
