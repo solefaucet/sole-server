@@ -74,20 +74,3 @@ func TestGetLatestTotalReward(t *testing.T) {
 		return err
 	})
 }
-
-func TestIncrementTotalReward(t *testing.T) {
-	Convey("Given empty mysql storage", t, func() {
-		s := prepareDatabaseForTesting()
-
-		Convey("When increment total reward", func() {
-			err := s.IncrementTotalReward(time.Now(), 1)
-			Convey("Error should be nil", func() {
-				So(err, ShouldBeNil)
-			})
-		})
-	})
-
-	withClosedConn(t, "When increment total reward", func(s Storage) error {
-		return s.IncrementTotalReward(time.Now(), 1)
-	})
-}

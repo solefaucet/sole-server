@@ -9,15 +9,14 @@ import (
 	"github.com/solefaucet/sole-server/models"
 )
 
-func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
+func TestIncrementUserBalance(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
-		now := time.Now()
 
 		Convey("When increment user balance with commited transaction", func() {
 			tx := s.db.MustBegin()
 			tx.Commit()
-			err := incrementUserBalanceByRewardIncome(tx, 0, 0, 0, now)
+			err := incrementUserBalance(tx, 0, 0, 0)
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})
@@ -27,7 +26,7 @@ func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
 
 		Convey("When increment user balance affecting 0 row", func() {
 			tx := s.db.MustBegin()
-			err := incrementUserBalanceByRewardIncome(tx, 0, 0, 0, now)
+			err := incrementUserBalance(tx, 0, 0, 0)
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})
@@ -37,14 +36,14 @@ func TestIncrementUserBalanceByRewardIncome(t *testing.T) {
 	})
 }
 
-func TestIncrementRefererBalanceByRewardIncome(t *testing.T) {
+func TestIncrementRefererBalance(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 
 		Convey("When increment referer balance with commited transaction", func() {
 			tx := s.db.MustBegin()
 			tx.Commit()
-			_, err := incrementRefererBalanceByRewardIncome(tx, 0, 0)
+			_, err := incrementRefererBalance(tx, 0, 0)
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})
@@ -54,14 +53,14 @@ func TestIncrementRefererBalanceByRewardIncome(t *testing.T) {
 	})
 }
 
-func TestInsertIntoIncomesTableByRewardIncome(t *testing.T) {
+func TestAddIncome(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 
 		Convey("When increment referer balance with commited transaction", func() {
 			tx := s.db.MustBegin()
 			tx.Commit()
-			err := insertIntoIncomesTableByRewardIncome(tx, models.Income{RefererID: 1})
+			_, err := addIncome(tx, models.Income{RefererID: 1})
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})
@@ -71,14 +70,14 @@ func TestInsertIntoIncomesTableByRewardIncome(t *testing.T) {
 	})
 }
 
-func TestIncrementTotalRewardByRewardIncome(t *testing.T) {
+func TestIncrementTotalReward(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
 
 		Convey("When increment total reward with commited transaction", func() {
 			tx := s.db.MustBegin()
 			tx.Commit()
-			err := incrementTotalRewardByRewardIncome(tx, 10, time.Now())
+			err := incrementTotalReward(tx, 10, time.Now())
 			Convey("Error should not be nil", func() {
 				So(err, ShouldNotBeNil)
 			})

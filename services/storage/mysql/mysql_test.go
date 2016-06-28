@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/solefaucet/sole-server/models"
@@ -58,4 +59,14 @@ func TestSelects(t *testing.T) {
 	withClosedConn(t, "When selects", func(s Storage) error {
 		return s.selects(&[]models.User{}, "SELECT * FROM users")
 	})
+}
+
+func (s Storage) IncrementTotalReward(now time.Time, delta float64) {
+	sql := "INSERT INTO total_rewards (`total`, `created_at`) VALUES (:delta, :created_at) ON DUPLICATE KEY UPDATE `total` = `total` + :delta"
+	args := map[string]interface{}{
+		"delta":      delta,
+		"created_at": now,
+	}
+
+	s.db.NamedExec(sql, args)
 }
