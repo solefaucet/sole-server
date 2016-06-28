@@ -49,7 +49,7 @@ type Storage interface {
 	UpdateWithdrawalStatusToProcessed(ids []int64, transactionID string) error
 
 	// Offerwow
-	GetOfferwowEventByID(eventID string) (models.OfferwowEvent, error)
+	GetNumberOfOfferwowEvents(eventID string) (int64, error)
 	CreateOfferwowIncome(income models.Income, eventID string) error
 
 	// Superrewards

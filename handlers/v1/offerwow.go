@@ -68,7 +68,7 @@ func (r offerwowResponse) MarshalJSON() ([]byte, error) {
 func OfferwowCallback(
 	offerwowKey string,
 	getUserByID dependencyGetUserByID,
-	getOfferwowEventByID dependencyGetOfferwowEventByID,
+	getNumberOfOfferwowEvent dependencyGetNumberOfOfferwowEvent,
 	getSystemConfig dependencyGetSystemConfig,
 	createOfferwowIncome dependencyCreateOfferwowIncome,
 ) gin.HandlerFunc {
@@ -104,7 +104,7 @@ func OfferwowCallback(
 			c.JSON(http.StatusOK, response)
 		}
 
-		errno, user, err := validateOfferwowEvent(payload, getUserByID, getOfferwowEventByID)
+		errno, user, err := validateOfferwowEvent(payload, getUserByID, getNumberOfOfferwowEvent)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -157,7 +157,7 @@ offerwow-06: immediate=3
 func validateOfferwowEvent(
 	payload offerwowPayload,
 	getUserByID dependencyGetUserByID,
-	getOfferwowEventByID dependencyGetOfferwowEventByID,
+	getNumberOfOfferwowEvent dependencyGetNumberOfOfferwowEvent,
 ) (errno string, user models.User, err error) {
 	if payload.UserID == 0 || payload.Amount == 0 || payload.EventID == "" || payload.WebsiteID == "" || payload.Immediate == "" {
 		errno = offerwowErrno01
@@ -180,14 +180,13 @@ func validateOfferwowEvent(
 	}
 
 	// check if eventid duplicates
-	_, err = getOfferwowEventByID(payload.EventID)
-	switch err {
-	case errors.ErrNotFound:
-		err = nil
-	case nil:
-		errno = offerwowErrno04
+	count, err := getNumberOfOfferwowEvent(payload.EventID)
+	if err != nil {
 		return
-	default:
+	}
+
+	if count > 0 {
+		errno = offerwowErrno04
 		return
 	}
 

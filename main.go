@@ -160,7 +160,7 @@ func main() {
 		v1.OfferwowCallback(
 			config.Offerwall.Offerwow.Key,
 			store.GetUserByID,
-			store.GetOfferwowEventByID,
+			store.GetNumberOfOfferwowEvents,
 			memoryCache.GetLatestConfig,
 			store.CreateOfferwowIncome,
 		),

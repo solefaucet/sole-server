@@ -66,7 +66,7 @@ type (
 	dependencyGetCaptchaID    func() string
 
 	// offerwow
-	dependencyGetOfferwowEventByID func(eventID string) (models.OfferwowEvent, error)
+	dependencyGetNumberOfOfferwowEvent func(eventID string) (int64, error)
 
 	// superrewards
 	dependencyGetSuperrewardsOfferByID func(transactionID string, userID int64) (models.SuperrewardsOffer, error)

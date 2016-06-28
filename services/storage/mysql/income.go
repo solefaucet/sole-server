@@ -67,20 +67,11 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	return nil
 }
 
-// GetOfferwowEventByID finds offerwow event by event id
-func (s Storage) GetOfferwowEventByID(eventID string) (models.OfferwowEvent, error) {
-	event := models.OfferwowEvent{}
-	err := s.db.Get(&event, "SELECT * FROM `offerwow` WHERE `event_id` = ?", eventID)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return event, errors.ErrNotFound
-		}
-
-		return event, fmt.Errorf("query offerwow event by id error: %v", err)
-	}
-
-	return event, nil
+// GetNumberOfOfferwowEvents gets number of offerwow event
+func (s Storage) GetNumberOfOfferwowEvents(eventID string) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `offerwow` WHERE `event_id` = ?", eventID).Scan(&count)
+	return count, err
 }
 
 // CreateOfferwowIncome creates a new offerwow type income

@@ -26,6 +26,21 @@ func TestGetNumberOfRewardIncomes(t *testing.T) {
 	})
 }
 
+func TestGetNumberOfOfferwowEvents(t *testing.T) {
+	Convey("Given mysql storage with offerwow events", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.MustExec("INSERT INTO `offerwow` (`event_id`, `income_id`, `amount`) VALUES ('123', 1, 12.3)")
+
+		Convey("When get number of offerwow events", func() {
+			count, _ := s.GetNumberOfOfferwowEvents("123")
+
+			Convey("Count should be 1", func() {
+				So(count, ShouldEqual, 1)
+			})
+		})
+	})
+}
+
 func TestIncrementUserBalance(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
