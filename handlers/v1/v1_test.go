@@ -132,3 +132,15 @@ func mockGetWithdrawals(withdrawals []models.Withdrawal, err error) dependencyGe
 		return withdrawals, err
 	}
 }
+
+func mockGetSuperrewardsOfferByID(offer models.SuperrewardsOffer, err error) dependencyGetSuperrewardsOfferByID {
+	return func(transactionID string, userID int64) (models.SuperrewardsOffer, error) {
+		return offer, err
+	}
+}
+
+func mockCreateSuperrewardsIncome(err error) dependencyCreateSuperrewardsIncome {
+	return func(income models.Income, transactionID, offerID string) error {
+		return err
+	}
+}
