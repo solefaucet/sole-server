@@ -46,26 +46,17 @@ func (s Storage) CreateRewardIncome(income models.Income, now time.Time) error {
 func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) error {
 	totalReward := income.Income
 
-	// insert income into incomes table
-	if _, err := addIncome(tx, income); err != nil {
+	_, rowAffected, err := commonBatchOperation(tx, income)
+	if err != nil {
 		return err
 	}
-
-	// update user balance, total_income, referer_total_income
-	if err := incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
-		return err
+	if rowAffected == 1 {
+		totalReward += income.RefererIncome
 	}
 
 	// update user rewarded_at
 	if _, err := tx.Exec("UPDATE users SET `rewarded_at` = ? WHERE `id` = ?", now, income.UserID); err != nil {
 		return err
-	}
-
-	// update referer balance
-	if rowAffected, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
-		return err
-	} else if rowAffected == 1 {
-		totalReward += income.RefererIncome
 	}
 
 	// update total reward
@@ -74,6 +65,132 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	}
 
 	return nil
+}
+
+// GetOfferwowEventByID finds offerwow event by event id
+func (s Storage) GetOfferwowEventByID(eventID string) (models.OfferwowEvent, error) {
+	event := models.OfferwowEvent{}
+	err := s.db.Get(&event, "SELECT * FROM `offerwow` WHERE `event_id` = ?", eventID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return event, errors.ErrNotFound
+		}
+
+		return event, fmt.Errorf("query offerwow event by id error: %v", err)
+	}
+
+	return event, nil
+}
+
+// CreateOfferwowIncome creates a new offerwow type income
+func (s Storage) CreateOfferwowIncome(income models.Income, eventID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createOfferwowIncomeWithTx(tx, income, eventID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create offerwow income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert offerwow event
+	offerwowEvent := models.OfferwowEvent{
+		EventID:  eventID,
+		IncomeID: id,
+		Amount:   income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `offerwow` (`event_id`, `income_id`, `amount`) VALUE (:event_id, :income_id, :amount)", offerwowEvent)
+	return err
+}
+
+// GetSuperrewardsOfferByID finds superrewards offer by transaction Id and user id
+func (s Storage) GetSuperrewardsOfferByID(transactionID string, userID int64) (models.SuperrewardsOffer, error) {
+	offer := models.SuperrewardsOffer{}
+	err := s.db.Get(&offer, "SELECT * FROM `superrewards` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return offer, errors.ErrNotFound
+		}
+
+		return offer, fmt.Errorf("query superrewards offer by id error: %v", err)
+	}
+
+	return offer, nil
+}
+
+// CreateSuperrewardsIncome creates a new superrewards type income
+func (s Storage) CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createSuperrewardsIncomeWithTx(tx, income, transactionID, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create superrewards income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert superrewards offer
+	offer := models.SuperrewardsOffer{
+		IncomeID:      id,
+		UserID:        income.UserID,
+		TransactionID: transactionID,
+		OfferID:       offerID,
+		Amount:        income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `superrewards` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
+	return err
+}
+
+// add income, update user, update referer
+func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRefererBalanceRowsAffected int64, err error) {
+	// insert income into incomes table
+	result, err := addIncome(tx, income)
+	if err != nil {
+		return
+	}
+	incomeID, err = result.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	// update user balance, total_income, referer_total_income
+	if err = incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
+		return
+	}
+
+	// update referer balance
+	updateRefererBalanceRowsAffected, err = incrementRefererBalance(tx, income.RefererID, income.RefererIncome)
+	if _, err = incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
+		return
+	}
+
+	return
 }
 
 // insert reward income into incomes table
@@ -126,134 +243,4 @@ func incrementTotalReward(tx *sqlx.Tx, totalReward float64, now time.Time) error
 	}
 
 	return nil
-}
-
-// GetOfferwowEventByID finds offerwow event by event id
-func (s Storage) GetOfferwowEventByID(eventID string) (models.OfferwowEvent, error) {
-	event := models.OfferwowEvent{}
-	err := s.db.Get(&event, "SELECT * FROM `offerwow` WHERE `event_id` = ?", eventID)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return event, errors.ErrNotFound
-		}
-
-		return event, fmt.Errorf("query offerwow event by id error: %v", err)
-	}
-
-	return event, nil
-}
-
-// CreateOfferwowIncome creates a new offerwow type income
-func (s Storage) CreateOfferwowIncome(income models.Income, eventID string) error {
-	tx := s.db.MustBegin()
-
-	if err := createOfferwowIncomeWithTx(tx, income, eventID); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// commit
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("create offerwow income commit transaction error: %v", err)
-	}
-
-	return nil
-}
-
-func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID string) error {
-	// insert offerwow income into incomes table
-	result, err := addIncome(tx, income)
-	if err != nil {
-		return err
-	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-
-	// update user balance, total_income, referer_total_income
-	if err = incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
-		return err
-	}
-
-	// update referer balance
-	if _, err = incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
-		return err
-	}
-
-	// insert offerwow event
-	offerwowEvent := models.OfferwowEvent{
-		EventID:  eventID,
-		IncomeID: id,
-		Amount:   income.Income,
-	}
-	_, err = tx.NamedExec("INSERT INTO `offerwow` (`event_id`, `income_id`, `amount`) VALUE (:event_id, :income_id, :amount)", offerwowEvent)
-	return err
-}
-
-// GetSuperrewardsOfferByID finds superrewards offer by transaction Id and user id
-func (s Storage) GetSuperrewardsOfferByID(transactionID string, userID int64) (models.SuperrewardsOffer, error) {
-	offer := models.SuperrewardsOffer{}
-	err := s.db.Get(&offer, "SELECT * FROM `superrewards` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return offer, errors.ErrNotFound
-		}
-
-		return offer, fmt.Errorf("query superrewards offer by id error: %v", err)
-	}
-
-	return offer, nil
-}
-
-// CreateSuperrewardsIncome creates a new superrewards type income
-func (s Storage) CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error {
-	tx := s.db.MustBegin()
-
-	if err := createSuperrewardsIncomeWithTx(tx, income, transactionID, offerID); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// commit
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("create superrewards income commit transaction error: %v", err)
-	}
-
-	return nil
-}
-
-func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	// insert superrewards income into incomes table
-	result, err := addIncome(tx, income)
-	if err != nil {
-		return err
-	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-
-	// update user balance, total_income, referer_total_income
-	if err = incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
-		return err
-	}
-
-	// update referer balance
-	if _, err = incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
-		return err
-	}
-
-	// insert superrewards offer
-	offer := models.SuperrewardsOffer{
-		IncomeID:      id,
-		UserID:        income.UserID,
-		TransactionID: transactionID,
-		OfferID:       offerID,
-		Amount:        income.Income,
-	}
-	_, err = tx.NamedExec("INSERT INTO `superrewards` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
-	return err
 }
