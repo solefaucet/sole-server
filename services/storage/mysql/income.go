@@ -173,12 +173,12 @@ func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID strin
 	}
 
 	// update user balance, total_income, referer_total_income
-	if err := incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
+	if err = incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
 		return err
 	}
 
 	// update referer balance
-	if _, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
+	if _, err = incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
 		return err
 	}
 
@@ -237,12 +237,12 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	}
 
 	// update user balance, total_income, referer_total_income
-	if err := incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
+	if err = incrementUserBalance(tx, income.UserID, income.Income, income.RefererIncome); err != nil {
 		return err
 	}
 
 	// update referer balance
-	if _, err := incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
+	if _, err = incrementRefererBalance(tx, income.RefererID, income.RefererIncome); err != nil {
 		return err
 	}
 
