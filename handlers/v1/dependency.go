@@ -69,5 +69,5 @@ type (
 	dependencyGetNumberOfOfferwowEvent func(eventID string) (int64, error)
 
 	// superrewards
-	dependencyGetSuperrewardsOfferByID func(transactionID string, userID int64) (models.SuperrewardsOffer, error)
+	dependencyGetNumberOfSuperrewardsOffers func(transactionID string, userID int64) (int64, error)
 )

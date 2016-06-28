@@ -41,6 +41,21 @@ func TestGetNumberOfOfferwowEvents(t *testing.T) {
 	})
 }
 
+func TestGetNumberOfSuperrewardsOffers(t *testing.T) {
+	Convey("Given mysql storage with superrewards offers", t, func() {
+		s := prepareDatabaseForTesting()
+		s.db.MustExec("INSERT INTO `superrewards` (`user_id`, `income_id`, `transaction_id`, `offer_id`, `amount`) VALUES (1, '1', 'transaction', 'offer', 123.321)")
+
+		Convey("When get number of superrewards offers", func() {
+			count, _ := s.GetNumberOfSuperrewardsOffers("transaction", 1)
+
+			Convey("Count should be 1", func() {
+				So(count, ShouldEqual, 1)
+			})
+		})
+	})
+}
+
 func TestIncrementUserBalance(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()

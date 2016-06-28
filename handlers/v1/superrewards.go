@@ -10,7 +10,6 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
 )
 
@@ -27,7 +26,7 @@ type superrewardPayload struct {
 func SuperrewardsCallback(
 	secretKey string,
 	getUserByID dependencyGetUserByID,
-	getSuperrewardsOfferByID dependencyGetSuperrewardsOfferByID,
+	getNumberOfSuperrewardsOffers dependencyGetNumberOfSuperrewardsOffers,
 	getSystemConfig dependencyGetSystemConfig,
 	createSuperrewardsIncome dependencyCreateSuperrewardsIncome,
 	broadcast dependencyBroadcast,
@@ -59,14 +58,14 @@ func SuperrewardsCallback(
 			return
 		}
 
-		_, err = getSuperrewardsOfferByID(payload.TransactionID, payload.UserID)
-		switch err {
-		case errors.ErrNotFound:
-		case nil:
-			c.String(http.StatusOK, "1")
-			return
-		default:
+		count, err := getNumberOfSuperrewardsOffers(payload.TransactionID, payload.UserID)
+		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		if count > 0 {
+			c.String(http.StatusOK, "1")
 			return
 		}
 

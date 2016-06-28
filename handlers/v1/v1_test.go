@@ -133,9 +133,9 @@ func mockGetWithdrawals(withdrawals []models.Withdrawal, err error) dependencyGe
 	}
 }
 
-func mockGetSuperrewardsOfferByID(offer models.SuperrewardsOffer, err error) dependencyGetSuperrewardsOfferByID {
-	return func(transactionID string, userID int64) (models.SuperrewardsOffer, error) {
-		return offer, err
+func mockGetNumberOfSuperrewardsOffers(count int64, err error) dependencyGetNumberOfSuperrewardsOffers {
+	return func(transactionID string, userID int64) (int64, error) {
+		return count, err
 	}
 }
 

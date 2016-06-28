@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
 )
 
@@ -107,20 +106,11 @@ func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID strin
 	return err
 }
 
-// GetSuperrewardsOfferByID finds superrewards offer by transaction Id and user id
-func (s Storage) GetSuperrewardsOfferByID(transactionID string, userID int64) (models.SuperrewardsOffer, error) {
-	offer := models.SuperrewardsOffer{}
-	err := s.db.Get(&offer, "SELECT * FROM `superrewards` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return offer, errors.ErrNotFound
-		}
-
-		return offer, fmt.Errorf("query superrewards offer by id error: %v", err)
-	}
-
-	return offer, nil
+// GetNumberOfSuperrewardsOffers gets number of superrewards offers
+func (s Storage) GetNumberOfSuperrewardsOffers(transactionID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `superrewards` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID).Scan(&count)
+	return count, err
 }
 
 // CreateSuperrewardsIncome creates a new superrewards type income

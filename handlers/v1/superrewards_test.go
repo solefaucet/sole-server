@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/solefaucet/sole-server/errors"
 	"github.com/solefaucet/sole-server/models"
 )
 
@@ -63,10 +62,10 @@ func TestSuperrewardsCallback(t *testing.T) {
 		})
 	})
 
-	Convey("Given superrewards callback handler with non-err-not-found errored getSuperrewardsOfferByID", t, func() {
+	Convey("Given superrewards callback handler with non-err-not-found errored getNumberOfSuperrewardsOffers", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		getSuperrewardsOfferByID := mockGetSuperrewardsOfferByID(models.SuperrewardsOffer{}, fmt.Errorf(""))
-		handler := SuperrewardsCallback("secret", getUserByID, getSuperrewardsOfferByID, nil, nil, nil)
+		getNumberOfSuperrewardsOffers := mockGetNumberOfSuperrewardsOffers(0, fmt.Errorf(""))
+		handler := SuperrewardsCallback("secret", getUserByID, getNumberOfSuperrewardsOffers, nil, nil, nil)
 		query := "id=id&uid=1&new=13.2&sig=4b2ae6c496f862b258e8b6b9d3242257"
 
 		Convey("When callback", func() {
@@ -82,10 +81,10 @@ func TestSuperrewardsCallback(t *testing.T) {
 		})
 	})
 
-	Convey("Given superrewards callback handler with getSuperrewardsOfferByID returning nil error", t, func() {
+	Convey("Given superrewards callback handler with getNumberOfSuperrewardsOffers returning nil error", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		getSuperrewardsOfferByID := mockGetSuperrewardsOfferByID(models.SuperrewardsOffer{}, nil)
-		handler := SuperrewardsCallback("secret", getUserByID, getSuperrewardsOfferByID, nil, nil, nil)
+		getNumberOfSuperrewardsOffers := mockGetNumberOfSuperrewardsOffers(2, nil)
+		handler := SuperrewardsCallback("secret", getUserByID, getNumberOfSuperrewardsOffers, nil, nil, nil)
 		query := "id=id&uid=1&new=13.2&sig=4b2ae6c496f862b258e8b6b9d3242257"
 
 		Convey("When callback", func() {
@@ -105,12 +104,12 @@ func TestSuperrewardsCallback(t *testing.T) {
 		})
 	})
 
-	Convey("Given superrewards callback handler with getSuperrewardsOfferByID returning ErrNotFound and errored createSuperrewardsIncome", t, func() {
+	Convey("Given superrewards callback handler without superrewards offers and errored createSuperrewardsIncome", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		getSuperrewardsOfferByID := mockGetSuperrewardsOfferByID(models.SuperrewardsOffer{}, errors.ErrNotFound)
+		getNumberOfSuperrewardsOffers := mockGetNumberOfSuperrewardsOffers(0, nil)
 		getSystemConfig := mockGetSystemConfig(models.Config{})
 		createSuperrewardsIncome := mockCreateSuperrewardsIncome(fmt.Errorf(""))
-		handler := SuperrewardsCallback("secret", getUserByID, getSuperrewardsOfferByID, getSystemConfig, createSuperrewardsIncome, nil)
+		handler := SuperrewardsCallback("secret", getUserByID, getNumberOfSuperrewardsOffers, getSystemConfig, createSuperrewardsIncome, nil)
 		query := "id=id&uid=1&new=13.2&sig=4b2ae6c496f862b258e8b6b9d3242257"
 
 		Convey("When callback", func() {
@@ -126,12 +125,12 @@ func TestSuperrewardsCallback(t *testing.T) {
 		})
 	})
 
-	Convey("Given superrewards callback handler with getSuperrewardsOfferByID returning ErrNotFound and correct createSuperrewardsIncome", t, func() {
+	Convey("Given superrewards callback handler without superrewards offers and correct createSuperrewardsIncome", t, func() {
 		getUserByID := mockGetUserByID(models.User{}, nil)
-		getSuperrewardsOfferByID := mockGetSuperrewardsOfferByID(models.SuperrewardsOffer{}, errors.ErrNotFound)
+		getNumberOfSuperrewardsOffers := mockGetNumberOfSuperrewardsOffers(0, nil)
 		getSystemConfig := mockGetSystemConfig(models.Config{})
 		createSuperrewardsIncome := mockCreateSuperrewardsIncome(nil)
-		handler := SuperrewardsCallback("secret", getUserByID, getSuperrewardsOfferByID, getSystemConfig, createSuperrewardsIncome, func([]byte) {})
+		handler := SuperrewardsCallback("secret", getUserByID, getNumberOfSuperrewardsOffers, getSystemConfig, createSuperrewardsIncome, func([]byte) {})
 		query := "id=id&uid=1&new=13.2&sig=4b2ae6c496f862b258e8b6b9d3242257"
 
 		Convey("When callback", func() {

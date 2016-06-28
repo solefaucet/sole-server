@@ -170,7 +170,7 @@ func main() {
 		v1.SuperrewardsCallback(
 			config.Offerwall.Superrewards.SecretKey,
 			store.GetUserByID,
-			store.GetSuperrewardsOfferByID,
+			store.GetNumberOfSuperrewardsOffers,
 			memoryCache.GetLatestConfig,
 			store.CreateSuperrewardsIncome,
 			connsHub.Broadcast,

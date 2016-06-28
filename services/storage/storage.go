@@ -53,6 +53,6 @@ type Storage interface {
 	CreateOfferwowIncome(income models.Income, eventID string) error
 
 	// Superrewards
-	GetSuperrewardsOfferByID(transactionID string, userID int64) (models.SuperrewardsOffer, error)
+	GetNumberOfSuperrewardsOffers(transactionID string, userID int64) (int64, error)
 	CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error
 }
