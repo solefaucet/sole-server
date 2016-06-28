@@ -9,6 +9,23 @@ import (
 	"github.com/solefaucet/sole-server/models"
 )
 
+func TestGetNumberOfRewardIncomes(t *testing.T) {
+	Convey("Given mysql storage with reward incomes", t, func() {
+		s := prepareDatabaseForTesting()
+		tx := s.db.MustBegin()
+		addIncome(tx, models.Income{UserID: 1, Type: models.IncomeTypeReward})
+		tx.Commit()
+
+		Convey("When get number of reward incomes", func() {
+			count, _ := s.GetNumberOfRewardIncomes(1)
+
+			Convey("Count should be 1", func() {
+				So(count, ShouldEqual, 1)
+			})
+		})
+	})
+}
+
 func TestIncrementUserBalance(t *testing.T) {
 	Convey("Given empty mysql storage", t, func() {
 		s := prepareDatabaseForTesting()
