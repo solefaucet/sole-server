@@ -423,7 +423,6 @@ func processWithdrawals() {
 		"remaining_balance":       must(getBalance()).(float64),
 		"address_to_receive_coin": must(coinClient.GetAccountAddress("")).(string),
 		"number_of_withdrawals":   len(amounts),
-		"txid":                    hash.String(),
 	}).Info("succeed to process withdraw requests")
 }
 
