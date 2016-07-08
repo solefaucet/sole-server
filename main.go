@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -364,7 +365,8 @@ func processWithdrawals() {
 	withdrawalIDs := []int64{}
 	for _, v := range withdrawals {
 		total += v.Amount * 1.1 // NOTE: assume tx_fee = amount * 0.1
-		amounts[v.Address] += v.Amount
+		address := strings.TrimSpace(v.Address)
+		amounts[address] = amounts[address] + v.Amount
 		withdrawalIDs = append(withdrawalIDs, v.ID)
 	}
 
@@ -411,8 +413,8 @@ func processWithdrawals() {
 			"event":          models.EventProcessWithdrawals,
 			"id":             withdrawalIDs,
 			"transaction_id": hash.String(),
-			"error":          err,
-		}).Error("failed to update withdrawal status to processed")
+			"error":          err.Error(),
+		}).Panic("failed to update withdrawal status to processed")
 		return
 	}
 
