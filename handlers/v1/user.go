@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -19,7 +20,7 @@ type signupPayload struct {
 func userWithSignupPayload(p signupPayload) models.User {
 	return models.User{
 		Email:     p.Email,
-		Address:   p.Address,
+		Address:   strings.TrimSpace(p.Address),
 		RefererID: p.RefererID,
 	}
 }
