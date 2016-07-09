@@ -71,6 +71,9 @@ type configuration struct {
 			PostbackPassword string
 			WhitelistIps     string
 		}
+		Clixwall struct {
+			SecretPassword string
+		}
 	}
 	CronjobSpec struct {
 		CreateWithdrawal  string
@@ -129,6 +132,7 @@ func initConfig() {
 	config.Offerwall.Superrewards.WhitelistIps = viper.GetString("superrewards_whitelist_ips")
 	config.Offerwall.PTCWall.PostbackPassword = viper.GetString("ptcwall_postback_password")
 	config.Offerwall.PTCWall.WhitelistIps = viper.GetString("ptcwall_whitelist_ips")
+	config.Offerwall.Clixwall.SecretPassword = viper.GetString("clixwall_secret_password")
 
 	config.CronjobSpec.CreateWithdrawal = viper.GetString("cronjob_spec_create_withdrawal")
 	config.CronjobSpec.ProcessWithdrawal = viper.GetString("cronjob_spec_process_withdrawal")

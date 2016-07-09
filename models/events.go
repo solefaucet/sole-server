@@ -16,4 +16,5 @@ const (
 	EventSuperrewardsCallback         = "superrewards callback"
 	EventSuperrewardsInvalidSignature = "superrewards invalid signature"
 	EventPTCWallCallback              = "ptcwall callback"
+	EventClixwallCallback             = "clixwall callback"
 )

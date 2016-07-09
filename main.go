@@ -156,6 +156,7 @@ func main() {
 
 	// offerwall endpoint
 	v1OfferwallEndpoints := v1Endpoints.Group("/offerwalls")
+
 	offerwowAuthRequired := middlewares.OfferwowAuthRequired(config.Offerwall.Offerwow.Key)
 	v1OfferwallEndpoints.GET("/offerwow", offerwowAuthRequired,
 		v1.OfferwowCallback(
@@ -166,6 +167,7 @@ func main() {
 			store.CreateOfferwowIncome,
 		),
 	)
+
 	superrewardsAuthRequired := middlewares.SuperrewardsAuthRequired(config.Offerwall.Superrewards.WhitelistIps)
 	v1OfferwallEndpoints.GET("/superrewards", superrewardsAuthRequired,
 		v1.SuperrewardsCallback(
@@ -177,8 +179,20 @@ func main() {
 			connsHub.Broadcast,
 		),
 	)
+
 	ptcwallAuthRequired := middlewares.PTCWallAuthRequired(config.Offerwall.PTCWall.PostbackPassword, config.Offerwall.PTCWall.WhitelistIps)
 	v1OfferwallEndpoints.GET("/ptcwall", ptcwallAuthRequired, v1.PTCWallCallback(store.GetUserByID, connsHub.Broadcast))
+
+	v1OfferwallEndpoints.POST("/clixwall",
+		v1.ClixwallCallback(
+			config.Offerwall.Clixwall.SecretPassword,
+			store.GetUserByID,
+			store.GetNumberOfClixwallOffers,
+			memoryCache.GetLatestConfig,
+			store.CreateClixwallIncome,
+			connsHub.Broadcast,
+		),
+	)
 
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",

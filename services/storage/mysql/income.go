@@ -148,6 +148,47 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	return err
 }
 
+// GetNumberOfClixwallOffers gets number of clixwall offers
+func (s Storage) GetNumberOfClixwallOffers(offerID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `clixwalls` WHERE `offer_id` = ? AND `user_id` = ?", offerID, userID).Scan(&count)
+	return count, err
+}
+
+// CreateClixwallIncome creates a new clixwall type income
+func (s Storage) CreateClixwallIncome(income models.Income, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createClixwallIncomeWithTx(tx, income, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create clixwall income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createClixwallIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert clixwall offer
+	offer := models.ClixwallOffer{
+		IncomeID: id,
+		UserID:   income.UserID,
+		OfferID:  offerID,
+		Amount:   income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `clixwalls` (`income_id`, `user_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :offer_id, :amount)", offer)
+	return err
+}
+
 // add income, update user, update referer
 func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRefererBalanceRowsAffected int64, err error) {
 	// insert income into incomes table

@@ -55,4 +55,8 @@ type Storage interface {
 	// Superrewards
 	GetNumberOfSuperrewardsOffers(transactionID string, userID int64) (int64, error)
 	CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error
+
+	// Clixwall
+	GetNumberOfClixwallOffers(offerID string, userID int64) (int64, error)
+	CreateClixwallIncome(income models.Income, offerID string) error
 }
