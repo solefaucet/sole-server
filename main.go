@@ -177,6 +177,8 @@ func main() {
 			connsHub.Broadcast,
 		),
 	)
+	ptcwallAuthRequired := middlewares.PTCWallAuthRequired(config.Offerwall.PTCWall.PostbackPassword, config.Offerwall.PTCWall.WhitelistIps)
+	v1OfferwallEndpoints.GET("/ptcwall", ptcwallAuthRequired, v1.PTCWallCallback(store.GetUserByID, connsHub.Broadcast))
 
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",

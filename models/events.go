@@ -15,4 +15,5 @@ const (
 	EventOfferwowInvalidSignature     = "offerwow invalid signature"
 	EventSuperrewardsCallback         = "superrewards callback"
 	EventSuperrewardsInvalidSignature = "superrewards invalid signature"
+	EventPTCWallCallback              = "ptcwall callback"
 )
