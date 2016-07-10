@@ -189,6 +189,39 @@ func createClixwallIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID strin
 	return err
 }
 
+// CreatePtcwallIncome creates a new ptcwall type income
+func (s Storage) CreatePtcwallIncome(income models.Income) error {
+	tx := s.db.MustBegin()
+
+	if err := createPtcwallIncomeWithTx(tx, income); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create clixwall income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createPtcwallIncomeWithTx(tx *sqlx.Tx, income models.Income) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert ptcwall offer
+	offer := models.PtcwallOffer{
+		IncomeID: id,
+		UserID:   income.UserID,
+		Amount:   income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `ptcwalls` (`income_id`, `user_id`, `amount`) VALUE (:income_id, :user_id, :amount)", offer)
+	return err
+}
+
 // add income, update user, update referer
 func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRefererBalanceRowsAffected int64, err error) {
 	// insert income into incomes table

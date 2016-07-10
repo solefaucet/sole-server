@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// PTCWallAuthRequired rejects request if client ip is not in the list
-func PTCWallAuthRequired(postbackPassword string, whitelistIPs string) gin.HandlerFunc {
+// PtcwallAuthRequired rejects request if client ip is not in the list
+func PtcwallAuthRequired(postbackPassword string, whitelistIPs string) gin.HandlerFunc {
 	ips := make(map[string]struct{})
 	for _, v := range strings.Split(whitelistIPs, ",") {
 		ips[v] = struct{}{}
@@ -17,7 +17,7 @@ func PTCWallAuthRequired(postbackPassword string, whitelistIPs string) gin.Handl
 	return func(c *gin.Context) {
 		password := c.Query("pwd")
 
-		if _, ok := ips[c.ClientIP()]; !ok || password != postbackPassword {
+		if _, ok := ips[c.ClientIP()]; !ok || password != postbackPassword || postbackPassword == "" {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}

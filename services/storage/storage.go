@@ -59,4 +59,7 @@ type Storage interface {
 	// Clixwall
 	GetNumberOfClixwallOffers(offerID string, userID int64) (int64, error)
 	CreateClixwallIncome(income models.Income, offerID string) error
+
+	// Ptcwall
+	CreatePtcwallIncome(income models.Income) error
 }

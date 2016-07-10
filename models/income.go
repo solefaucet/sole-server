@@ -12,6 +12,7 @@ const (
 	IncomeTypeOfferwow     = 1
 	IncomeTypeSuperrewards = 2
 	IncomeTypeClixwall     = 3
+	IncomeTypePtcwall      = 4
 )
 
 var incomeTypes = map[int64]string{
@@ -19,6 +20,7 @@ var incomeTypes = map[int64]string{
 	IncomeTypeOfferwow:     "offerwow",
 	IncomeTypeSuperrewards: "superrewards",
 	IncomeTypeClixwall:     "clixwall",
+	IncomeTypePtcwall:      "ptcwall",
 }
 
 // Income model

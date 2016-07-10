@@ -67,7 +67,7 @@ type configuration struct {
 			SecretKey    string
 			WhitelistIps string
 		}
-		PTCWall struct {
+		Ptcwall struct {
 			PostbackPassword string
 			WhitelistIps     string
 		}
@@ -130,8 +130,8 @@ func initConfig() {
 	config.Offerwall.Offerwow.Key = viper.GetString("offerwow_key")
 	config.Offerwall.Superrewards.SecretKey = viper.GetString("superrewards_secret_key")
 	config.Offerwall.Superrewards.WhitelistIps = viper.GetString("superrewards_whitelist_ips")
-	config.Offerwall.PTCWall.PostbackPassword = viper.GetString("ptcwall_postback_password")
-	config.Offerwall.PTCWall.WhitelistIps = viper.GetString("ptcwall_whitelist_ips")
+	config.Offerwall.Ptcwall.PostbackPassword = viper.GetString("ptcwall_postback_password")
+	config.Offerwall.Ptcwall.WhitelistIps = viper.GetString("ptcwall_whitelist_ips")
 	config.Offerwall.Clixwall.SecretPassword = viper.GetString("clixwall_secret_password")
 
 	config.CronjobSpec.CreateWithdrawal = viper.GetString("cronjob_spec_create_withdrawal")

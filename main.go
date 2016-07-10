@@ -180,8 +180,15 @@ func main() {
 		),
 	)
 
-	ptcwallAuthRequired := middlewares.PTCWallAuthRequired(config.Offerwall.PTCWall.PostbackPassword, config.Offerwall.PTCWall.WhitelistIps)
-	v1OfferwallEndpoints.GET("/ptcwall", ptcwallAuthRequired, v1.PTCWallCallback(store.GetUserByID, connsHub.Broadcast))
+	ptcwallAuthRequired := middlewares.PtcwallAuthRequired(config.Offerwall.Ptcwall.PostbackPassword, config.Offerwall.Ptcwall.WhitelistIps)
+	v1OfferwallEndpoints.GET("/ptcwall", ptcwallAuthRequired,
+		v1.PtcwallCallback(
+			store.GetUserByID,
+			memoryCache.GetLatestConfig,
+			store.CreatePtcwallIncome,
+			connsHub.Broadcast,
+		),
+	)
 
 	v1OfferwallEndpoints.POST("/clixwall",
 		v1.ClixwallCallback(
