@@ -423,8 +423,10 @@ func processWithdrawals() {
 	if err != nil {
 		logger.Printf("sendmany error: %v\n", err)
 		logrus.WithFields(logrus.Fields{
-			"event": models.EventProcessWithdrawals,
-			"error": err.Error(),
+			"event":   models.EventProcessWithdrawals,
+			"amounts": amounts,
+			"balance": balance,
+			"error":   err.Error(),
 		}).Error("fail to send coin")
 		return
 	}
