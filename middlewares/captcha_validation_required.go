@@ -21,13 +21,7 @@ func CaptchaValidationRequired(validateCaptcha dependencyValidateCaptcha) gin.Ha
 
 		valid, err := validateCaptcha(challenge, validate, seccode)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"event":     models.EventValidateCaptcha,
-				"challenge": challenge,
-				"validate":  validate,
-				"seccode":   seccode,
-			}).Error(err.Error())
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithError(http.StatusServiceUnavailable, err)
 			return
 		}
 

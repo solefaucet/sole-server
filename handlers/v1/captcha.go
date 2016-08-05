@@ -18,11 +18,7 @@ func RegisterCaptcha(
 		captchaID := getCaptchaID()
 		challenge, err := registerCaptcha()
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"event":      models.EventRegisterCaptcha,
-				"captcha_id": captchaID,
-			}).Error(err.Error())
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithError(http.StatusServiceUnavailable, err)
 			return
 		}
 
