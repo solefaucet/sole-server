@@ -62,4 +62,8 @@ type Storage interface {
 
 	// Ptcwall
 	CreatePtcwallIncome(income models.Income) error
+
+	// Personaly
+	GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error)
+	CreatePersonalyIncome(income models.Income, offerID string) error
 }

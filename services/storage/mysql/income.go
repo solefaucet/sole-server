@@ -148,6 +148,47 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	return err
 }
 
+// GetNumberOfPersonalyOffers gets number of personaly offers
+func (s Storage) GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `personaly` WHERE `offer_id` = ? AND `user_id` = ?", offerID, userID).Scan(&count)
+	return count, err
+}
+
+// CreatePersonalyIncome creates a new personaly type income
+func (s Storage) CreatePersonalyIncome(income models.Income, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createPersonalyIncomeWithTx(tx, income, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create personaly income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createPersonalyIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert personaly offer
+	offer := models.PersonalyOffer{
+		IncomeID: id,
+		UserID:   income.UserID,
+		OfferID:  offerID,
+		Amount:   income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `personaly` (`income_id`, `user_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :offer_id, :amount)", offer)
+	return err
+}
+
 // GetNumberOfClixwallOffers gets number of clixwall offers
 func (s Storage) GetNumberOfClixwallOffers(offerID string, userID int64) (int64, error) {
 	var count int64

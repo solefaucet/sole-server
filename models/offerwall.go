@@ -40,3 +40,13 @@ type PtcwallOffer struct {
 	Amount    float64   `db:"amount"`
 	CreatedAt time.Time `db:"created_at"`
 }
+
+// PersonalyOffer model
+type PersonalyOffer struct {
+	ID        int64     `db:"id"`
+	IncomeID  int64     `db:"income_id"`
+	UserID    int64     `db:"user_id"`
+	OfferID   string    `db:"offer_id"`
+	Amount    float64   `db:"amount"`
+	CreatedAt time.Time `db:"created_at"`
+}
