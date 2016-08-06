@@ -20,7 +20,7 @@ func PersonalyAuthRequired(whitelistIPs, appHash, secretKey string) gin.HandlerF
 
 	return func(c *gin.Context) {
 		if _, ok := ips[c.ClientIP()]; !ok {
-			c.String(http.StatusForbidden, "0")
+			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
@@ -32,7 +32,7 @@ func PersonalyAuthRequired(whitelistIPs, appHash, secretKey string) gin.HandlerF
 				"signature":   sign,
 				"q_signature": c.Query("signature"),
 			}).Error("signature not matched")
-			c.String(http.StatusForbidden, "0")
+			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
