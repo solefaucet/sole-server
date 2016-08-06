@@ -203,7 +203,13 @@ func main() {
 
 	personaly := config.Offerwall.Personaly
 	personalyAuthRequired := middlewares.PersonalyAuthRequired(personaly.WhitelistIps, personaly.AppHash, personaly.SecretKey)
-	v1OfferwallEndpoints.GET("/personaly", personalyAuthRequired)
+	v1OfferwallEndpoints.GET("/personaly", personalyAuthRequired, v1.PersonalyCallback(
+		store.GetUserByID,
+		store.GetNumberOfPersonalyOffers,
+		memoryCache.GetLatestConfig,
+		store.CreatePersonalyIncome,
+		connsHub.Broadcast,
+	))
 
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
