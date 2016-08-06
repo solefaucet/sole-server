@@ -20,9 +20,6 @@ func PersonalyAuthRequired(whitelistIPs, appHash, secretKey string) gin.HandlerF
 	}
 
 	return func(c *gin.Context) {
-		c.Next()
-		return
-
 		if _, ok := ips[c.ClientIP()]; !ok {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
