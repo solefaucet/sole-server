@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
@@ -24,6 +25,7 @@ func PersonalyAuthRequired(whitelistIPs, appHash, secretKey string) gin.HandlerF
 			return
 		}
 
+		httprequest, _ := httputil.DumpRequest(c.Request, true)
 		data := fmt.Sprintf("%v:%v:%v", c.Query("user_id"), appHash, secretKey)
 		if sign := fmt.Sprintf("%x", md5.Sum([]byte(data))); sign != c.Query("signature") {
 			logrus.WithFields(logrus.Fields{
@@ -31,6 +33,7 @@ func PersonalyAuthRequired(whitelistIPs, appHash, secretKey string) gin.HandlerF
 				"user_id":     c.Query("user_id"),
 				"signature":   sign,
 				"q_signature": c.Query("signature"),
+				"request":     string(httprequest),
 			}).Error("signature not matched")
 			c.AbortWithStatus(http.StatusForbidden)
 			return
