@@ -17,4 +17,5 @@ const (
 	EventSuperrewardsInvalidSignature = "superrewards invalid signature"
 	EventPTCWallCallback              = "ptcwall callback"
 	EventClixwallCallback             = "clixwall callback"
+	EventPersonalyInvalidSignature    = "personaly invalid signature"
 )
