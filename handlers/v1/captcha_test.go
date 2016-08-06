@@ -22,8 +22,8 @@ func TestRegisterCaptcha(t *testing.T) {
 			req, _ := http.NewRequest("POST", route, nil)
 			r.ServeHTTP(resp, req)
 
-			Convey("Response status code should be 500", func() {
-				So(resp.Code, ShouldEqual, 500)
+			Convey("Response status code should be 503", func() {
+				So(resp.Code, ShouldEqual, 503)
 			})
 		})
 	})
