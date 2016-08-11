@@ -39,6 +39,8 @@ type Storage interface {
 	CreateRewardIncome(models.Income, time.Time) error
 	GetRewardIncomes(userID int64, limit, offset int64) ([]models.Income, error)
 	GetNumberOfRewardIncomes(userID int64) (int64, error)
+	GetOfferwallIncomes(userID int64, limit, offset int64) ([]models.Income, error)
+	GetNumberOfOfferwallIncomes(userID int64) (int64, error)
 
 	// Withdrawal
 	CreateWithdrawal(models.Withdrawal) error

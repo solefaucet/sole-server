@@ -147,6 +147,7 @@ func main() {
 			connsHub.Broadcast),
 	)
 	v1IncomeEndpoints.GET("/rewards", v1.RewardList(store.GetRewardIncomes, store.GetNumberOfRewardIncomes))
+	v1IncomeEndpoints.GET("/offerwalls", v1.OfferwallList(store.GetOfferwallIncomes, store.GetNumberOfOfferwallIncomes))
 
 	// withdrawal endpoint
 	v1Endpoints.GET("/withdrawals", authRequired, v1.WithdrawalList(store.GetWithdrawals, store.GetNumberOfWithdrawals, constructTxURL))

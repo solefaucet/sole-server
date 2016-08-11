@@ -40,15 +40,17 @@ type (
 	dependencyGetSystemConfig func() models.Config
 
 	// income
-	dependencyCreateRewardIncome       func(models.Income, time.Time) error
-	dependencyCreateOfferwowIncome     func(models.Income, string) error
-	dependencyCreateSuperrewardsIncome func(income models.Income, transactionID, offerID string) error
-	dependencyCreatePersonalyIncome    func(income models.Income, offerID string) error
-	dependencyCreateClixwallIncome     func(income models.Income, offerID string) error
-	dependencyCreatePtcwallIncome      func(income models.Income) error
-	dependencyGetRewardIncomes         func(userID int64, limit, offset int64) ([]models.Income, error)
-	dependencyGetNumberOfRewardIncomes func(userID int64) (int64, error)
-	dependencyInsertIncome             func(interface{}) // cache for broadcasting
+	dependencyCreateRewardIncome          func(models.Income, time.Time) error
+	dependencyCreateOfferwowIncome        func(models.Income, string) error
+	dependencyCreateSuperrewardsIncome    func(income models.Income, transactionID, offerID string) error
+	dependencyCreatePersonalyIncome       func(income models.Income, offerID string) error
+	dependencyCreateClixwallIncome        func(income models.Income, offerID string) error
+	dependencyCreatePtcwallIncome         func(income models.Income) error
+	dependencyGetRewardIncomes            func(userID int64, limit, offset int64) ([]models.Income, error)
+	dependencyGetNumberOfRewardIncomes    func(userID int64) (int64, error)
+	dependencyGetOfferwallIncomes         func(userID int64, limit, offset int64) ([]models.Income, error)
+	dependencyGetNumberOfOfferwallIncomes func(userID int64) (int64, error)
+	dependencyInsertIncome                func(interface{}) // cache for broadcasting
 
 	// websocket
 	dependencyPutConn          func(*websocket.Conn)

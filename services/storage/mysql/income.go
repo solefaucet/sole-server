@@ -25,6 +25,22 @@ func (s Storage) GetNumberOfRewardIncomes(userID int64) (int64, error) {
 	return count, err
 }
 
+// GetOfferwallIncomes get user's offerwall incomes
+func (s Storage) GetOfferwallIncomes(userID int64, limit, offset int64) ([]models.Income, error) {
+	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `type` != ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
+	args := []interface{}{userID, models.IncomeTypeReward, limit, offset}
+	incomes := []models.Income{}
+	err := s.selects(&incomes, rawSQL, args...)
+	return incomes, err
+}
+
+// GetNumberOfOfferwallIncomes gets number of user's offerwall incomes
+func (s Storage) GetNumberOfOfferwallIncomes(userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `incomes` WHERE `user_id` = ? AND `type` != ?", userID, models.IncomeTypeReward).Scan(&count)
+	return count, err
+}
+
 // CreateRewardIncome creates a new reward type income
 func (s Storage) CreateRewardIncome(income models.Income, now time.Time) error {
 	tx := s.db.MustBegin()
