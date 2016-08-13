@@ -212,6 +212,9 @@ func main() {
 		connsHub.Broadcast,
 	))
 
+	trialpayAuthRequired := middlewares.TrialpayAuthRequired(config.Offerwall.Trialpay.WhitelistIps, config.Offerwall.Trialpay.NotificationKey)
+	v1OfferwallEndpoints.GET("/trialpay", trialpayAuthRequired, nil)
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(

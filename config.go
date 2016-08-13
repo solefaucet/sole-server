@@ -79,6 +79,10 @@ type configuration struct {
 			AppHash      string
 			SecretKey    string
 		}
+		Trialpay struct {
+			WhitelistIps    string
+			NotificationKey string
+		}
 	}
 	CronjobSpec struct {
 		CreateWithdrawal  string
@@ -141,6 +145,8 @@ func initConfig() {
 	config.Offerwall.Personaly.WhitelistIps = viper.GetString("personaly_whitelist_ips")
 	config.Offerwall.Personaly.AppHash = viper.GetString("personaly_app_hash")
 	config.Offerwall.Personaly.SecretKey = viper.GetString("personaly_secret_key")
+	config.Offerwall.Trialpay.WhitelistIps = viper.GetString("trialpay_whitelist_ips")
+	config.Offerwall.Trialpay.NotificationKey = viper.GetString("trialpay_notification_key")
 
 	config.CronjobSpec.CreateWithdrawal = viper.GetString("cronjob_spec_create_withdrawal")
 	config.CronjobSpec.ProcessWithdrawal = viper.GetString("cronjob_spec_process_withdrawal")

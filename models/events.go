@@ -19,4 +19,6 @@ const (
 	EventClixwallCallback             = "clixwall callback"
 	EventPersonalyCallback            = "personaly callback"
 	EventPersonalyInvalidSignature    = "personaly invalid signature"
+	EventTrialpayCallback             = "trialpay callback"
+	EventTrialpayInvalidSignature     = "trialpay invalid signature"
 )
