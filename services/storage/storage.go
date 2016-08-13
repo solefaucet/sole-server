@@ -68,4 +68,8 @@ type Storage interface {
 	// Personaly
 	GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error)
 	CreatePersonalyIncome(income models.Income, offerID string) error
+
+	// Trialpay
+	GetNumberOfTrialpayOffers(offerID string, userID int64) (int64, error)
+	CreateTrialpayIncome(income models.Income, offerID string) error
 }

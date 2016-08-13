@@ -215,9 +215,9 @@ func main() {
 	trialpayAuthRequired := middlewares.TrialpayAuthRequired(config.Offerwall.Trialpay.WhitelistIps, config.Offerwall.Trialpay.NotificationKey)
 	v1OfferwallEndpoints.GET("/trialpay", trialpayAuthRequired, v1.TrialpayCallback(
 		store.GetUserByID,
-		nil,
+		store.GetNumberOfTrialpayOffers,
 		memoryCache.GetLatestConfig,
-		nil,
+		store.CreateTrialpayIncome,
 		connsHub.Broadcast,
 	))
 
