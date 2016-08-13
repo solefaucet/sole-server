@@ -25,9 +25,9 @@ func PersonalyAuthRequired(whitelistIPs, appHash, secretKey string) gin.HandlerF
 			return
 		}
 
-		httprequest, _ := httputil.DumpRequest(c.Request, true)
 		data := fmt.Sprintf("%v:%v:%v", c.Query("user_id"), appHash, secretKey)
 		if sign := fmt.Sprintf("%x", md5.Sum([]byte(data))); sign != c.Query("signature") {
+			httprequest, _ := httputil.DumpRequest(c.Request, true)
 			logrus.WithFields(logrus.Fields{
 				"event":       models.EventPersonalyInvalidSignature,
 				"user_id":     c.Query("user_id"),
