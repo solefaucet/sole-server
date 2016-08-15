@@ -16,8 +16,9 @@ import (
 // test helpers
 func execCommand(cmd string) {
 	c := exec.Command("sh", "-c", "-i", cmd)
-	if err := c.Run(); err != nil {
-		log.Fatalf("execute command %v, error: %v", cmd, err)
+	output, err := c.CombinedOutput()
+	if err != nil {
+		log.Fatalf("execute command %v, error: %v, output: %s", cmd, err, output)
 	}
 }
 
