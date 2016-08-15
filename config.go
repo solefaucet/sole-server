@@ -79,6 +79,10 @@ type configuration struct {
 			AppHash      string
 			SecretKey    string
 		}
+		Kiwiwall struct {
+			WhitelistIps string
+			SecretKey    string
+		}
 		Trialpay struct {
 			WhitelistIps    string
 			NotificationKey string
@@ -145,6 +149,8 @@ func initConfig() {
 	config.Offerwall.Personaly.WhitelistIps = viper.GetString("personaly_whitelist_ips")
 	config.Offerwall.Personaly.AppHash = viper.GetString("personaly_app_hash")
 	config.Offerwall.Personaly.SecretKey = viper.GetString("personaly_secret_key")
+	config.Offerwall.Kiwiwall.WhitelistIps = viper.GetString("kiwiwall_whitelist_ips")
+	config.Offerwall.Kiwiwall.SecretKey = viper.GetString("kiwiwall_secret_key")
 	config.Offerwall.Trialpay.WhitelistIps = viper.GetString("trialpay_whitelist_ips")
 	config.Offerwall.Trialpay.NotificationKey = viper.GetString("trialpay_notification_key")
 

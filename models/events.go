@@ -19,6 +19,8 @@ const (
 	EventClixwallCallback             = "clixwall callback"
 	EventPersonalyCallback            = "personaly callback"
 	EventPersonalyInvalidSignature    = "personaly invalid signature"
+	EventKiwiwallCallback             = "kiwiwall callback"
+	EventKiwiwallInvalidSignature     = "kiwiwall invalid signature"
 	EventTrialpayCallback             = "trialpay callback"
 	EventTrialpayInvalidSignature     = "trialpay invalid signature"
 )
