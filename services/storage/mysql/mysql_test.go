@@ -37,7 +37,7 @@ func prepareDatabaseForTesting() Storage {
 }
 
 func resetDatabase() {
-	execCommand(`mysql -uroot -e 'drop database if exists sole-server_test;'`)
+	execCommand(`mysql -uroot -e 'drop database if exists sole_test;'`)
 }
 
 func withClosedConn(t *testing.T, description string, f func(Storage) error) {
