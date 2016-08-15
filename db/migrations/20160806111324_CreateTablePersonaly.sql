@@ -17,3 +17,6 @@ ADD UNIQUE INDEX (`user_id`, `offer_id`),
 ADD INDEX (`offer_id`),
 ADD INDEX (`created_at`);
 
+-- +goose Down
+-- SQL section 'Down' is executed when this migration is rolled back
+DROP TABLE `personaly`;
