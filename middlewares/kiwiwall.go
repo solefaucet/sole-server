@@ -21,7 +21,7 @@ func KiwiwallAuthRequired(whitelistIPs, secretKey string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		if _, ok := ips[c.ClientIP()]; !ok {
-			c.AbortWithStatus(http.StatusForbidden)
+			c.String(http.StatusForbidden, "0")
 			return
 		}
 
@@ -35,7 +35,7 @@ func KiwiwallAuthRequired(whitelistIPs, secretKey string) gin.HandlerFunc {
 				"q_signature": c.Query("signature"),
 				"request":     string(httprequest),
 			}).Error("signature not matched")
-			c.AbortWithStatus(http.StatusForbidden)
+			c.String(http.StatusForbidden, "0")
 			return
 		}
 

@@ -213,7 +213,13 @@ func main() {
 	))
 
 	kiwiwallAuthRequired := middlewares.KiwiwallAuthRequired(config.Offerwall.Kiwiwall.WhitelistIps, config.Offerwall.Kiwiwall.SecretKey)
-	v1OfferwallEndpoints.GET("/kiwiwall", kiwiwallAuthRequired, nil)
+	v1OfferwallEndpoints.GET("/kiwiwall", kiwiwallAuthRequired, v1.KiwiwallCallback(
+		store.GetUserByID,
+		nil,
+		memoryCache.GetLatestConfig,
+		nil,
+		connsHub.Broadcast,
+	))
 
 	trialpayAuthRequired := middlewares.TrialpayAuthRequired(config.Offerwall.Trialpay.WhitelistIps, config.Offerwall.Trialpay.NotificationKey)
 	v1OfferwallEndpoints.GET("/trialpay", trialpayAuthRequired, v1.TrialpayCallback(

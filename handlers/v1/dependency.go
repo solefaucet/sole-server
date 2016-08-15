@@ -43,6 +43,7 @@ type (
 	dependencyCreateRewardIncome          func(models.Income, time.Time) error
 	dependencyCreateOfferwowIncome        func(models.Income, string) error
 	dependencyCreateSuperrewardsIncome    func(income models.Income, transactionID, offerID string) error
+	dependencyCreateKiwiwallIncome        func(income models.Income, transactionID, offerID string) error
 	dependencyCreatePersonalyIncome       func(income models.Income, offerID string) error
 	dependencyCreateTrialpayIncome        func(income models.Income, offerID string) error
 	dependencyCreateClixwallIncome        func(income models.Income, offerID string) error
@@ -85,4 +86,7 @@ type (
 
 	// trialpay
 	dependencyGetNumberOfTrialpayOffers func(offerID string, userID int64) (int64, error)
+
+	// kiwiwall
+	dependencyGetNumberOfKiwiwallOffers func(transactionID string, userID int64) (int64, error)
 )
