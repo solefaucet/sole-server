@@ -215,9 +215,9 @@ func main() {
 	kiwiwallAuthRequired := middlewares.KiwiwallAuthRequired(config.Offerwall.Kiwiwall.WhitelistIps, config.Offerwall.Kiwiwall.SecretKey)
 	v1OfferwallEndpoints.GET("/kiwiwall", kiwiwallAuthRequired, v1.KiwiwallCallback(
 		store.GetUserByID,
-		nil,
+		store.GetNumberOfKiwiwallOffers,
 		memoryCache.GetLatestConfig,
-		nil,
+		store.CreateKiwiwallIncome,
 		connsHub.Broadcast,
 	))
 

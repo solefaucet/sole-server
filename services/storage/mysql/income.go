@@ -164,6 +164,48 @@ func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	return err
 }
 
+// GetNumberOfKiwiwallOffers gets number of kiwiwall offers
+func (s Storage) GetNumberOfKiwiwallOffers(transactionID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `kiwiwall` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID).Scan(&count)
+	return count, err
+}
+
+// CreateKiwiwallIncome creates a new kiwiwall type income
+func (s Storage) CreateKiwiwallIncome(income models.Income, transactionID, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createKiwiwallIncomeWithTx(tx, income, transactionID, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create kiwiwall income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createKiwiwallIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert kiwiwall offer
+	offer := models.KiwiwallOffer{
+		IncomeID:      id,
+		UserID:        income.UserID,
+		TransactionID: transactionID,
+		OfferID:       offerID,
+		Amount:        income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `kiwiwall` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
+	return err
+}
+
 // GetNumberOfPersonalyOffers gets number of personaly offers
 func (s Storage) GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error) {
 	var count int64
