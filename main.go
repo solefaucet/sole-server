@@ -25,6 +25,7 @@ import (
 	"github.com/solefaucet/sole-server/services/mail/mandrill"
 	"github.com/solefaucet/sole-server/services/storage"
 	"github.com/solefaucet/sole-server/services/storage/mysql"
+	"github.com/solefaucet/sole-server/utils"
 	grayloghook "github.com/yumimobi/logrus-graylog2-hook"
 )
 
@@ -418,7 +419,7 @@ func processWithdrawals() {
 	for _, v := range withdrawals {
 		total += v.Amount * 1.1 // NOTE: assume tx_fee = amount * 0.1
 		address := strings.TrimSpace(v.Address)
-		amounts[address] = amounts[address] + v.Amount
+		amounts[address] = utils.ToFixed(amounts[address]+v.Amount, 8)
 		withdrawalIDs = append(withdrawalIDs, v.ID)
 	}
 
@@ -455,6 +456,7 @@ func processWithdrawals() {
 			"event":   models.EventProcessWithdrawals,
 			"amounts": amounts,
 			"balance": balance,
+			"total":   total,
 			"error":   err.Error(),
 		}).Error("fail to send coin")
 		return
