@@ -44,6 +44,7 @@ type (
 	dependencyCreateOfferwowIncome        func(models.Income, string) error
 	dependencyCreateSuperrewardsIncome    func(income models.Income, transactionID, offerID string) error
 	dependencyCreateKiwiwallIncome        func(income models.Income, transactionID, offerID string) error
+	dependencyCreateAdscendMediaIncome    func(income models.Income, transactionID, offerID string) error
 	dependencyCreatePersonalyIncome       func(income models.Income, offerID string) error
 	dependencyCreateTrialpayIncome        func(income models.Income, offerID string) error
 	dependencyCreateClixwallIncome        func(income models.Income, offerID string) error
@@ -89,4 +90,7 @@ type (
 
 	// kiwiwall
 	dependencyGetNumberOfKiwiwallOffers func(transactionID string, userID int64) (int64, error)
+
+	// adscend media
+	dependencyGetNumberOfAdscendMediaOffers func(transactionID string, userID int64) (int64, error)
 )

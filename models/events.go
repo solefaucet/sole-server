@@ -23,4 +23,5 @@ const (
 	EventKiwiwallInvalidSignature     = "kiwiwall invalid signature"
 	EventTrialpayCallback             = "trialpay callback"
 	EventTrialpayInvalidSignature     = "trialpay invalid signature"
+	EventAdscendMediaCallback         = "adscend media callback"
 )
