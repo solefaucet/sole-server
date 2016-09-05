@@ -206,6 +206,48 @@ func createKiwiwallIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID
 	return err
 }
 
+// GetNumberOfAdscendMediaOffers gets number of adscend media offers
+func (s Storage) GetNumberOfAdscendMediaOffers(transactionID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `adscend_media` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID).Scan(&count)
+	return count, err
+}
+
+// CreateAdscendMediaIncome creates a new adscend media type income
+func (s Storage) CreateAdscendMediaIncome(income models.Income, transactionID, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createAdscendMediaIncomeWithTx(tx, income, transactionID, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create adscend media income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createAdscendMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert adscend media offer
+	offer := models.AdscendMedia{
+		IncomeID:      id,
+		UserID:        income.UserID,
+		TransactionID: transactionID,
+		OfferID:       offerID,
+		Amount:        income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `adscend_media` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
+	return err
+}
+
 // GetNumberOfPersonalyOffers gets number of personaly offers
 func (s Storage) GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error) {
 	var count int64

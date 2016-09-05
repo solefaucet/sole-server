@@ -76,4 +76,8 @@ type Storage interface {
 	// Kiwiwall
 	GetNumberOfKiwiwallOffers(transactionID string, userID int64) (int64, error)
 	CreateKiwiwallIncome(income models.Income, transactionID, offerID string) error
+
+	// AdscendMedia
+	GetNumberOfAdscendMediaOffers(transactionID string, userID int64) (int64, error)
+	CreateAdscendMediaIncome(income models.Income, transactionID, offerID string) error
 }

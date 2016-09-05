@@ -231,6 +231,15 @@ func main() {
 		connsHub.Broadcast,
 	))
 
+	adscendMediaAuthRequired := middlewares.AdscendMediaAuthRequired(config.Offerwall.AdscendMedia.WhitelistIps)
+	v1OfferwallEndpoints.GET("/adscend_media", adscendMediaAuthRequired, v1.AdscendMediaCallback(
+		store.GetUserByID,
+		store.GetNumberOfAdscendMediaOffers,
+		memoryCache.GetLatestConfig,
+		store.CreateAdscendMediaIncome,
+		connsHub.Broadcast,
+	))
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(
