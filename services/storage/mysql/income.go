@@ -248,6 +248,48 @@ func createAdscendMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transacti
 	return err
 }
 
+// GetNumberOfAdgateMediaOffers gets number of adgate media offers
+func (s Storage) GetNumberOfAdgateMediaOffers(transactionID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `adgate_media` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID).Scan(&count)
+	return count, err
+}
+
+// CreateAdgateMediaIncome creates a new adgate media type income
+func (s Storage) CreateAdgateMediaIncome(income models.Income, transactionID, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createAdgateMediaIncomeWithTx(tx, income, transactionID, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create adgate media income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createAdgateMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert adgate media offer
+	offer := models.AdgateMedia{
+		IncomeID:      id,
+		UserID:        income.UserID,
+		TransactionID: transactionID,
+		OfferID:       offerID,
+		Amount:        income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `adgate_media` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
+	return err
+}
+
 // GetNumberOfPersonalyOffers gets number of personaly offers
 func (s Storage) GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error) {
 	var count int64

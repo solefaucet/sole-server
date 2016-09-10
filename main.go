@@ -240,6 +240,15 @@ func main() {
 		connsHub.Broadcast,
 	))
 
+	adgateMediaAuthRequired := middlewares.AdgateMediaAuthRequired(config.Offerwall.AdgateMedia.WhitelistIps)
+	v1OfferwallEndpoints.GET("/adgate_media", adgateMediaAuthRequired, v1.AdgateMediaCallback(
+		store.GetUserByID,
+		store.GetNumberOfAdgateMediaOffers,
+		memoryCache.GetLatestConfig,
+		store.CreateAdgateMediaIncome,
+		connsHub.Broadcast,
+	))
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(

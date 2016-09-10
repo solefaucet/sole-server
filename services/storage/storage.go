@@ -80,4 +80,8 @@ type Storage interface {
 	// AdscendMedia
 	GetNumberOfAdscendMediaOffers(transactionID string, userID int64) (int64, error)
 	CreateAdscendMediaIncome(income models.Income, transactionID, offerID string) error
+
+	// AdgateMedia
+	GetNumberOfAdgateMediaOffers(transactionID string, userID int64) (int64, error)
+	CreateAdgateMediaIncome(income models.Income, transactionID, offerID string) error
 }
