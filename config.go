@@ -90,6 +90,9 @@ type configuration struct {
 		AdscendMedia struct {
 			WhitelistIps string
 		}
+		AdgateMedia struct {
+			WhitelistIps string
+		}
 	}
 	CronjobSpec struct {
 		CreateWithdrawal  string
@@ -157,6 +160,7 @@ func initConfig() {
 	config.Offerwall.Trialpay.WhitelistIps = viper.GetString("trialpay_whitelist_ips")
 	config.Offerwall.Trialpay.NotificationKey = viper.GetString("trialpay_notification_key")
 	config.Offerwall.AdscendMedia.WhitelistIps = viper.GetString("adscendmedia_whitelist_ips")
+	config.Offerwall.AdgateMedia.WhitelistIps = viper.GetString("adgatemedia_whitelist_ips")
 
 	config.CronjobSpec.CreateWithdrawal = viper.GetString("cronjob_spec_create_withdrawal")
 	config.CronjobSpec.ProcessWithdrawal = viper.GetString("cronjob_spec_process_withdrawal")
