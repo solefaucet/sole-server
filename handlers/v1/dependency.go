@@ -45,6 +45,7 @@ type (
 	dependencyCreateSuperrewardsIncome    func(income models.Income, transactionID, offerID string) error
 	dependencyCreateKiwiwallIncome        func(income models.Income, transactionID, offerID string) error
 	dependencyCreateAdscendMediaIncome    func(income models.Income, transactionID, offerID string) error
+	dependencyCreateAdgateMediaIncome     func(income models.Income, transactionID, offerID string) error
 	dependencyCreatePersonalyIncome       func(income models.Income, offerID string) error
 	dependencyCreateTrialpayIncome        func(income models.Income, offerID string) error
 	dependencyCreateClixwallIncome        func(income models.Income, offerID string) error
@@ -93,4 +94,7 @@ type (
 
 	// adscend media
 	dependencyGetNumberOfAdscendMediaOffers func(transactionID string, userID int64) (int64, error)
+
+	// adgate media
+	dependencyGetNumberOfAdgateMediaOffers func(transactionID string, userID int64) (int64, error)
 )

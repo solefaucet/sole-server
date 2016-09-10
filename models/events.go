@@ -24,4 +24,5 @@ const (
 	EventTrialpayCallback             = "trialpay callback"
 	EventTrialpayInvalidSignature     = "trialpay invalid signature"
 	EventAdscendMediaCallback         = "adscend media callback"
+	EventAdgateMediaCallback          = "adgate media callback"
 )
