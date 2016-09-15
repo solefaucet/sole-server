@@ -84,4 +84,8 @@ type Storage interface {
 	// AdgateMedia
 	GetNumberOfAdgateMediaOffers(transactionID string, userID int64) (int64, error)
 	CreateAdgateMediaIncome(income models.Income, transactionID, offerID string) error
+
+	// Offertoro
+	GetNumberOfOffertoroOffers(transactionID string, userID int64) (int64, error)
+	CreateOffertoroIncome(income models.Income, transactionID, offerID string) error
 }

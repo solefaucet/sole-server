@@ -290,6 +290,48 @@ func createAdgateMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transactio
 	return err
 }
 
+// GetNumberOfOffertoroOffers gets number of offertoro offers
+func (s Storage) GetNumberOfOffertoroOffers(transactionID string, userID int64) (int64, error) {
+	var count int64
+	err := s.db.QueryRowx("SELECT COUNT(*) FROM `offertoro` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID).Scan(&count)
+	return count, err
+}
+
+// CreateOffertoroIncome creates a new offertoro type income
+func (s Storage) CreateOffertoroIncome(income models.Income, transactionID, offerID string) error {
+	tx := s.db.MustBegin()
+
+	if err := createOffertoroIncomeWithTx(tx, income, transactionID, offerID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("create offertoro income commit transaction error: %v", err)
+	}
+
+	return nil
+}
+
+func createOffertoroIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
+	id, _, err := commonBatchOperation(tx, income)
+	if err != nil {
+		return err
+	}
+
+	// insert offertoro offer
+	offer := models.Offertoro{
+		IncomeID:      id,
+		UserID:        income.UserID,
+		TransactionID: transactionID,
+		OfferID:       offerID,
+		Amount:        income.Income,
+	}
+	_, err = tx.NamedExec("INSERT INTO `offertoro` (`income_id`, `user_id`, `transaction_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :transaction_id, :offer_id, :amount)", offer)
+	return err
+}
+
 // GetNumberOfPersonalyOffers gets number of personaly offers
 func (s Storage) GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error) {
 	var count int64
