@@ -18,6 +18,7 @@ const (
 	IncomeTypeKiwiwall     = 7
 	IncomeTypeAdscendMedia = 8
 	IncomeTypeAdgateMedia  = 9
+	IncomeTypeOffertoro    = 10
 )
 
 var incomeTypes = map[int64]string{
@@ -31,6 +32,7 @@ var incomeTypes = map[int64]string{
 	IncomeTypeKiwiwall:     "kiwiwall",
 	IncomeTypeAdscendMedia: "adscend media",
 	IncomeTypeAdgateMedia:  "adgate media",
+	IncomeTypeOffertoro:    "offertoro",
 }
 
 // Income model
