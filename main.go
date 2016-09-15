@@ -249,6 +249,15 @@ func main() {
 		connsHub.Broadcast,
 	))
 
+	offertoroAuthRequired := middlewares.OffertoroAuthRequired(config.Offerwall.Offertoro.SecretKey)
+	v1OfferwallEndpoints.GET("/offertoro", offertoroAuthRequired, v1.OffertoroCallback(
+		store.GetUserByID,
+		store.GetNumberOfOffertoroOffers,
+		memoryCache.GetLatestConfig,
+		store.CreateOffertoroIncome,
+		connsHub.Broadcast,
+	))
+
 	// websocket endpoint
 	v1Endpoints.GET("/websocket",
 		v1.Websocket(
