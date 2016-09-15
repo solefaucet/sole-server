@@ -26,4 +26,5 @@ const (
 	EventAdscendMediaCallback         = "adscend media callback"
 	EventAdgateMediaCallback          = "adgate media callback"
 	EventOffertoroCallback            = "offertoro callback"
+	EventOffertoroInvalidSignature    = "offertoro invalid signature"
 )
