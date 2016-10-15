@@ -39,7 +39,7 @@ metalint:
 
 test:
 	# run test
-	go test -cover ./...
+	bash test.sh
 	# cleanup
 	mysql -uroot -e 'drop database if exists sole_test;'
 
