@@ -231,14 +231,19 @@ func (s Storage) CreateAdscendMediaIncome(income models.Income, transactionID, o
 }
 
 func createAdscendMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	// insert income into incomes table
+	result, err := addIncome(tx, income)
+	if err != nil {
+		return err
+	}
+	incomeID, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
 
 	// insert adscend media offer
 	offer := models.AdscendMedia{
-		IncomeID:      id,
+		IncomeID:      incomeID,
 		UserID:        income.UserID,
 		TransactionID: transactionID,
 		OfferID:       offerID,
@@ -516,7 +521,13 @@ func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRe
 
 // insert reward income into incomes table
 func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
-	result, err := tx.NamedExec("INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)", income)
+	sql := "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`, `status`) VALUES (:user_id, :referer_id, :type, :income, :referer_income, :status)"
+
+	if income.Status == "" {
+		sql = "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)"
+	}
+
+	result, err := tx.NamedExec(sql, income)
 	if err != nil {
 		return nil, fmt.Errorf("add income error: %v", err)
 	}
