@@ -22,6 +22,7 @@ type adscendMediaPayload struct {
 func AdscendMediaCallback(
 	getUserByID dependencyGetUserByID,
 	getAdscendMediaOffer dependencyGetAdscendMediaOffer,
+	chargebackIncome dependencyChargebackIncome,
 	getSystemConfig dependencyGetSystemConfig,
 	createAdscendMediaIncome dependencyCreateAdscendMediaIncome,
 	broadcast dependencyBroadcast,
@@ -50,6 +51,17 @@ func AdscendMediaCallback(
 		offer, err := getAdscendMediaOffer(payload.TransactionID, payload.UserID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		// chargeback
+		if payload.Amount < 0 {
+			if err := chargebackIncome(offer.IncomeID); err != nil {
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+
+			c.Status(http.StatusOK)
 			return
 		}
 

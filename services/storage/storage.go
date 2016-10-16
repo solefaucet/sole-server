@@ -41,6 +41,7 @@ type Storage interface {
 	GetNumberOfRewardIncomes(userID int64) (int64, error)
 	GetOfferwallIncomes(userID int64, limit, offset int64) ([]models.Income, error)
 	GetNumberOfOfferwallIncomes(userID int64) (int64, error)
+	ChargebackIncome(incomeID int64) error
 
 	// Withdrawal
 	CreateWithdrawal(models.Withdrawal) error

@@ -234,7 +234,8 @@ func main() {
 	adscendMediaAuthRequired := middlewares.AdscendMediaAuthRequired(config.Offerwall.AdscendMedia.WhitelistIps)
 	v1OfferwallEndpoints.GET("/adscend_media", adscendMediaAuthRequired, v1.AdscendMediaCallback(
 		store.GetUserByID,
-		store.GetNumberOfAdscendMediaOffers,
+		store.GetAdscendMediaOffer,
+		store.ChargebackIncome,
 		memoryCache.GetLatestConfig,
 		store.CreateAdscendMediaIncome,
 		connsHub.Broadcast,

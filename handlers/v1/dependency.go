@@ -56,6 +56,7 @@ type (
 	dependencyGetOfferwallIncomes         func(userID int64, limit, offset int64) ([]models.Income, error)
 	dependencyGetNumberOfOfferwallIncomes func(userID int64) (int64, error)
 	dependencyInsertIncome                func(interface{}) // cache for broadcasting
+	dependencyChargebackIncome            func(incomeID int64) error
 
 	// websocket
 	dependencyPutConn          func(*websocket.Conn)

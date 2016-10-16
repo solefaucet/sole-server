@@ -9,6 +9,14 @@ import (
 	"github.com/solefaucet/sole-server/models"
 )
 
+// ChargebackIncome set income status to chargeback
+func (s Storage) ChargebackIncome(incomeID int64) error {
+	sql := "UPDATE `incomes` SET `status` = ? WHERE `id` = ?"
+	args := []interface{}{models.IncomeStatusChargeback, incomeID}
+	_, err := s.db.Exec(sql, args...)
+	return err
+}
+
 // GetRewardIncomes get user's reward incomes
 func (s Storage) GetRewardIncomes(userID int64, limit, offset int64) ([]models.Income, error) {
 	rawSQL := "SELECT * FROM incomes WHERE `user_id` = ? AND `type` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?"
