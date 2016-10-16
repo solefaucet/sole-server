@@ -206,11 +206,16 @@ func createKiwiwallIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID
 	return err
 }
 
-// GetNumberOfAdscendMediaOffers gets number of adscend media offers
-func (s Storage) GetNumberOfAdscendMediaOffers(transactionID string, userID int64) (int64, error) {
-	var count int64
-	err := s.db.QueryRowx("SELECT COUNT(*) FROM `adscend_media` WHERE `transaction_id` = ? AND `user_id` = ?", transactionID, userID).Scan(&count)
-	return count, err
+// GetAdscendMediaOffer returns AdscendMediaOffer
+func (s Storage) GetAdscendMediaOffer(transactionID string, userID int64) (*models.AdscendMedia, error) {
+	dest := &models.AdscendMedia{}
+	query := "SELECT * FROM `adscend_media` WHERE `transaction_id` = ? AND `user_id` = ?"
+	args := []interface{}{transactionID, userID}
+	err := s.db.Get(dest, query, args...)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return dest, err
 }
 
 // CreateAdscendMediaIncome creates a new adscend media type income

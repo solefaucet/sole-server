@@ -94,7 +94,7 @@ type (
 	dependencyGetNumberOfKiwiwallOffers func(transactionID string, userID int64) (int64, error)
 
 	// adscend media
-	dependencyGetNumberOfAdscendMediaOffers func(transactionID string, userID int64) (int64, error)
+	dependencyGetAdscendMediaOffer func(transactionID string, userID int64) (*models.AdscendMedia, error)
 
 	// adgate media
 	dependencyGetNumberOfAdgateMediaOffers func(transactionID string, userID int64) (int64, error)

@@ -78,7 +78,7 @@ type Storage interface {
 	CreateKiwiwallIncome(income models.Income, transactionID, offerID string) error
 
 	// AdscendMedia
-	GetNumberOfAdscendMediaOffers(transactionID string, userID int64) (int64, error)
+	GetAdscendMediaOffer(transactionID string, userID int64) (*models.AdscendMedia, error)
 	CreateAdscendMediaIncome(income models.Income, transactionID, offerID string) error
 
 	// AdgateMedia

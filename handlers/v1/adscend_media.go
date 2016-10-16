@@ -21,7 +21,7 @@ type adscendMediaPayload struct {
 // AdscendMediaCallback handles callback from adscendMedia
 func AdscendMediaCallback(
 	getUserByID dependencyGetUserByID,
-	getNumberOfAdscendMediaOffers dependencyGetNumberOfAdscendMediaOffers,
+	getAdscendMediaOffer dependencyGetAdscendMediaOffer,
 	getSystemConfig dependencyGetSystemConfig,
 	createAdscendMediaIncome dependencyCreateAdscendMediaIncome,
 	broadcast dependencyBroadcast,
@@ -47,13 +47,14 @@ func AdscendMediaCallback(
 			return
 		}
 
-		count, err := getNumberOfAdscendMediaOffers(payload.TransactionID, payload.UserID)
+		offer, err := getAdscendMediaOffer(payload.TransactionID, payload.UserID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		if count > 0 {
+		// already added
+		if offer != nil {
 			c.String(http.StatusOK, "1")
 			return
 		}
