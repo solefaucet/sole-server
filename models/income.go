@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+// Income Status
+const (
+	IncomeStatusPending    = "Pending"
+	IncomeStatusCharged    = "Charged"
+	IncomeStatusChargeback = "Chargeback"
+)
+
 // Income Type
 const (
 	IncomeTypeReward       = 0
@@ -44,6 +51,7 @@ type Income struct {
 	Income        float64   `db:"income"`
 	RefererIncome float64   `db:"referer_income"`
 	CreatedAt     time.Time `db:"created_at"`
+	Status        string    `db:"status"`
 }
 
 // MarshalJSON implements json.Marshaler interface
@@ -51,6 +59,11 @@ func (i Income) MarshalJSON() ([]byte, error) {
 	t, ok := incomeTypes[i.Type]
 	if !ok {
 		panic(fmt.Sprintf("Invalid income type %v", i.Type))
+	}
+
+	// FIXME: it's silly to put income status in type, FUCK MY CODE
+	if i.Type != IncomeTypeReward {
+		t = fmt.Sprintf("%s.%s", t, i.Status)
 	}
 
 	return json.Marshal(map[string]interface{}{
