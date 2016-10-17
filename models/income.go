@@ -21,7 +21,6 @@ const (
 	IncomeTypeClixwall     = 3
 	IncomeTypePtcwall      = 4
 	IncomeTypePersonaly    = 5
-	IncomeTypeTrialpay     = 6
 	IncomeTypeKiwiwall     = 7
 	IncomeTypeAdscendMedia = 8
 	IncomeTypeAdgateMedia  = 9
@@ -35,7 +34,6 @@ var incomeTypes = map[int64]string{
 	IncomeTypeClixwall:     "clixwall",
 	IncomeTypePtcwall:      "ptcwall",
 	IncomeTypePersonaly:    "personaly",
-	IncomeTypeTrialpay:     "trialpay",
 	IncomeTypeKiwiwall:     "kiwiwall",
 	IncomeTypeAdscendMedia: "adscend media",
 	IncomeTypeAdgateMedia:  "adgate media",

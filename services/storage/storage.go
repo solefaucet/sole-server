@@ -70,10 +70,6 @@ type Storage interface {
 	GetNumberOfPersonalyOffers(offerID string, userID int64) (int64, error)
 	CreatePersonalyIncome(income models.Income, offerID string) error
 
-	// Trialpay
-	GetNumberOfTrialpayOffers(offerID string, userID int64) (int64, error)
-	CreateTrialpayIncome(income models.Income, offerID string) error
-
 	// Kiwiwall
 	GetNumberOfKiwiwallOffers(transactionID string, userID int64) (int64, error)
 	CreateKiwiwallIncome(income models.Income, transactionID, offerID string) error

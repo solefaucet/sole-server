@@ -48,7 +48,6 @@ type (
 	dependencyCreateAdgateMediaIncome     func(income models.Income, transactionID, offerID string) error
 	dependencyCreateOffertoroIncome       func(income models.Income, transactionID, offerID string) error
 	dependencyCreatePersonalyIncome       func(income models.Income, offerID string) error
-	dependencyCreateTrialpayIncome        func(income models.Income, offerID string) error
 	dependencyCreateClixwallIncome        func(income models.Income, offerID string) error
 	dependencyCreatePtcwallIncome         func(income models.Income) error
 	dependencyGetRewardIncomes            func(userID int64, limit, offset int64) ([]models.Income, error)
@@ -87,9 +86,6 @@ type (
 
 	// personaly
 	dependencyGetNumberOfPersonalyOffers func(offerID string, userID int64) (int64, error)
-
-	// trialpay
-	dependencyGetNumberOfTrialpayOffers func(offerID string, userID int64) (int64, error)
 
 	// kiwiwall
 	dependencyGetNumberOfKiwiwallOffers func(transactionID string, userID int64) (int64, error)

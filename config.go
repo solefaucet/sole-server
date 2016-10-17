@@ -83,10 +83,6 @@ type configuration struct {
 			WhitelistIps string
 			SecretKey    string
 		}
-		Trialpay struct {
-			WhitelistIps    string
-			NotificationKey string
-		}
 		AdscendMedia struct {
 			WhitelistIps string
 		}
@@ -160,8 +156,6 @@ func initConfig() {
 	config.Offerwall.Personaly.SecretKey = viper.GetString("personaly_secret_key")
 	config.Offerwall.Kiwiwall.WhitelistIps = viper.GetString("kiwiwall_whitelist_ips")
 	config.Offerwall.Kiwiwall.SecretKey = viper.GetString("kiwiwall_secret_key")
-	config.Offerwall.Trialpay.WhitelistIps = viper.GetString("trialpay_whitelist_ips")
-	config.Offerwall.Trialpay.NotificationKey = viper.GetString("trialpay_notification_key")
 	config.Offerwall.AdscendMedia.WhitelistIps = viper.GetString("adscendmedia_whitelist_ips")
 	config.Offerwall.AdgateMedia.WhitelistIps = viper.GetString("adgatemedia_whitelist_ips")
 	config.Offerwall.Offertoro.SecretKey = viper.GetString("offertoro_secret_key")

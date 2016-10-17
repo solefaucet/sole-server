@@ -51,16 +51,6 @@ type PersonalyOffer struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
-// TrialpayOffer model
-type TrialpayOffer struct {
-	ID        int64     `db:"id"`
-	IncomeID  int64     `db:"income_id"`
-	UserID    int64     `db:"user_id"`
-	OfferID   string    `db:"offer_id"`
-	Amount    float64   `db:"amount"`
-	CreatedAt time.Time `db:"created_at"`
-}
-
 // KiwiwallOffer model
 type KiwiwallOffer struct {
 	ID            int64     `db:"id"`

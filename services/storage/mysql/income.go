@@ -391,47 +391,6 @@ func createPersonalyIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID stri
 	return err
 }
 
-// GetNumberOfTrialpayOffers gets number of trialpay offers
-func (s Storage) GetNumberOfTrialpayOffers(offerID string, userID int64) (int64, error) {
-	var count int64
-	err := s.db.QueryRowx("SELECT COUNT(*) FROM `trialpay` WHERE `offer_id` = ? AND `user_id` = ?", offerID, userID).Scan(&count)
-	return count, err
-}
-
-// CreateTrialpayIncome creates a new trialpay type income
-func (s Storage) CreateTrialpayIncome(income models.Income, offerID string) error {
-	tx := s.db.MustBegin()
-
-	if err := createTrialpayIncomeWithTx(tx, income, offerID); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// commit
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("create trialpay income commit transaction error: %v", err)
-	}
-
-	return nil
-}
-
-func createTrialpayIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
-	if err != nil {
-		return err
-	}
-
-	// insert trialpay offer
-	offer := models.TrialpayOffer{
-		IncomeID: id,
-		UserID:   income.UserID,
-		OfferID:  offerID,
-		Amount:   income.Income,
-	}
-	_, err = tx.NamedExec("INSERT INTO `trialpay` (`income_id`, `user_id`, `offer_id`, `amount`) VALUE (:income_id, :user_id, :offer_id, :amount)", offer)
-	return err
-}
-
 // GetNumberOfClixwallOffers gets number of clixwall offers
 func (s Storage) GetNumberOfClixwallOffers(offerID string, userID int64) (int64, error) {
 	var count int64

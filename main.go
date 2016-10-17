@@ -222,15 +222,6 @@ func main() {
 		connsHub.Broadcast,
 	))
 
-	trialpayAuthRequired := middlewares.TrialpayAuthRequired(config.Offerwall.Trialpay.WhitelistIps, config.Offerwall.Trialpay.NotificationKey)
-	v1OfferwallEndpoints.GET("/trialpay", trialpayAuthRequired, v1.TrialpayCallback(
-		store.GetUserByID,
-		store.GetNumberOfTrialpayOffers,
-		memoryCache.GetLatestConfig,
-		store.CreateTrialpayIncome,
-		connsHub.Broadcast,
-	))
-
 	adscendMediaAuthRequired := middlewares.AdscendMediaAuthRequired(config.Offerwall.AdscendMedia.WhitelistIps)
 	v1OfferwallEndpoints.GET("/adscend_media", adscendMediaAuthRequired, v1.AdscendMediaCallback(
 		store.GetUserByID,
