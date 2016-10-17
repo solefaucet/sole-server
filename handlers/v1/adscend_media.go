@@ -79,7 +79,6 @@ func AdscendMediaCallback(
 			Type:          models.IncomeTypeAdscendMedia,
 			Income:        amount,
 			RefererIncome: amount * getSystemConfig().RefererRewardRate,
-			Status:        models.IncomeStatusPending,
 		}
 		if err := createAdscendMediaIncome(income, payload.TransactionID, payload.OfferID); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)

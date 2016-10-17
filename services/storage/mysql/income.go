@@ -509,6 +509,12 @@ func createPtcwallIncomeWithTx(tx *sqlx.Tx, income models.Income) error {
 // add income, update user, update referer
 func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRefererBalanceRowsAffected int64, err error) {
 	// insert income into incomes table
+
+	// pending offerwall income
+	if income.Type != models.IncomeTypeReward {
+		income.Status = models.IncomeStatusPending
+	}
+
 	result, err := addIncome(tx, income)
 	if err != nil {
 		return
