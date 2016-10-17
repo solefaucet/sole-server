@@ -155,14 +155,14 @@ func (s Storage) CreateSuperrewardsIncome(income models.Income, transactionID, o
 }
 
 func createSuperrewardsIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert superrewards offer
 	offer := models.SuperrewardsOffer{
-		IncomeID:      id,
+		IncomeID:      incomeID,
 		UserID:        income.UserID,
 		TransactionID: transactionID,
 		OfferID:       offerID,
@@ -197,14 +197,14 @@ func (s Storage) CreateKiwiwallIncome(income models.Income, transactionID, offer
 }
 
 func createKiwiwallIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert kiwiwall offer
 	offer := models.KiwiwallOffer{
-		IncomeID:      id,
+		IncomeID:      incomeID,
 		UserID:        income.UserID,
 		TransactionID: transactionID,
 		OfferID:       offerID,
@@ -245,11 +245,7 @@ func (s Storage) CreateAdscendMediaIncome(income models.Income, transactionID, o
 
 func createAdscendMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
 	// insert income into incomes table
-	result, err := addIncome(tx, income)
-	if err != nil {
-		return err
-	}
-	incomeID, err := result.LastInsertId()
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
@@ -291,14 +287,14 @@ func (s Storage) CreateAdgateMediaIncome(income models.Income, transactionID, of
 }
 
 func createAdgateMediaIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert adgate media offer
 	offer := models.AdgateMedia{
-		IncomeID:      id,
+		IncomeID:      incomeID,
 		UserID:        income.UserID,
 		TransactionID: transactionID,
 		OfferID:       offerID,
@@ -333,14 +329,14 @@ func (s Storage) CreateOffertoroIncome(income models.Income, transactionID, offe
 }
 
 func createOffertoroIncomeWithTx(tx *sqlx.Tx, income models.Income, transactionID, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert offertoro offer
 	offer := models.Offertoro{
-		IncomeID:      id,
+		IncomeID:      incomeID,
 		UserID:        income.UserID,
 		TransactionID: transactionID,
 		OfferID:       offerID,
@@ -375,14 +371,14 @@ func (s Storage) CreatePersonalyIncome(income models.Income, offerID string) err
 }
 
 func createPersonalyIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert personaly offer
 	offer := models.PersonalyOffer{
-		IncomeID: id,
+		IncomeID: incomeID,
 		UserID:   income.UserID,
 		OfferID:  offerID,
 		Amount:   income.Income,
@@ -416,14 +412,14 @@ func (s Storage) CreateClixwallIncome(income models.Income, offerID string) erro
 }
 
 func createClixwallIncomeWithTx(tx *sqlx.Tx, income models.Income, offerID string) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert clixwall offer
 	offer := models.ClixwallOffer{
-		IncomeID: id,
+		IncomeID: incomeID,
 		UserID:   income.UserID,
 		OfferID:  offerID,
 		Amount:   income.Income,
@@ -450,14 +446,14 @@ func (s Storage) CreatePtcwallIncome(income models.Income) error {
 }
 
 func createPtcwallIncomeWithTx(tx *sqlx.Tx, income models.Income) error {
-	id, _, err := commonBatchOperation(tx, income)
+	incomeID, err := addIncome(tx, income)
 	if err != nil {
 		return err
 	}
 
 	// insert ptcwall offer
 	offer := models.PtcwallOffer{
-		IncomeID: id,
+		IncomeID: incomeID,
 		UserID:   income.UserID,
 		Amount:   income.Income,
 	}
@@ -468,11 +464,7 @@ func createPtcwallIncomeWithTx(tx *sqlx.Tx, income models.Income) error {
 // add income, update user, update referer
 func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRefererBalanceRowsAffected int64, err error) {
 	// insert income into incomes table
-	result, err := addIncome(tx, income)
-	if err != nil {
-		return
-	}
-	incomeID, err = result.LastInsertId()
+	incomeID, err = addIncome(tx, income)
 	if err != nil {
 		return
 	}
@@ -492,7 +484,7 @@ func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRe
 }
 
 // insert reward income into incomes table
-func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
+func addIncome(tx *sqlx.Tx, income models.Income) (int64, error) {
 	sql := "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)"
 
 	// pending offerwall income
@@ -503,10 +495,14 @@ func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
 
 	result, err := tx.NamedExec(sql, income)
 	if err != nil {
-		return nil, fmt.Errorf("add income error: %v", err)
+		return 0, fmt.Errorf("add income error: %v", err)
+	}
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
 	}
 
-	return result, nil
+	return lastInsertID, nil
 }
 
 // increment user balance, total_income, referer_total_income
