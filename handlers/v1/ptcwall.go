@@ -45,7 +45,7 @@ func PtcwallCallback(
 		}
 
 		// create income ptcwall
-		amount := payload.Amount
+		amount := payload.Amount / 1e8
 		income := models.Income{
 			UserID:        user.ID,
 			RefererID:     user.RefererID,
