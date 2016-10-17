@@ -51,10 +51,6 @@ type Storage interface {
 	UpdateWithdrawalStatusToProcessing(ids []int64) error
 	UpdateWithdrawalStatusToProcessed(ids []int64, transactionID string) error
 
-	// Offerwow
-	GetNumberOfOfferwowEvents(eventID string) (int64, error)
-	CreateOfferwowIncome(income models.Income, eventID string) error
-
 	// Superrewards
 	GetNumberOfSuperrewardsOffers(transactionID string, userID int64) (int64, error)
 	CreateSuperrewardsIncome(income models.Income, transactionID, offerID string) error

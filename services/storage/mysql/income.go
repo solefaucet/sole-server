@@ -90,46 +90,6 @@ func createRewardIncomeWithTx(tx *sqlx.Tx, income models.Income, now time.Time) 
 	return nil
 }
 
-// GetNumberOfOfferwowEvents gets number of offerwow event
-func (s Storage) GetNumberOfOfferwowEvents(eventID string) (int64, error) {
-	var count int64
-	err := s.db.QueryRowx("SELECT COUNT(*) FROM `offerwow` WHERE `event_id` = ?", eventID).Scan(&count)
-	return count, err
-}
-
-// CreateOfferwowIncome creates a new offerwow type income
-func (s Storage) CreateOfferwowIncome(income models.Income, eventID string) error {
-	tx := s.db.MustBegin()
-
-	if err := createOfferwowIncomeWithTx(tx, income, eventID); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// commit
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("create offerwow income commit transaction error: %v", err)
-	}
-
-	return nil
-}
-
-func createOfferwowIncomeWithTx(tx *sqlx.Tx, income models.Income, eventID string) error {
-	id, _, err := commonBatchOperation(tx, income)
-	if err != nil {
-		return err
-	}
-
-	// insert offerwow event
-	offerwowEvent := models.OfferwowEvent{
-		EventID:  eventID,
-		IncomeID: id,
-		Amount:   income.Income,
-	}
-	_, err = tx.NamedExec("INSERT INTO `offerwow` (`event_id`, `income_id`, `amount`) VALUE (:event_id, :income_id, :amount)", offerwowEvent)
-	return err
-}
-
 // GetNumberOfSuperrewardsOffers gets number of superrewards offers
 func (s Storage) GetNumberOfSuperrewardsOffers(transactionID string, userID int64) (int64, error) {
 	var count int64

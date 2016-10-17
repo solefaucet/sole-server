@@ -41,7 +41,6 @@ type (
 
 	// income
 	dependencyCreateRewardIncome          func(models.Income, time.Time) error
-	dependencyCreateOfferwowIncome        func(models.Income, string) error
 	dependencyCreateSuperrewardsIncome    func(income models.Income, transactionID, offerID string) error
 	dependencyCreateKiwiwallIncome        func(income models.Income, transactionID, offerID string) error
 	dependencyCreateAdscendMediaIncome    func(income models.Income, transactionID, offerID string) error
@@ -74,9 +73,6 @@ type (
 	// captcha
 	dependencyRegisterCaptcha func() (string, error)
 	dependencyGetCaptchaID    func() string
-
-	// offerwow
-	dependencyGetNumberOfOfferwowEvent func(eventID string) (int64, error)
 
 	// superrewards
 	dependencyGetNumberOfSuperrewardsOffers func(transactionID string, userID int64) (int64, error)

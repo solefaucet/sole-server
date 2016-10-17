@@ -159,17 +159,6 @@ func main() {
 	// offerwall endpoint
 	v1OfferwallEndpoints := v1Endpoints.Group("/offerwalls")
 
-	offerwowAuthRequired := middlewares.OfferwowAuthRequired(config.Offerwall.Offerwow.Key)
-	v1OfferwallEndpoints.GET("/offerwow", offerwowAuthRequired,
-		v1.OfferwowCallback(
-			config.Offerwall.Offerwow.Key,
-			store.GetUserByID,
-			store.GetNumberOfOfferwowEvents,
-			memoryCache.GetLatestConfig,
-			store.CreateOfferwowIncome,
-		),
-	)
-
 	superrewardsAuthRequired := middlewares.SuperrewardsAuthRequired(config.Offerwall.Superrewards.WhitelistIps)
 	v1OfferwallEndpoints.GET("/superrewards", superrewardsAuthRequired,
 		v1.SuperrewardsCallback(

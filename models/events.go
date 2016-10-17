@@ -11,8 +11,6 @@ const (
 	EventReward                       = "reward"
 	EventGetGeoFromIP                 = "get geo from ip"
 	EventUserSignup                   = "user signup"
-	EventOfferwowCallback             = "offerwow callback"
-	EventOfferwowInvalidSignature     = "offerwow invalid signature"
 	EventSuperrewardsCallback         = "superrewards callback"
 	EventSuperrewardsInvalidSignature = "superrewards invalid signature"
 	EventPTCWallCallback              = "ptcwall callback"
