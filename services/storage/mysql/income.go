@@ -468,12 +468,6 @@ func createPtcwallIncomeWithTx(tx *sqlx.Tx, income models.Income) error {
 // add income, update user, update referer
 func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRefererBalanceRowsAffected int64, err error) {
 	// insert income into incomes table
-
-	// pending offerwall income
-	if income.Type != models.IncomeTypeReward {
-		income.Status = models.IncomeStatusPending
-	}
-
 	result, err := addIncome(tx, income)
 	if err != nil {
 		return
@@ -499,10 +493,12 @@ func commonBatchOperation(tx *sqlx.Tx, income models.Income) (incomeID, updateRe
 
 // insert reward income into incomes table
 func addIncome(tx *sqlx.Tx, income models.Income) (sql.Result, error) {
-	sql := "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`, `status`) VALUES (:user_id, :referer_id, :type, :income, :referer_income, :status)"
+	sql := "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)"
 
-	if income.Status == "" {
-		sql = "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`) VALUES (:user_id, :referer_id, :type, :income, :referer_income)"
+	// pending offerwall income
+	if income.Type != models.IncomeTypeReward {
+		income.Status = models.IncomeStatusPending
+		sql = "INSERT INTO incomes (`user_id`, `referer_id`, `type`, `income`, `referer_income`, `status`) VALUES (:user_id, :referer_id, :type, :income, :referer_income, :status)"
 	}
 
 	result, err := tx.NamedExec(sql, income)
