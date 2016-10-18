@@ -421,19 +421,24 @@ func processWithdrawals() {
 	}
 
 	// parse data from withdrawals
-	total := 0.0
+	balance := must(getBalance()).(float64)
+	total, totalWithdrawal := 0.0, 0.0
 	amounts := map[string]float64{}
 	withdrawalIDs := []int64{}
 	for _, v := range withdrawals {
 		total += v.Amount * 1.1 // NOTE: assume tx_fee = amount * 0.1
-		address := strings.TrimSpace(v.Address)
-		amounts[address] = utils.ToFixed(amounts[address]+v.Amount, 8)
-		withdrawalIDs = append(withdrawalIDs, v.ID)
+
+		// process as much as it can when balance > 0.1
+		if balance > 0.1 && balance > total {
+			totalWithdrawal += v.Amount * 1.1
+			address := strings.TrimSpace(v.Address)
+			amounts[address] = utils.ToFixed(amounts[address]+v.Amount, 8)
+			withdrawalIDs = append(withdrawalIDs, v.ID)
+		}
 	}
 
-	// get current remaining balance
-	balance := must(getBalance()).(float64)
-	if balance < total {
+	// nothing to withdraw
+	if len(withdrawalIDs) <= 0 {
 		logrus.WithFields(logrus.Fields{
 			"event":                   models.EventProcessWithdrawals,
 			"address_to_receive_coin": must(coinClient.GetAccountAddress("")).(string),
@@ -464,7 +469,7 @@ func processWithdrawals() {
 			"event":   models.EventProcessWithdrawals,
 			"amounts": amounts,
 			"balance": balance,
-			"total":   total,
+			"total":   totalWithdrawal,
 			"error":   err.Error(),
 		}).Error("fail to send coin")
 		return
@@ -485,7 +490,7 @@ func processWithdrawals() {
 	logrus.WithFields(logrus.Fields{
 		"event":                   models.EventProcessWithdrawals,
 		"duration":                float64(time.Since(start).Nanoseconds()) / 1e6,
-		"total":                   total,
+		"total":                   totalWithdrawal,
 		"remaining_balance":       must(getBalance()).(float64),
 		"address_to_receive_coin": must(coinClient.GetAccountAddress("")).(string),
 		"number_of_withdrawals":   len(amounts),
