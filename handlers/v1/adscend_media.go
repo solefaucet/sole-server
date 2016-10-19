@@ -15,7 +15,7 @@ type adscendMediaPayload struct {
 	TransactionID string  `form:"tx_id" binding:"required"`
 	UserID        int64   `form:"user_id" binding:"required,gt=0"`
 	OfferID       string  `form:"offer_id"`
-	Amount        float64 `form:"amount" binding:"required,gt=0"`
+	Amount        float64 `form:"amount" binding:"required"`
 }
 
 // AdscendMediaCallback handles callback from adscendMedia
